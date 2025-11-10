@@ -182,52 +182,61 @@ builder.Services.AddScoped<INotificacionService, NotificacionService>();
 var app = builder.Build();
 
 Console.WriteLine("[STARTUP] Application built successfully");
+// ============================================
+// IMPORTANTE: La base de datos se configura manualmente con SQL
+// NO usar migraciones de EF Core
+// ============================================
 
-// Apply migrations and seed data in production
 if (app.Environment.IsProduction())
 {
- Console.WriteLine("[STARTUP] Production environment detected");
-    Console.WriteLine("[STARTUP] SKIPPING automatic migrations for now - will apply manually");
+    Console.WriteLine("[STARTUP] Production environment detected");
+    Console.WriteLine("[STARTUP] Testing database connection...");
     
-    // TODO: Apply migrations manually via Railway CLI:
-    // railway run dotnet ef database update --project checkpoint-web
-    
-  /*
-    using (var scope = app.Services.CreateScope())
+    try
     {
-      try
-{
-   var db = scope.ServiceProvider.GetRequiredService<CheckpointDbContext>();
- Console.WriteLine("[STARTUP] DbContext acquired, checking database connection...");
-   
- // Test connection
-      await db.Database.CanConnectAsync();
-   Console.WriteLine("[STARTUP] Database connection successful");
+        using (var scope = app.Services.CreateScope())
+        {
+         var db = scope.ServiceProvider.GetRequiredService<CheckpointDbContext>();
             
-   Console.WriteLine("[STARTUP] Applying migrations...");
-   await db.Database.MigrateAsync();
-    Console.WriteLine("[STARTUP] Migrations applied successfully");
-  
-         Console.WriteLine("[STARTUP] Seeding database...");
-      await SeedData.InitializeAsync(scope.ServiceProvider);
-       Console.WriteLine("[STARTUP] Database seeded successfully");
-        }
-catch (Exception ex)
-  {
-      Console.WriteLine($"[STARTUP ERROR] Database initialization failed: {ex.GetType().Name}");
-            Console.WriteLine($"[STARTUP ERROR] Message: {ex.Message}");
-      if (ex.InnerException != null)
+     // Solo probar conexión, NO aplicar migraciones
+            var canConnect = await db.Database.CanConnectAsync();
+       
+   if (canConnect)
+            {
+   Console.WriteLine("[STARTUP] ? Database connection successful!");
+         
+   // Verificar que las tablas existen
+  try
     {
-    Console.WriteLine($"[STARTUP ERROR] Inner: {ex.InnerException.Message}");
-   }
-  Console.WriteLine("[STARTUP] Application will continue without database initialization");
-      }
+           var userCount = await db.Users.CountAsync();
+    Console.WriteLine($"[STARTUP] ? Found {userCount} users in database");
+       }
+       catch (Exception ex)
+  {
+        Console.WriteLine($"[STARTUP] ?? Could not query users: {ex.Message}");
+          Console.WriteLine("[STARTUP] ?? Please ensure database schema is created using railway-setup-complete.sql");
+        }
+  }
+            else
+    {
+   Console.WriteLine("[STARTUP] ? Database connection FAILED");
+          }
+}
     }
-    */
+    catch (Exception ex)
+    {
+  Console.WriteLine($"[STARTUP ERROR] Database test failed: {ex.GetType().Name}");
+    Console.WriteLine($"[STARTUP ERROR] Message: {ex.Message}");
+        if (ex.InnerException != null)
+        {
+            Console.WriteLine($"[STARTUP ERROR] Inner: {ex.InnerException.Message}");
+        }
+        Console.WriteLine("[STARTUP] ?? Application will continue but database may not be accessible");
+    }
 }
 else
 {
-Console.WriteLine("[STARTUP] Development environment, skipping automatic migrations");
+    Console.WriteLine("[STARTUP] Development environment detected");
 }
 
 Console.WriteLine("[STARTUP] Configuring HTTP pipeline...");
@@ -259,7 +268,7 @@ app.Use(async (context, next) =>
 {
     if (context.Request.Path == "/")
  {
-        var user = context.User;
+      var user = context.User;
  if (!(user?.Identity?.IsAuthenticated ?? false))
   {
      if (!context.Request.Path.StartsWithSegments("/Account/Login", StringComparison.OrdinalIgnoreCase))
@@ -274,13 +283,58 @@ app.Use(async (context, next) =>
 
 app.UseAuthorization();
 
-// Simple health check endpoint for Railway
-app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
-    .AllowAnonymous();
+// Enhanced health check endpoint for Railway
+app.MapGet("/health", async (CheckpointDbContext db) =>
+{
+    try
+    {
+        // Test database connection
+        var canConnect = await db.Database.CanConnectAsync();
+        
+        if (!canConnect)
+        {
+            return Results.Json(new
+            {
+    status = "unhealthy",
+            timestamp = DateTime.UtcNow,
+ error = "Database connection failed"
+}, statusCode: 503);
+    }
+        
+        // Check if users table exists and has data
+        var userCount = await db.Users.CountAsync();
+  
+        return Results.Ok(new
+  {
+   status = "healthy",
+       timestamp = DateTime.UtcNow,
+            database = new
+ {
+  connected = true,
+     users = userCount,
+       provider = "PostgreSQL"
+            }
+        });
+    }
+    catch (Exception ex)
+    {
+        return Results.Json(new
+    {
+        status = "unhealthy",
+            timestamp = DateTime.UtcNow,
+      error = ex.Message,
+      errorType = ex.GetType().Name
+        }, statusCode: 503);
+    }
+})
+.AllowAnonymous();
 
 app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+Console.WriteLine("[STARTUP] Application started successfully!");
+Console.WriteLine("[STARTUP] Ready to accept requests");
 
 app.Run();
