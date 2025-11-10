@@ -2,82 +2,370 @@ using Microsoft.EntityFrameworkCore;
 using checkpoint_web.Data;
 using checkpoint_web.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using checkpoint_web.Services;
+using checkpoint_web.Middleware;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Console.WriteLine("[MINIMAL] Starting minimal configuration...");
+// Early logging configuration
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
+// Add services to the container.
+var configuration = builder.Configuration;
+
+// ============================================
+// Database configuration: SOLO PostgreSQL
+// ============================================
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+// Si DATABASE_URL no está o es la red interna, usar DATABASE_PUBLIC_URL
+if (string.IsNullOrEmpty(databaseUrl) || databaseUrl.Contains("railway.internal"))
+{
+    Console.WriteLine("[STARTUP] DATABASE_URL is internal or missing, trying DATABASE_PUBLIC_URL...");
+    databaseUrl = Environment.GetEnvironmentVariable("DATABASE_PUBLIC_URL");
+}
+
+Console.WriteLine($"[STARTUP] Environment: {builder.Environment.EnvironmentName}");
+Console.WriteLine($"[STARTUP] DATABASE_URL present: {!string.IsNullOrEmpty(databaseUrl)}");
+
+if (!string.IsNullOrEmpty(databaseUrl))
+{
+    try
+    {
+     // Railway PostgreSQL
+    Console.WriteLine("[STARTUP] Parsing Railway DATABASE_URL...");
+     var databaseUri = new Uri(databaseUrl);
+        var userInfo = databaseUri.UserInfo.Split(':');
+        var host = databaseUri.Host;
+ var database = databaseUri.AbsolutePath.Trim('/');
+    var username = userInfo[0];
+        var password = userInfo.Length > 1 ? userInfo[1] : "";
+        var port = databaseUri.Port;
+ 
+        var connectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+        
+ Console.WriteLine($"[STARTUP] PostgreSQL connection configured: Host={host}, Port={port}, Database={database}");
+    
+   Console.WriteLine("[STARTUP] Adding DbContext to services...");
+     builder.Services.AddDbContext<CheckpointDbContext>(options =>
+            options.UseNpgsql(connectionString));
+        Console.WriteLine("[STARTUP] DbContext added successfully");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[STARTUP ERROR] Failed to parse DATABASE_URL: {ex.Message}");
+   throw;
+    }
+}
+else
+{
+    // Local development - SOLO PostgreSQL desde appsettings.json
+    var connectionString = configuration.GetConnectionString("DefaultConnection")
+        ?? "Host=localhost;Port=5432;Database=CheckpointDev;Username=postgres;Password=postgres;";
+    
+    Console.WriteLine($"[STARTUP] Using local PostgreSQL connection");
+    Console.WriteLine($"[STARTUP] Connection: {connectionString.Split(';')[0]}");
+
+    builder.Services.AddDbContext<CheckpointDbContext>(options =>
+        options.UseNpgsql(connectionString));
+}
+
+Console.WriteLine("[STARTUP] Configuring Identity...");
 try
 {
-    // Parse DATABASE_URL
-    var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-    
-    if (string.IsNullOrEmpty(databaseUrl) || databaseUrl.Contains("railway.internal"))
- {
-        databaseUrl = Environment.GetEnvironmentVariable("DATABASE_PUBLIC_URL");
-    }
-    
-    if (string.IsNullOrEmpty(databaseUrl))
-  {
-        throw new Exception("No DATABASE_URL or DATABASE_PUBLIC_URL found!");
-    }
-    
-    Console.WriteLine($"[MINIMAL] Using database URL: {databaseUrl.Substring(0, Math.Min(50, databaseUrl.Length))}...");
-    
-    var uri = new Uri(databaseUrl);
-    var userInfo = uri.UserInfo.Split(':');
-    
-    var connStr = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.Trim('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
-    
-    Console.WriteLine($"[MINIMAL] Parsed connection: Host={uri.Host}, Port={uri.Port}");
-    
-    // Add DbContext
-    builder.Services.AddDbContext<CheckpointDbContext>(options =>
-        options.UseNpgsql(connStr));
-    
-    Console.WriteLine("[MINIMAL] DbContext added");
-    
-    // Add Identity
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireDigit = false;
+    })
     .AddEntityFrameworkStores<CheckpointDbContext>()
- .AddDefaultTokenProviders();
-    
-    Console.WriteLine("[MINIMAL] Identity added");
-    
-    // Add Razor Pages (MINIMAL - no conventions yet)
-    builder.Services.AddRazorPages();
+    .AddDefaultTokenProviders();
 
-    Console.WriteLine("[MINIMAL] Razor Pages added");
-    
-    Console.WriteLine("[MINIMAL] Building app...");
-    var app = builder.Build();
-    Console.WriteLine("[MINIMAL] App built successfully!");
-    
-    // Minimal pipeline
-    app.UseStaticFiles();
-    app.UseRouting();
-    app.UseAuthentication();
- app.UseAuthorization();
-  
-    // Simple health check
-    app.MapGet("/health", () => Results.Ok(new { status = "ok", time = DateTime.UtcNow }));
-    
- app.MapRazorPages();
-    
-    Console.WriteLine("[MINIMAL] Starting app...");
-    app.Run();
+    Console.WriteLine("[STARTUP] Identity configured successfully");
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"[MINIMAL ERROR] Type: {ex.GetType().FullName}");
-    Console.WriteLine($"[MINIMAL ERROR] Message: {ex.Message}");
-    
+    Console.WriteLine($"[STARTUP ERROR] Identity configuration failed: {ex.GetType().Name}");
+    Console.WriteLine($"[STARTUP ERROR] Message: {ex.Message}");
     if (ex.InnerException != null)
     {
-        Console.WriteLine($"[MINIMAL ERROR] Inner Type: {ex.InnerException.GetType().FullName}");
-   Console.WriteLine($"[MINIMAL ERROR] Inner Message: {ex.InnerException.Message}");
+      Console.WriteLine($"[STARTUP ERROR] Inner: {ex.InnerException.Message}");
     }
-    
-    Console.WriteLine($"[MINIMAL ERROR] Stack: {ex.StackTrace}");
     throw;
 }
+
+Console.WriteLine("[STARTUP] Configuring authentication cookies...");
+// Configure cookie behavior: TRUE session-only cookies
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.Name = "Checkpoint.Auth";
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.Path = "/";
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    
+    options.SlidingExpiration = false;
+    options.Cookie.MaxAge = null;
+    options.Cookie.Expiration = null;
+    
+    options.Events = new CookieAuthenticationEvents
+    {
+        OnSigningIn = context =>
+        {
+            context.Properties.IsPersistent = false;
+    context.Properties.ExpiresUtc = null;
+            context.CookieOptions.Expires = null;
+            context.CookieOptions.MaxAge = null;
+         return Task.CompletedTask;
+        },
+      OnValidatePrincipal = async context =>
+    {
+       if (context.Properties.IsPersistent)
+     {
+ context.Properties.IsPersistent = false;
+    context.Properties.ExpiresUtc = null;
+  context.ShouldRenew = true;
+       }
+ await Task.CompletedTask;
+ }
+    };
+});
+Console.WriteLine("[STARTUP] Authentication cookies configured");
+
+Console.WriteLine("[STARTUP] Configuring antiforgery...");
+builder.Services.AddAntiforgery(options =>
+{
+    options.Cookie.Name = "CheckpointAntiforgery";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.MaxAge = null;
+    options.Cookie.Expiration = null;
+    options.Cookie.IsEssential = true;
+});
+Console.WriteLine("[STARTUP] Antiforgery configured");
+
+Console.WriteLine("[STARTUP] Configuring authorization...");
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+ .Build();
+});
+Console.WriteLine("[STARTUP] Authorization configured");
+
+Console.WriteLine("[STARTUP] Configuring Razor Pages...");
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AllowAnonymousToPage("/Account/Login");
+    options.Conventions.AllowAnonymousToPage("/Account/Logout");
+    options.Conventions.AllowAnonymousToPage("/Privacy");
+    options.Conventions.AllowAnonymousToPage("/Account/CookieDiagnostics");
+});
+Console.WriteLine("[STARTUP] Razor Pages configured");
+
+Console.WriteLine("[STARTUP] Adding MVC controllers...");
+builder.Services.AddControllersWithViews();
+Console.WriteLine("[STARTUP] MVC controllers added");
+
+Console.WriteLine("[STARTUP] Registering application services...");
+// Audit service
+builder.Services.AddScoped<IAuditService, AuditService>();
+// Domain services
+builder.Services.AddScoped<IProductoService, ProductoService>();
+builder.Services.AddScoped<IInventarioService, InventarioService>();
+builder.Services.AddScoped<ISedeService, SedeService>();
+builder.Services.AddScoped<IUbicacionService, UbicacionService>();
+builder.Services.AddScoped<ITareaService, TareaService>();
+builder.Services.AddScoped<IClienteService, ClienteService>();
+builder.Services.AddScoped<IProveedorService, ProveedorService>();
+builder.Services.AddScoped<IMovimientoService, MovimientoService>();
+builder.Services.AddScoped<ICalidadService, CalidadService>();
+builder.Services.AddScoped<IReporteService, ReporteService>();
+builder.Services.AddScoped<INotificacionService, NotificacionService>();
+Console.WriteLine("[STARTUP] Application services registered");
+
+Console.WriteLine("[STARTUP] Building application...");
+var app = builder.Build();
+Console.WriteLine("[STARTUP] Application built successfully");
+
+// ============================================
+// IMPORTANTE: La base de datos se configura manualmente con SQL
+// NO usar migraciones de EF Core
+// ============================================
+
+if (app.Environment.IsProduction())
+{
+Console.WriteLine("[STARTUP] Production environment detected");
+    Console.WriteLine("[STARTUP] Testing database connection...");
+    
+    try
+    {
+ using (var scope = app.Services.CreateScope())
+        {
+       Console.WriteLine("[STARTUP] Creating service scope...");
+        var db = scope.ServiceProvider.GetRequiredService<CheckpointDbContext>();
+Console.WriteLine("[STARTUP] DbContext acquired");
+  
+          // Solo probar conexión, NO aplicar migraciones
+    Console.WriteLine("[STARTUP] Testing database connectivity...");
+            var canConnect = await db.Database.CanConnectAsync();
+  Console.WriteLine($"[STARTUP] Connection test result: {canConnect}");
+       
+    if (canConnect)
+            {
+           Console.WriteLine("[STARTUP] ? Database connection successful!");
+         
+        // Verificar que las tablas existen
+             try
+        {
+       Console.WriteLine("[STARTUP] Counting users in database...");
+          var userCount = await db.Users.CountAsync();
+  Console.WriteLine($"[STARTUP] ? Found {userCount} users in database");
+    }
+ catch (Exception ex)
+        {
+     Console.WriteLine($"[STARTUP] ?? Could not query users: {ex.Message}");
+        Console.WriteLine("[STARTUP] ?? Please ensure database schema is created using railway-setup-complete.sql");
+                }
+   }
+            else
+            {
+        Console.WriteLine("[STARTUP] ? Database connection FAILED");
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[STARTUP ERROR] Database test failed: {ex.GetType().Name}");
+        Console.WriteLine($"[STARTUP ERROR] Message: {ex.Message}");
+     if (ex.InnerException != null)
+        {
+      Console.WriteLine($"[STARTUP ERROR] Inner: {ex.InnerException.Message}");
+      }
+        Console.WriteLine("[STARTUP] ?? Application will continue but database may not be accessible");
+    }
+}
+else
+{
+    Console.WriteLine("[STARTUP] Development environment detected");
+}
+
+Console.WriteLine("[STARTUP] Configuring HTTP pipeline...
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    Console.WriteLine("[STARTUP] Configuring production error handling...");
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+    Console.WriteLine("[STARTUP] Production error handling configured");
+}
+
+// Only use HTTPS redirection in production with proper certificate
+if (app.Environment.IsProduction())
+{
+    Console.WriteLine("[STARTUP] Enabling HTTPS redirection...");
+    app.UseHttpsRedirection();
+}
+
+Console.WriteLine("[STARTUP] Enabling static files...");
+app.UseStaticFiles();
+
+Console.WriteLine("[STARTUP] Configuring routing...");
+app.UseRouting();
+
+Console.WriteLine("[STARTUP] Enabling authentication...");
+app.UseAuthentication();
+
+Console.WriteLine("[STARTUP] Adding audit middleware...");
+app.UseMiddleware<AuditMiddleware>();
+
+Console.WriteLine("[STARTUP] Configuring root redirect...");
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path == "/")
+    {
+  var user = context.User;
+        if (!(user?.Identity?.IsAuthenticated ?? false))
+        {
+    if (!context.Request.Path.StartsWithSegments("/Account/Login", StringComparison.OrdinalIgnoreCase))
+            {
+context.Response.Redirect("/Account/Login");
+    return;
+      }
+  }
+    }
+    await next();
+});
+
+Console.WriteLine("[STARTUP] Enabling authorization...");
+app.UseAuthorization();
+
+Console.WriteLine("[STARTUP] Mapping health check endpoint...");
+app.MapGet("/health", async (CheckpointDbContext db) =>
+{
+    try
+    {
+        var canConnect = await db.Database.CanConnectAsync();
+      
+        if (!canConnect)
+   {
+return Results.Json(new
+          {
+              status = "unhealthy",
+      timestamp = DateTime.UtcNow,
+   error = "Database connection failed"
+          }, statusCode: 503);
+  }
+
+        var userCount = await db.Users.CountAsync();
+  
+  return Results.Ok(new
+        {
+            status = "healthy",
+   timestamp = DateTime.UtcNow,
+    database = new
+    {
+     connected = true,
+          users = userCount,
+     provider = "PostgreSQL"
+            }
+        });
+    }
+    catch (Exception ex)
+    {
+        return Results.Json(new
+        {
+  status = "unhealthy",
+ timestamp = DateTime.UtcNow,
+            error = ex.Message,
+            errorType = ex.GetType().Name
+        }, statusCode: 503);
+    }
+})
+.AllowAnonymous();
+
+Console.WriteLine("[STARTUP] Mapping Razor Pages...");
+app.MapRazorPages();
+
+Console.WriteLine("[STARTUP] Mapping MVC routes...");
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+Console.WriteLine("[STARTUP] ? Application configured successfully!");
+Console.WriteLine("[STARTUP] ? Ready to accept requests");
+Console.WriteLine("[STARTUP] ========================================");
+
+app.Run();
