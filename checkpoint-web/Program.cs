@@ -12,11 +12,43 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var configuration = builder.Configuration;
-var connectionString = configuration.GetConnectionString("DefaultConnection")
-    ?? "Server=(localdb)\\mssqllocaldb;Database=CheckpointDev;Trusted_Connection=True;";
 
-builder.Services.AddDbContext<CheckpointDbContext>(options =>
+// Database configuration: Railway (PostgreSQL) or Local (SQL Server)
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+if (!string.IsNullOrEmpty(databaseUrl))
+{
+    // Railway PostgreSQL
+    var databaseUri = new Uri(databaseUrl);
+    var userInfo = databaseUri.UserInfo.Split(':');
+    var host = databaseUri.Host;
+ var database = databaseUri.AbsolutePath.Trim('/');
+    var username = userInfo[0];
+    var password = userInfo[1];
+ var port = databaseUri.Port;
+    
+    var connectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+    
+    builder.Services.AddDbContext<CheckpointDbContext>(options =>
+        options.UseNpgsql(connectionString));
+}
+else
+{
+    // Local development - SQL Server or PostgreSQL from appsettings.json
+    var connectionString = configuration.GetConnectionString("DefaultConnection")
+        ?? "Server=(localdb)\\mssqllocaldb;Database=CheckpointDev;Trusted_Connection=True;";
+    
+    // Detect if it's PostgreSQL or SQL Server based on connection string
+    if (connectionString.Contains("Host=") || connectionString.Contains("host="))
+    {
+  builder.Services.AddDbContext<CheckpointDbContext>(options =>
+     options.UseNpgsql(connectionString));
+    }
+    else
+    {
+  builder.Services.AddDbContext<CheckpointDbContext>(options =>
     options.UseSqlServer(connectionString));
+    }
+}
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
@@ -31,17 +63,17 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 // Configure cookie behavior: TRUE session-only cookies
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.Cookie.Name = "Checkpoint.Auth";
+ options.Cookie.Name = "Checkpoint.Auth";
     options.LoginPath = "/Account/Login";
     options.LogoutPath = "/Account/Logout";
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
-    options.Cookie.Path = "/";
+ options.Cookie.Path = "/";
   options.Cookie.SameSite = SameSiteMode.Lax;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // Changed for Railway compatibility
     
     // CRITICAL: Do NOT set ExpireTimeSpan - this creates persistent cookies
-    // The cookie will expire when browser closes (true session cookie)
+ // The cookie will expire when browser closes (true session cookie)
     options.SlidingExpiration = false;
     options.Cookie.MaxAge = null;
     options.Cookie.Expiration = null;
@@ -53,24 +85,24 @@ builder.Services.ConfigureApplicationCookie(options =>
         {
          // Always force session cookie (no expiration)
    context.Properties.IsPersistent = false;
-            context.Properties.ExpiresUtc = null;
-   
+        context.Properties.ExpiresUtc = null;
+ 
         // Force cookie options to be session-only
-            context.CookieOptions.Expires = null;
+       context.CookieOptions.Expires = null;
             context.CookieOptions.MaxAge = null;
          
-            return Task.CompletedTask;
+return Task.CompletedTask;
         },
-        OnValidatePrincipal = async context =>
+  OnValidatePrincipal = async context =>
         {
    // Validate that cookie is still a session cookie
      if (context.Properties.IsPersistent)
      {
            // Force it back to session-only
-                context.Properties.IsPersistent = false;
+         context.Properties.IsPersistent = false;
    context.Properties.ExpiresUtc = null;
-     context.ShouldRenew = true;
-            }
+  context.ShouldRenew = true;
+   }
    await Task.CompletedTask;
         }
     };
@@ -81,7 +113,7 @@ builder.Services.AddAntiforgery(options =>
 {
     options.Cookie.Name = "CheckpointAntiforgery";
     options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
     options.Cookie.SameSite = SameSiteMode.Lax;
     options.Cookie.MaxAge = null;
   options.Cookie.Expiration = null;
@@ -124,18 +156,38 @@ builder.Services.AddScoped<INotificacionService, NotificacionService>();
 
 var app = builder.Build();
 
-// Seed DB
-// NOTE: Temporarily disabled to allow application startup while debugging seed/migration issues.
-// await SeedData.InitializeAsync(app.Services);
+// Apply migrations and seed data in production
+if (app.Environment.IsProduction())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+    try
+        {
+   var db = scope.ServiceProvider.GetRequiredService<CheckpointDbContext>();
+            await db.Database.MigrateAsync();
+       await SeedData.InitializeAsync(scope.ServiceProvider);
+  }
+ catch (Exception ex)
+  {
+      var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+     logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+        }
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+ app.UseExceptionHandler("/Home/Error");
+ app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// Only use HTTPS redirection in production with proper certificate
+if (app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -151,12 +203,12 @@ app.Use(async (context, next) =>
     if (context.Request.Path == "/")
  {
         var user = context.User;
-        if (!(user?.Identity?.IsAuthenticated ?? false))
+ if (!(user?.Identity?.IsAuthenticated ?? false))
   {
-            if (!context.Request.Path.StartsWithSegments("/Account/Login", StringComparison.OrdinalIgnoreCase))
+     if (!context.Request.Path.StartsWithSegments("/Account/Login", StringComparison.OrdinalIgnoreCase))
           {
        context.Response.Redirect("/Account/Login");
-          return;
+      return;
  }
      }
     }
