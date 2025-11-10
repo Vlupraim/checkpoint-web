@@ -1,36 +1,109 @@
-# ?? EJECUTAR SCRIPTS SQL EN RAILWAY - GUÍA RÁPIDA
+# ?? EJECUTAR SCRIPTS SQL EN RAILWAY CON DBEAVER
 
-## ? **SOLUCIÓN AL PROBLEMA DE ToString()**
+## ? **MÉTODO RECOMENDADO: DBeaver (Visual y Fácil)**
 
-El error `"Cannot print exception string because Exception.ToString() failed"` es causado por incompatibilidades entre las migraciones de SQL Server y PostgreSQL.
-
-**Solución:** Crear las tablas manualmente con scripts SQL nativos de PostgreSQL.
+DBeaver es perfecto para conectarte a Railway PostgreSQL y ejecutar los scripts visualmente.
 
 ---
 
-## ?? **MÉTODO 1: Desde Railway Web UI (MÁS FÁCIL)**
+## ?? **PASO A PASO CON DBEAVER:**
 
-### **Paso 1: Acceder a la base de datos**
+### **Paso 1: Obtener credenciales de Railway**
 
-1. Ve a Railway ? Tu proyecto
-2. Click en **"Postgres"** (el servicio de base de datos)
-3. Click en la pestaña **"Database"** o **"Data"**
-4. Verás un editor SQL o consola
+1. Ve a **Railway** ? Tu proyecto
+2. Click en **"Postgres"** (servicio de base de datos)
+3. Click en pestaña **"Connect"** o **"Variables"**
+4. Copia las siguientes credenciales:
 
-### **Paso 2: Ejecutar schema**
+```
+Host: postgres.railway.internal
+Port: 5432
+Database: railway
+Username: postgres
+Password: [tu password]
+```
 
-1. Abre el archivo `database-schema.sql` en tu editor
-2. **Copia TODO el contenido** (Ctrl+A, Ctrl+C)
-3. **Pega** en el editor SQL de Railway
-4. Click **"Execute"** o **"Run"**
-5. ? Deberías ver: `"Schema creado exitosamente!"`
+O copia la **URL completa** que se ve así:
+```
+postgresql://postgres:XXXPASSWORDXXX@postgres.railway.internal:5432/railway
+```
 
-### **Paso 3: Ejecutar seed data**
+### **Paso 2: Instalar DBeaver (si no lo tienes)**
 
-1. Abre el archivo `database-seed.sql`
+1. Descarga desde: https://dbeaver.io/download/
+2. Instala la versión Community (gratis)
+3. Abre DBeaver
+
+### **Paso 3: Crear conexión en DBeaver**
+
+1. En DBeaver, click en **"Database"** ? **"New Database Connection"**
+2. Selecciona **"PostgreSQL"**
+3. Click **"Next"**
+
+#### **Configuración de la conexión:**
+
+**Pestaña "Main":**
+```
+Host: postgres.railway.internal
+Port: 5432
+Database: railway
+Username: postgres
+Password: [tu password de Railway]
+```
+
+**Checkbox importante:**
+- ? Marca: **"Show all databases"**
+
+Click **"Test Connection"**
+- ? Debería decir: **"Connected"**
+
+Click **"Finish"**
+
+### **Paso 4: Ejecutar script de Schema**
+
+1. En DBeaver, expande la conexión **"PostgreSQL - railway"**
+2. Click derecho en **"railway"** ? **"SQL Editor"** ? **"New SQL Script"**
+3. **Abre el archivo** `database-schema.sql` en tu editor (VS Code)
+4. **Copia TODO el contenido** (Ctrl+A, Ctrl+C)
+5. **Pega** en el SQL Editor de DBeaver
+6. Click en el botón **"Execute SQL Statement"** (? naranja) o presiona **Ctrl+Enter**
+7. ? Deberías ver en la consola abajo:
+```
+Schema creado exitosamente!
+Tablas principales creadas:
+  - AspNetUsers (Usuario)
+- Sede
+  - Ubicacion
+  - Producto
+  - Lote
+  - Stock
+  - Movimiento
+  ...
+```
+
+### **Paso 5: Verificar tablas creadas**
+
+1. En DBeaver, click derecho en **"railway"** ? **"Refresh"**
+2. Expande **"Schemas"** ? **"public"** ? **"Tables"**
+3. ? Deberías ver ~20 tablas:
+   - AspNetUsers
+   - AspNetRoles
+   - Sedes
+   - Ubicaciones
+   - Productos
+   - Lotes
+   - Stocks
+ - Movimientos
+   - CalidadLiberaciones
+   - UserLocationAssignments
+   - etc.
+
+### **Paso 6: Ejecutar script de Seed Data**
+
+1. **Abre** el archivo `database-seed.sql`
 2. **Copia TODO el contenido**
-3. **Pega** en el editor SQL de Railway
-4. Click **"Execute"** o **"Run"**
+3. **Pega** en una nueva ventana de SQL Editor de DBeaver
+4. Click **"Execute SQL Statement"** (?)
 5. ? Deberías ver:
 ```
 Datos iniciales cargados exitosamente!
@@ -40,158 +113,46 @@ Usuarios creados:
   - calidad@example.com / Calidad123!
 ```
 
----
+### **Paso 7: Verificar datos insertados**
 
-## ?? **MÉTODO 2: Desde Railway CLI**
-
-### **Requisitos:**
-```sh
-npm install -g @railway/cli
-```
-
-### **Paso 1: Login y Link**
-
-```sh
-# Login a Railway
-railway login
-
-# Link al proyecto (en la carpeta del proyecto)
-railway link
-```
-
-### **Paso 2: Ejecutar Scripts**
-
-```sh
-# Ejecutar schema
-railway run psql -c "$(cat database-schema.sql)"
-
-# Ejecutar seed data
-railway run psql -c "$(cat database-seed.sql)"
-```
-
----
-
-## ?? **MÉTODO 3: Con psql directamente**
-
-### **Paso 1: Obtener conexión de Railway**
-
-1. Railway ? Postgres ? Variables
-2. Copiar el valor de `DATABASE_URL`
-
-### **Paso 2: Conectar con psql**
-
-```sh
-# Reemplaza con tu DATABASE_URL
-psql "postgresql://postgres:XXXXX@postgres.railway.internal:5432/railway"
-```
-
-### **Paso 3: Ejecutar scripts**
+En DBeaver, ejecuta estas queries para verificar:
 
 ```sql
--- Dentro de psql
-\i database-schema.sql
-\i database-seed.sql
-```
-
----
-
-## ?? **MÉTODO 4: Desde TablePlus / pgAdmin (GUI)**
-
-Si prefieres una interfaz gráfica:
-
-### **Paso 1: Obtener credenciales**
-
-Railway ? Postgres ? Connect ? Copiar credenciales:
-```
-Host: postgres.railway.internal
-Port: 5432
-Database: railway
-User: postgres
-Password: [tu password]
-```
-
-### **Paso 2: Conectar**
-
-1. Abre TablePlus o pgAdmin
-2. Nueva conexión PostgreSQL
-3. Ingresa las credenciales
-4. Conectar
-
-### **Paso 3: Ejecutar SQL**
-
-1. Abre `database-schema.sql` en el editor SQL
-2. Ejecutar todo
-3. Abre `database-seed.sql`
-4. Ejecutar todo
-
----
-
-## ? **VERIFICACIÓN**
-
-Después de ejecutar ambos scripts:
-
-### **1. Verificar tablas creadas**
-
-```sql
-SELECT table_name 
-FROM information_schema.tables 
-WHERE table_schema = 'public' 
-ORDER BY table_name;
-```
-
-Deberías ver ~20 tablas incluyendo:
-- AspNetUsers
-- AspNetRoles
-- Productos
-- Lotes
-- Stocks
-- Movimientos
-- etc.
-
-### **2. Verificar usuarios**
-
-```sql
+-- Ver usuarios creados
 SELECT "Email", "UserName" 
 FROM "AspNetUsers";
-```
 
-Deberías ver:
-- admin@example.com
-- bodega@example.com
-- calidad@example.com
+-- Ver roles
+SELECT "Name" 
+FROM "AspNetRoles";
 
-### **3. Verificar roles**
+-- Ver productos de ejemplo
+SELECT "Sku", "Nombre" 
+FROM "Productos";
 
-```sql
-SELECT u."Email", r."Name" 
-FROM "AspNetUsers" u
-JOIN "AspNetUserRoles" ur ON u."Id" = ur."UserId"
-JOIN "AspNetRoles" r ON r."Id" = ur."RoleId";
+-- Ver sedes
+SELECT "Codigo", "Nombre" 
+FROM "Sedes";
 ```
 
 ---
 
 ## ?? **DESPUÉS DE EJECUTAR LOS SCRIPTS:**
 
-### **1. Redeploy la app en Railway**
+### **1. Redeploy en Railway (opcional)**
 
-```sh
-# Desde tu proyecto local
-git add database-schema.sql database-seed.sql MANUAL_DATABASE_SETUP.md
-git commit -m "Add manual database setup scripts"
-git push
+Si Railway estaba en estado "Failed", haz redeploy:
 ```
-
-O manualmente en Railway:
-- Deployments ? Latest ? ... ? Redeploy
+Railway ? checkpoint-web ? Deployments ? Latest ? ... ? Redeploy
+```
 
 ### **2. Verificar que la app inicia**
 
-1. Espera el deploy (2-3 min)
+1. Espera 2-3 minutos
 2. Abre: `https://checkpoint-web-production.up.railway.app/health`
-3. Deberías ver: `{"status":"healthy",...}`
+3. ? Deberías ver: `{"status":"healthy","timestamp":"..."}`
 
-### **3. Probar login**
+### **3. Probar Login**
 
 1. Abre: `https://checkpoint-web-production.up.railway.app`
 2. Login con:
@@ -201,63 +162,99 @@ O manualmente en Railway:
 
 ---
 
-## ?? **NOTA IMPORTANTE:**
+## ?? **TIPS DE DBEAVER:**
 
-Los passwords en `database-seed.sql` están hasheados con ASP.NET Core Identity.
+### **Ver estructura de una tabla:**
+- Click derecho en la tabla ? **"View Table"** ? Pestaña **"Columns"**
 
-**Passwords para todos los usuarios:**
-- `Admin123!` para admin@example.com
-- `Bodega123!` para bodega@example.com
-- `Calidad123!` para calidad@example.com
+### **Ver datos de una tabla:**
+- Doble click en la tabla ? Pestaña **"Data"**
 
-(Todos usan el mismo hash por simplicidad en esta demo)
+### **Ejecutar queries rápidas:**
+- Click derecho en tabla ? **"Generate SQL"** ? **"SELECT"**
+
+### **Exportar datos:**
+- Click derecho en tabla ? **"Export Data"**
+
+### **Ver relaciones (Foreign Keys):**
+- Click derecho en tabla ? **"View Table"** ? Pestaña **"Foreign Keys"**
 
 ---
 
-## ?? **SI LOS PASSWORDS NO FUNCIONAN:**
+## ?? **MÉTODOS ALTERNATIVOS:**
 
-Crea nuevos usuarios desde la app:
+### **Opción 2: Railway Web UI**
 
-1. Login como admin (si funciona)
-2. Ve a Admin ? Usuarios
-3. Crea un nuevo usuario con rol Administrador
+1. Railway ? Postgres ? **"Query"** o **"Data"** tab
+2. Copiar y pegar cada script
+3. Ejecutar
 
-O cambia los passwords desde SQL:
+### **Opción 3: Railway CLI**
 
-```sql
--- Generar nuevo hash para password "MiPassword123!"
--- Nota: Necesitas usar un generador de hash ASP.NET Identity
-UPDATE "AspNetUsers" 
-SET "PasswordHash" = 'TU_NUEVO_HASH_AQUI'
-WHERE "Email" = 'admin@example.com';
+```sh
+railway login
+railway link
+railway run psql < database-schema.sql
+railway run psql < database-seed.sql
+```
+
+### **Opción 4: psql directamente**
+
+```sh
+psql "postgresql://postgres:XXXXX@postgres.railway.internal:5432/railway" -f database-schema.sql
+psql "postgresql://postgres:XXXXX@postgres.railway.internal:5432/railway" -f database-seed.sql
 ```
 
 ---
 
-## ?? **VENTAJAS DE ESTE MÉTODO:**
+## ? **VENTAJAS DE USAR DBEAVER:**
 
-? **No depende de Entity Framework migrations**
-? **Scripts SQL nativos de PostgreSQL**
-? **Más control sobre el schema**
-? **Fácil de versionar en Git**
-? **Más rápido de ejecutar**
-? **Sin problemas de compatibilidad SQL Server ? PostgreSQL**
+? **Visual y fácil de usar**
+? **Ver tablas y datos en tiempo real**
+? **Autocompletado SQL**
+? **Ver relaciones entre tablas gráficamente**
+? **Exportar/importar datos fácilmente**
+? **No requiere CLI o comandos complicados**
+? **Puedes explorar la base de datos después**
+
+---
+
+## ?? **ESQUEMA BASADO EN TUS DIAGRAMAS:**
+
+Los scripts ahora incluyen:
+
+? **Lote** con:
+   - CodigoLote, FechaIngreso, FechaVencimiento
+   - GuiaDespacho, TempIngreso, Estado
+
+? **Movimiento** con:
+   - OrigenUbicacionId, DestinoUbicacionId
+   - SedeId, GuiaDespacho, Motivo
+
+? **Stock** con:
+ - Unidad específica por stock
+
+? **UserLocationAssignments**:
+   - Asignación de usuarios a ubicaciones específicas
+
+? **CalidadLiberacion** con:
+   - Estado, Observacion, EvidenciaUrl
 
 ---
 
 ## ?? **RESULTADO ESPERADO:**
 
-Después de ejecutar ambos scripts:
+Después de ejecutar ambos scripts en DBeaver:
 
 ```
-? 20+ tablas creadas
-? 3 roles creados (Administrador, PersonalBodega, ControlCalidad)
-? 3 usuarios creados con passwords funcionales
-? Datos de ejemplo (sedes, productos, clientes, proveedores)
-? App funciona correctamente
-? Login exitoso
+? 20+ tablas creadas según tus diagramas
+? 3 usuarios funcionales
+? Datos de ejemplo (sedes, productos, ubicaciones)
+? Relaciones correctas (Foreign Keys)
+? Índices optimizados
+? App funciona inmediatamente
 ```
 
 ---
 
-**¡Ejecuta los scripts y tu app debería funcionar inmediatamente!** ??
+**¡Usa DBeaver, es mucho más visual y fácil!** ??

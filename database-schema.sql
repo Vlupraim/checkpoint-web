@@ -1,7 +1,9 @@
 -- ============================================
 -- CHECKPOINT DATABASE - PostgreSQL Schema
--- Crear todas las tablas manualmente
+-- Basado en diagramas del usuario
 -- ============================================
+
+BEGIN;
 
 -- 1. Tabla: AspNetRoles
 CREATE TABLE IF NOT EXISTS "AspNetRoles" (
@@ -13,7 +15,7 @@ CREATE TABLE IF NOT EXISTS "AspNetRoles" (
 
 CREATE INDEX IF NOT EXISTS "RoleNameIndex" ON "AspNetRoles" ("NormalizedName");
 
--- 2. Tabla: AspNetUsers
+-- 2. Tabla: AspNetUsers (Usuario del diagrama)
 CREATE TABLE IF NOT EXISTS "AspNetUsers" (
     "Id" VARCHAR(450) NOT NULL PRIMARY KEY,
     "UserName" VARCHAR(256),
@@ -29,13 +31,13 @@ CREATE TABLE IF NOT EXISTS "AspNetUsers" (
     "TwoFactorEnabled" BOOLEAN NOT NULL,
     "LockoutEnd" TIMESTAMPTZ,
     "LockoutEnabled" BOOLEAN NOT NULL,
-    "AccessFailedCount" INTEGER NOT NULL
+"AccessFailedCount" INTEGER NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS "EmailIndex" ON "AspNetUsers" ("NormalizedEmail");
 CREATE UNIQUE INDEX IF NOT EXISTS "UserNameIndex" ON "AspNetUsers" ("NormalizedUserName");
 
--- 3. Tabla: AspNetUserRoles
+-- 3. Tabla: AspNetUserRoles (UserRole del diagrama)
 CREATE TABLE IF NOT EXISTS "AspNetUserRoles" (
     "UserId" VARCHAR(450) NOT NULL,
     "RoleId" VARCHAR(450) NOT NULL,
@@ -74,7 +76,7 @@ CREATE TABLE IF NOT EXISTS "AspNetUserTokens" (
     "UserId" VARCHAR(450) NOT NULL,
     "LoginProvider" VARCHAR(450) NOT NULL,
     "Name" VARCHAR(450) NOT NULL,
-  "Value" TEXT,
+    "Value" TEXT,
     PRIMARY KEY ("UserId", "LoginProvider", "Name"),
     FOREIGN KEY ("UserId") REFERENCES "AspNetUsers" ("Id") ON DELETE CASCADE
 );
@@ -90,7 +92,7 @@ CREATE TABLE IF NOT EXISTS "AspNetRoleClaims" (
 
 CREATE INDEX IF NOT EXISTS "IX_AspNetRoleClaims_RoleId" ON "AspNetRoleClaims" ("RoleId");
 
--- 8. Tabla: Sedes
+-- 8. Tabla: Sede (del diagrama)
 CREATE TABLE IF NOT EXISTS "Sedes" (
     "Id" UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
     "Codigo" VARCHAR(20) NOT NULL,
@@ -101,13 +103,13 @@ CREATE TABLE IF NOT EXISTS "Sedes" (
 
 CREATE UNIQUE INDEX IF NOT EXISTS "IX_Sedes_Codigo" ON "Sedes" ("Codigo");
 
--- 9. Tabla: Ubicaciones
+-- 9. Tabla: Ubicacion (del diagrama)
 CREATE TABLE IF NOT EXISTS "Ubicaciones" (
     "Id" UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
-    "Codigo" VARCHAR(50) NOT NULL,
-    "Nombre" VARCHAR(200) NOT NULL,
-    "TipoUbicacion" VARCHAR(50) NOT NULL,
     "SedeId" UUID NOT NULL,
+ "Codigo" VARCHAR(50) NOT NULL,
+  "Tipo" VARCHAR(50) NOT NULL,
+    "Capacidad" DECIMAL(18,3),
     "Activo" BOOLEAN NOT NULL DEFAULT TRUE,
     FOREIGN KEY ("SedeId") REFERENCES "Sedes" ("Id") ON DELETE CASCADE
 );
@@ -115,44 +117,46 @@ CREATE TABLE IF NOT EXISTS "Ubicaciones" (
 CREATE UNIQUE INDEX IF NOT EXISTS "IX_Ubicaciones_Codigo" ON "Ubicaciones" ("Codigo");
 CREATE INDEX IF NOT EXISTS "IX_Ubicaciones_SedeId" ON "Ubicaciones" ("SedeId");
 
--- 10. Tabla: Productos
+-- 10. Tabla: Producto (del diagrama)
 CREATE TABLE IF NOT EXISTS "Productos" (
     "Id" UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
     "Sku" VARCHAR(50) NOT NULL,
     "Nombre" VARCHAR(200) NOT NULL,
     "Unidad" VARCHAR(50) NOT NULL DEFAULT 'u',
-    "VidaUtilDias" INTEGER NOT NULL,
+  "VidaUtilDias" INTEGER NOT NULL,
     "TempMin" DECIMAL(10,2) NOT NULL,
-"TempMax" DECIMAL(10,2) NOT NULL,
-    "StockMinimo" DECIMAL(18,3) NOT NULL,
+    "TempMax" DECIMAL(10,2) NOT NULL,
+  "StockMinimo" DECIMAL(18,3) NOT NULL,
     "Activo" BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS "IX_Productos_Sku" ON "Productos" ("Sku");
 
--- 11. Tabla: Lotes
+-- 11. Tabla: Lote (del diagrama)
 CREATE TABLE IF NOT EXISTS "Lotes" (
     "Id" UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
- "NumeroLote" VARCHAR(50) NOT NULL,
     "ProductoId" UUID NOT NULL,
-    "FechaProduccion" TIMESTAMP NOT NULL,
+    "CodigoLote" VARCHAR(50) NOT NULL,
+    "FechaIngreso" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "FechaVencimiento" TIMESTAMP NOT NULL,
-    "CantidadInicial" DECIMAL(18,3) NOT NULL,
-    "EstadoCalidad" VARCHAR(50) NOT NULL DEFAULT 'Pendiente',
-"Observaciones" TEXT,
+    "GuiaDespacho" VARCHAR(100),
+    "TempIngreso" DECIMAL(10,2),
+    "Estado" VARCHAR(50) NOT NULL DEFAULT 'Pendiente',
     FOREIGN KEY ("ProductoId") REFERENCES "Productos" ("Id") ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS "IX_Lotes_NumeroLote" ON "Lotes" ("NumeroLote");
+CREATE UNIQUE INDEX IF NOT EXISTS "IX_Lotes_CodigoLote" ON "Lotes" ("CodigoLote");
 CREATE INDEX IF NOT EXISTS "IX_Lotes_ProductoId" ON "Lotes" ("ProductoId");
+CREATE INDEX IF NOT EXISTS "IX_Lotes_Estado" ON "Lotes" ("Estado");
 
--- 12. Tabla: Stocks
+-- 12. Tabla: Stock (del diagrama)
 CREATE TABLE IF NOT EXISTS "Stocks" (
-    "Id" UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
+ "Id" UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
     "LoteId" UUID NOT NULL,
     "UbicacionId" UUID NOT NULL,
     "Cantidad" DECIMAL(18,3) NOT NULL,
-    "FechaUltimaActualizacion" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "Unidad" VARCHAR(50) NOT NULL,
+    "FechaActualizacion" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY ("LoteId") REFERENCES "Lotes" ("Id") ON DELETE CASCADE,
     FOREIGN KEY ("UbicacionId") REFERENCES "Ubicaciones" ("Id") ON DELETE CASCADE
 );
@@ -160,47 +164,70 @@ CREATE TABLE IF NOT EXISTS "Stocks" (
 CREATE INDEX IF NOT EXISTS "IX_Stocks_LoteId" ON "Stocks" ("LoteId");
 CREATE INDEX IF NOT EXISTS "IX_Stocks_UbicacionId" ON "Stocks" ("UbicacionId");
 
--- 13. Tabla: Movimientos
+-- 13. Tabla: Movimiento (del diagrama con OrigenUbicacion y DestinoUbicacion)
 CREATE TABLE IF NOT EXISTS "Movimientos" (
     "Id" UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
+"LoteId" UUID NOT NULL,
+    "SedeId" UUID,
+    "OrigenUbicacionId" UUID,
+    "DestinoUbicacionId" UUID,
     "Tipo" VARCHAR(50) NOT NULL,
-    "LoteId" UUID NOT NULL,
-    "UbicacionOrigenId" UUID,
-    "UbicacionDestinoId" UUID,
     "Cantidad" DECIMAL(18,3) NOT NULL,
+    "UsuarioId" VARCHAR(450),
     "Fecha" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-"UsuarioId" VARCHAR(450),
-    "Observaciones" TEXT,
-    "Estado" VARCHAR(50) NOT NULL DEFAULT 'Completado',
+    "Motivo" TEXT,
+    "GuiaDespacho" VARCHAR(100),
     FOREIGN KEY ("LoteId") REFERENCES "Lotes" ("Id") ON DELETE CASCADE,
-    FOREIGN KEY ("UbicacionOrigenId") REFERENCES "Ubicaciones" ("Id") ON DELETE SET NULL,
-    FOREIGN KEY ("UbicacionDestinoId") REFERENCES "Ubicaciones" ("Id") ON DELETE SET NULL
+    FOREIGN KEY ("SedeId") REFERENCES "Sedes" ("Id") ON DELETE SET NULL,
+    FOREIGN KEY ("OrigenUbicacionId") REFERENCES "Ubicaciones" ("Id") ON DELETE SET NULL,
+    FOREIGN KEY ("DestinoUbicacionId") REFERENCES "Ubicaciones" ("Id") ON DELETE SET NULL,
+    FOREIGN KEY ("UsuarioId") REFERENCES "AspNetUsers" ("Id") ON DELETE SET NULL
 );
 
 CREATE INDEX IF NOT EXISTS "IX_Movimientos_LoteId" ON "Movimientos" ("LoteId");
+CREATE INDEX IF NOT EXISTS "IX_Movimientos_SedeId" ON "Movimientos" ("SedeId");
+CREATE INDEX IF NOT EXISTS "IX_Movimientos_OrigenUbicacionId" ON "Movimientos" ("OrigenUbicacionId");
+CREATE INDEX IF NOT EXISTS "IX_Movimientos_DestinoUbicacionId" ON "Movimientos" ("DestinoUbicacionId");
 CREATE INDEX IF NOT EXISTS "IX_Movimientos_Fecha" ON "Movimientos" ("Fecha");
 
--- 14. Tabla: CalidadLiberaciones
+-- 14. Tabla: CalidadLiberacion (del diagrama)
 CREATE TABLE IF NOT EXISTS "CalidadLiberaciones" (
     "Id" UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
     "LoteId" UUID NOT NULL,
     "UsuarioId" VARCHAR(450),
-    "FechaRevision" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "Resultado" VARCHAR(50) NOT NULL,
-    "Observaciones" TEXT,
-    FOREIGN KEY ("LoteId") REFERENCES "Lotes" ("Id") ON DELETE CASCADE
+    "Fecha" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "Estado" VARCHAR(50) NOT NULL,
+    "Observacion" TEXT,
+    "EvidenciaUrl" VARCHAR(500),
+    FOREIGN KEY ("LoteId") REFERENCES "Lotes" ("Id") ON DELETE CASCADE,
+    FOREIGN KEY ("UsuarioId") REFERENCES "AspNetUsers" ("Id") ON DELETE SET NULL
 );
 
 CREATE INDEX IF NOT EXISTS "IX_CalidadLiberaciones_LoteId" ON "CalidadLiberaciones" ("LoteId");
+CREATE INDEX IF NOT EXISTS "IX_CalidadLiberaciones_Estado" ON "CalidadLiberaciones" ("Estado");
 
--- 15. Tabla: Clientes
+-- 15. Tabla: UserLocationAssignment (del diagrama - asignación de usuarios a ubicaciones)
+CREATE TABLE IF NOT EXISTS "UserLocationAssignments" (
+    "Id" UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
+    "UsuarioId" VARCHAR(450) NOT NULL,
+    "UbicacionId" UUID NOT NULL,
+    "FechaAsignacion" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "Activo" BOOLEAN NOT NULL DEFAULT TRUE,
+    FOREIGN KEY ("UsuarioId") REFERENCES "AspNetUsers" ("Id") ON DELETE CASCADE,
+    FOREIGN KEY ("UbicacionId") REFERENCES "Ubicaciones" ("Id") ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS "IX_UserLocationAssignments_UsuarioId" ON "UserLocationAssignments" ("UsuarioId");
+CREATE INDEX IF NOT EXISTS "IX_UserLocationAssignments_UbicacionId" ON "UserLocationAssignments" ("UbicacionId");
+
+-- 16. Tabla: Clientes (opcional - si la usas)
 CREATE TABLE IF NOT EXISTS "Clientes" (
     "Id" UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
     "Nombre" VARCHAR(200) NOT NULL,
-    "NombreComercial" VARCHAR(200),
+  "NombreComercial" VARCHAR(200),
     "IdentificadorFiscal" VARCHAR(50),
     "Direccion" VARCHAR(500),
-  "Ciudad" VARCHAR(100),
+    "Ciudad" VARCHAR(100),
     "Pais" VARCHAR(100) NOT NULL DEFAULT 'Chile',
     "Telefono" VARCHAR(50),
     "Email" VARCHAR(200),
@@ -208,12 +235,12 @@ CREATE TABLE IF NOT EXISTS "Clientes" (
     "Estado" VARCHAR(50) NOT NULL DEFAULT 'Activo'
 );
 
--- 16. Tabla: Proveedores
+-- 17. Tabla: Proveedores (opcional - si la usas)
 CREATE TABLE IF NOT EXISTS "Proveedores" (
     "Id" UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
     "Nombre" VARCHAR(200) NOT NULL,
     "IdentificadorFiscal" VARCHAR(50),
- "Direccion" VARCHAR(500),
+    "Direccion" VARCHAR(500),
     "Telefono" VARCHAR(50),
     "Email" VARCHAR(200),
     "PersonaContacto" VARCHAR(200),
@@ -222,25 +249,26 @@ CREATE TABLE IF NOT EXISTS "Proveedores" (
     "Estado" VARCHAR(50) NOT NULL DEFAULT 'Activo'
 );
 
--- 17. Tabla: Tareas
+-- 18. Tabla: Tareas (opcional - si la usas)
 CREATE TABLE IF NOT EXISTS "Tareas" (
     "Id" UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
     "Titulo" VARCHAR(200) NOT NULL,
     "Descripcion" TEXT,
     "Estado" VARCHAR(50) NOT NULL DEFAULT 'Pendiente',
-    "Prioridad" VARCHAR(50) NOT NULL DEFAULT 'Media',
+  "Prioridad" VARCHAR(50) NOT NULL DEFAULT 'Media',
     "FechaCreacion" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "FechaLimite" TIMESTAMP,
     "ResponsableId" VARCHAR(450),
     "ProductoId" UUID,
     "Progreso" INTEGER NOT NULL DEFAULT 0,
-    FOREIGN KEY ("ProductoId") REFERENCES "Productos" ("Id") ON DELETE SET NULL
+FOREIGN KEY ("ProductoId") REFERENCES "Productos" ("Id") ON DELETE SET NULL,
+    FOREIGN KEY ("ResponsableId") REFERENCES "AspNetUsers" ("Id") ON DELETE SET NULL
 );
 
 CREATE INDEX IF NOT EXISTS "IX_Tareas_Estado" ON "Tareas" ("Estado");
 CREATE INDEX IF NOT EXISTS "IX_Tareas_ResponsableId" ON "Tareas" ("ResponsableId");
 
--- 18. Tabla: Notificaciones
+-- 19. Tabla: Notificaciones (opcional - si la usas)
 CREATE TABLE IF NOT EXISTS "Notificaciones" (
     "Id" UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
     "UsuarioId" VARCHAR(450) NOT NULL,
@@ -248,13 +276,14 @@ CREATE TABLE IF NOT EXISTS "Notificaciones" (
     "Tipo" VARCHAR(50) NOT NULL,
     "Leida" BOOLEAN NOT NULL DEFAULT FALSE,
     "FechaCreacion" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "Url" VARCHAR(500)
+    "Url" VARCHAR(500),
+    FOREIGN KEY ("UsuarioId") REFERENCES "AspNetUsers" ("Id") ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS "IX_Notificaciones_UsuarioId" ON "Notificaciones" ("UsuarioId");
 CREATE INDEX IF NOT EXISTS "IX_Notificaciones_Leida" ON "Notificaciones" ("Leida");
 
--- 19. Tabla: AuditLogs
+-- 20. Tabla: AuditLogs
 CREATE TABLE IF NOT EXISTS "AuditLogs" (
     "Id" UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
     "UserId" VARCHAR(450),
@@ -263,27 +292,32 @@ CREATE TABLE IF NOT EXISTS "AuditLogs" (
     "EntityId" VARCHAR(450),
     "Changes" TEXT,
     "Timestamp" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "IpAddress" VARCHAR(50)
+    "IpAddress" VARCHAR(50),
+    FOREIGN KEY ("UserId") REFERENCES "AspNetUsers" ("Id") ON DELETE SET NULL
 );
 
 CREATE INDEX IF NOT EXISTS "IX_AuditLogs_UserId" ON "AuditLogs" ("UserId");
 CREATE INDEX IF NOT EXISTS "IX_AuditLogs_Timestamp" ON "AuditLogs" ("Timestamp");
 CREATE INDEX IF NOT EXISTS "IX_AuditLogs_Action" ON "AuditLogs" ("Action");
 
--- 20. Tabla: Parametros (opcional)
-CREATE TABLE IF NOT EXISTS "Parametros" (
-    "Id" UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
-    "Clave" VARCHAR(100) NOT NULL,
-    "Valor" TEXT,
-    "Descripcion" VARCHAR(500)
-);
-
-CREATE UNIQUE INDEX IF NOT EXISTS "IX_Parametros_Clave" ON "Parametros" ("Clave");
-
 COMMIT;
 
 -- Mensaje de éxito
 DO $$
 BEGIN
+    RAISE NOTICE '============================================';
     RAISE NOTICE 'Schema creado exitosamente!';
+    RAISE NOTICE '============================================';
+    RAISE NOTICE 'Tablas principales creadas:';
+    RAISE NOTICE '  - AspNetUsers (Usuario)';
+    RAISE NOTICE '  - AspNetRoles (Rol)';
+    RAISE NOTICE '  - Sede';
+    RAISE NOTICE '  - Ubicacion';
+    RAISE NOTICE '  - Producto';
+    RAISE NOTICE '  - Lote';
+  RAISE NOTICE '  - Stock';
+    RAISE NOTICE '  - Movimiento';
+    RAISE NOTICE '  - CalidadLiberacion';
+    RAISE NOTICE '  - UserLocationAssignments';
+    RAISE NOTICE '============================================';
 END $$;
