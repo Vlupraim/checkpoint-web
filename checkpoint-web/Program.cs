@@ -23,6 +23,13 @@ var configuration = builder.Configuration;
 // ============================================
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
+// Si DATABASE_URL no está o es la red interna, usar DATABASE_PUBLIC_URL
+if (string.IsNullOrEmpty(databaseUrl) || databaseUrl.Contains("railway.internal"))
+{
+    Console.WriteLine("[STARTUP] DATABASE_URL is internal or missing, trying DATABASE_PUBLIC_URL...");
+    databaseUrl = Environment.GetEnvironmentVariable("DATABASE_PUBLIC_URL");
+}
+
 Console.WriteLine($"[STARTUP] Environment: {builder.Environment.EnvironmentName}");
 Console.WriteLine($"[STARTUP] DATABASE_URL present: {!string.IsNullOrEmpty(databaseUrl)}");
 
@@ -30,29 +37,29 @@ if (!string.IsNullOrEmpty(databaseUrl))
 {
     try
     {
-        // Railway PostgreSQL
- Console.WriteLine("[STARTUP] Parsing Railway DATABASE_URL...");
-        var databaseUri = new Uri(databaseUrl);
+     // Railway PostgreSQL
+    Console.WriteLine("[STARTUP] Parsing Railway DATABASE_URL...");
+     var databaseUri = new Uri(databaseUrl);
         var userInfo = databaseUri.UserInfo.Split(':');
         var host = databaseUri.Host;
-        var database = databaseUri.AbsolutePath.Trim('/');
-   var username = userInfo[0];
+ var database = databaseUri.AbsolutePath.Trim('/');
+    var username = userInfo[0];
         var password = userInfo.Length > 1 ? userInfo[1] : "";
         var port = databaseUri.Port;
  
         var connectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
         
-        Console.WriteLine($"[STARTUP] PostgreSQL connection configured: Host={host}, Port={port}, Database={database}");
+ Console.WriteLine($"[STARTUP] PostgreSQL connection configured: Host={host}, Port={port}, Database={database}");
     
-        Console.WriteLine("[STARTUP] Adding DbContext to services...");
-   builder.Services.AddDbContext<CheckpointDbContext>(options =>
-        options.UseNpgsql(connectionString));
-   Console.WriteLine("[STARTUP] DbContext added successfully");
+   Console.WriteLine("[STARTUP] Adding DbContext to services...");
+     builder.Services.AddDbContext<CheckpointDbContext>(options =>
+            options.UseNpgsql(connectionString));
+        Console.WriteLine("[STARTUP] DbContext added successfully");
     }
     catch (Exception ex)
     {
         Console.WriteLine($"[STARTUP ERROR] Failed to parse DATABASE_URL: {ex.Message}");
-        throw;
+   throw;
     }
 }
 else
