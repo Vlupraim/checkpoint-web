@@ -10,46 +10,71 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Early logging configuration
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
 // Add services to the container.
 var configuration = builder.Configuration;
 
 // Database configuration: Railway (PostgreSQL) or Local (SQL Server)
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+Console.WriteLine($"[STARTUP] Environment: {builder.Environment.EnvironmentName}");
+Console.WriteLine($"[STARTUP] DATABASE_URL present: {!string.IsNullOrEmpty(databaseUrl)}");
+
 if (!string.IsNullOrEmpty(databaseUrl))
 {
-    // Railway PostgreSQL
-    var databaseUri = new Uri(databaseUrl);
-    var userInfo = databaseUri.UserInfo.Split(':');
-    var host = databaseUri.Host;
- var database = databaseUri.AbsolutePath.Trim('/');
-    var username = userInfo[0];
-    var password = userInfo[1];
- var port = databaseUri.Port;
+    try
+    {
+        // Railway PostgreSQL
+    Console.WriteLine("[STARTUP] Parsing Railway DATABASE_URL...");
+     var databaseUri = new Uri(databaseUrl);
+        var userInfo = databaseUri.UserInfo.Split(':');
+        var host = databaseUri.Host;
+        var database = databaseUri.AbsolutePath.Trim('/');
+        var username = userInfo[0];
+        var password = userInfo.Length > 1 ? userInfo[1] : "";
+  var port = databaseUri.Port;
+ 
+   var connectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+        
+    Console.WriteLine($"[STARTUP] PostgreSQL connection configured: Host={host}, Port={port}, Database={database}");
     
-    var connectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
-    
-    builder.Services.AddDbContext<CheckpointDbContext>(options =>
-        options.UseNpgsql(connectionString));
+        builder.Services.AddDbContext<CheckpointDbContext>(options =>
+    options.UseNpgsql(connectionString));
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[STARTUP ERROR] Failed to parse DATABASE_URL: {ex.Message}");
+        throw;
+    }
 }
 else
 {
     // Local development - SQL Server or PostgreSQL from appsettings.json
-    var connectionString = configuration.GetConnectionString("DefaultConnection")
+ var connectionString = configuration.GetConnectionString("DefaultConnection")
         ?? "Server=(localdb)\\mssqllocaldb;Database=CheckpointDev;Trusted_Connection=True;";
     
+    Console.WriteLine($"[STARTUP] Using local connection string");
+
     // Detect if it's PostgreSQL or SQL Server based on connection string
     if (connectionString.Contains("Host=") || connectionString.Contains("host="))
     {
-  builder.Services.AddDbContext<CheckpointDbContext>(options =>
+        Console.WriteLine("[STARTUP] Detected PostgreSQL from connection string");
+        builder.Services.AddDbContext<CheckpointDbContext>(options =>
      options.UseNpgsql(connectionString));
     }
     else
     {
-  builder.Services.AddDbContext<CheckpointDbContext>(options =>
+        Console.WriteLine("[STARTUP] Detected SQL Server from connection string");
+        builder.Services.AddDbContext<CheckpointDbContext>(options =>
     options.UseSqlServer(connectionString));
     }
 }
 
+Console.WriteLine("[STARTUP] Configuring Identity...");
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -156,40 +181,49 @@ builder.Services.AddScoped<INotificacionService, NotificacionService>();
 
 var app = builder.Build();
 
-// Log startup information
-var logger = app.Services.GetRequiredService<ILogger<Program>>();
-logger.LogInformation("Starting Checkpoint application...");
-logger.LogInformation($"Environment: {app.Environment.EnvironmentName}");
-logger.LogInformation($"Database URL present: {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DATABASE_URL"))}");
+Console.WriteLine("[STARTUP] Application built successfully");
 
 // Apply migrations and seed data in production
 if (app.Environment.IsProduction())
 {
+ Console.WriteLine("[STARTUP] Production environment detected, applying migrations...");
     using (var scope = app.Services.CreateScope())
     {
- try
-        {
+      try
+{
    var db = scope.ServiceProvider.GetRequiredService<CheckpointDbContext>();
-       var scopedLogger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-            
-         scopedLogger.LogInformation("Applying database migrations...");
-      await db.Database.MigrateAsync();
-    scopedLogger.LogInformation("Migrations applied successfully.");
+ Console.WriteLine("[STARTUP] DbContext acquired, checking database connection...");
      
-      scopedLogger.LogInformation("Seeding database...");
+ // Test connection
+          await db.Database.CanConnectAsync();
+   Console.WriteLine("[STARTUP] Database connection successful");
+            
+   Console.WriteLine("[STARTUP] Applying migrations...");
+   await db.Database.MigrateAsync();
+    Console.WriteLine("[STARTUP] Migrations applied successfully");
+  
+         Console.WriteLine("[STARTUP] Seeding database...");
       await SeedData.InitializeAsync(scope.ServiceProvider);
-        scopedLogger.LogInformation("Database seeded successfully.");
-}
- catch (Exception ex)
-  {
-      var scopedLogger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-     scopedLogger.LogError(ex, "An error occurred while migrating or seeding the database. The application will continue but database may not be initialized.");
- // Don't throw - let the app start anyway
+       Console.WriteLine("[STARTUP] Database seeded successfully");
         }
+        catch (Exception ex)
+  {
+      Console.WriteLine($"[STARTUP ERROR] Database initialization failed: {ex.GetType().Name}");
+            Console.WriteLine($"[STARTUP ERROR] Message: {ex.Message}");
+      if (ex.InnerException != null)
+            {
+    Console.WriteLine($"[STARTUP ERROR] Inner: {ex.InnerException.Message}");
+   }
+  Console.WriteLine("[STARTUP] Application will continue without database initialization");
+      }
     }
 }
+else
+{
+    Console.WriteLine("[STARTUP] Development environment, skipping automatic migrations");
+}
 
-logger.LogInformation("Configuring HTTP pipeline...");
+Console.WriteLine("[STARTUP] Configuring HTTP pipeline...");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
