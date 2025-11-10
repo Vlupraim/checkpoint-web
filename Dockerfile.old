@@ -19,18 +19,8 @@ RUN dotnet publish "checkpoint-web.csproj" -c Release -o /app/publish /p:UseAppH
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
-# Instalar herramientas de EF Core para migraciones en runtime
-RUN dotnet tool install --global dotnet-ef --version 8.*
-ENV PATH="${PATH}:/root/.dotnet/tools"
-
 EXPOSE 8080
-EXPOSE 8081
 
 COPY --from=publish /app/publish .
 
-# Crear script de inicio que aplica migraciones
-RUN echo '#!/bin/bash\n\
-dotnet ef database update --no-build\n\
-dotnet checkpoint-web.dll' > /app/start.sh && chmod +x /app/start.sh
-
-ENTRYPOINT ["/app/start.sh"]
+ENTRYPOINT ["dotnet", "checkpoint-web.dll"]

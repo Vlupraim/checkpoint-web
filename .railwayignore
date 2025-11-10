@@ -1,0 +1,2 @@
+# Ignore Dockerfile, use Nixpacks from railway.json
+Dockerfile

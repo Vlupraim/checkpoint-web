@@ -156,24 +156,40 @@ builder.Services.AddScoped<INotificacionService, NotificacionService>();
 
 var app = builder.Build();
 
+// Log startup information
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("Starting Checkpoint application...");
+logger.LogInformation($"Environment: {app.Environment.EnvironmentName}");
+logger.LogInformation($"Database URL present: {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DATABASE_URL"))}");
+
 // Apply migrations and seed data in production
 if (app.Environment.IsProduction())
 {
     using (var scope = app.Services.CreateScope())
     {
-    try
+ try
         {
    var db = scope.ServiceProvider.GetRequiredService<CheckpointDbContext>();
-            await db.Database.MigrateAsync();
-       await SeedData.InitializeAsync(scope.ServiceProvider);
-  }
+       var scopedLogger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            
+         scopedLogger.LogInformation("Applying database migrations...");
+      await db.Database.MigrateAsync();
+    scopedLogger.LogInformation("Migrations applied successfully.");
+     
+      scopedLogger.LogInformation("Seeding database...");
+      await SeedData.InitializeAsync(scope.ServiceProvider);
+        scopedLogger.LogInformation("Database seeded successfully.");
+}
  catch (Exception ex)
   {
-      var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-     logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+      var scopedLogger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+     scopedLogger.LogError(ex, "An error occurred while migrating or seeding the database. The application will continue but database may not be initialized.");
+ // Don't throw - let the app start anyway
         }
     }
 }
+
+logger.LogInformation("Configuring HTTP pipeline...");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -216,6 +232,10 @@ app.Use(async (context, next) =>
 });
 
 app.UseAuthorization();
+
+// Simple health check endpoint for Railway
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
+    .AllowAnonymous();
 
 app.MapRazorPages();
 app.MapControllerRoute(
