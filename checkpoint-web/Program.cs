@@ -30,37 +30,39 @@ if (!string.IsNullOrEmpty(databaseUrl))
 {
     try
     {
-      // Railway PostgreSQL
-   Console.WriteLine("[STARTUP] Parsing Railway DATABASE_URL...");
+        // Railway PostgreSQL
+ Console.WriteLine("[STARTUP] Parsing Railway DATABASE_URL...");
         var databaseUri = new Uri(databaseUrl);
         var userInfo = databaseUri.UserInfo.Split(':');
         var host = databaseUri.Host;
-     var database = databaseUri.AbsolutePath.Trim('/');
-        var username = userInfo[0];
-  var password = userInfo.Length > 1 ? userInfo[1] : "";
-var port = databaseUri.Port;
+        var database = databaseUri.AbsolutePath.Trim('/');
+   var username = userInfo[0];
+        var password = userInfo.Length > 1 ? userInfo[1] : "";
+        var port = databaseUri.Port;
  
         var connectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
         
         Console.WriteLine($"[STARTUP] PostgreSQL connection configured: Host={host}, Port={port}, Database={database}");
     
-      builder.Services.AddDbContext<CheckpointDbContext>(options =>
-    options.UseNpgsql(connectionString));
+        Console.WriteLine("[STARTUP] Adding DbContext to services...");
+   builder.Services.AddDbContext<CheckpointDbContext>(options =>
+        options.UseNpgsql(connectionString));
+   Console.WriteLine("[STARTUP] DbContext added successfully");
     }
     catch (Exception ex)
     {
-      Console.WriteLine($"[STARTUP ERROR] Failed to parse DATABASE_URL: {ex.Message}");
-     throw;
+        Console.WriteLine($"[STARTUP ERROR] Failed to parse DATABASE_URL: {ex.Message}");
+        throw;
     }
 }
 else
 {
     // Local development - SOLO PostgreSQL desde appsettings.json
     var connectionString = configuration.GetConnectionString("DefaultConnection")
-   ?? "Host=localhost;Port=5432;Database=CheckpointDev;Username=postgres;Password=postgres;";
+        ?? "Host=localhost;Port=5432;Database=CheckpointDev;Username=postgres;Password=postgres;";
     
     Console.WriteLine($"[STARTUP] Using local PostgreSQL connection");
-    Console.WriteLine($"[STARTUP] Connection: {connectionString.Split(';')[0]}"); // Solo mostrar el host
+    Console.WriteLine($"[STARTUP] Connection: {connectionString.Split(';')[0]}");
 
     builder.Services.AddDbContext<CheckpointDbContext>(options =>
         options.UseNpgsql(connectionString));
@@ -74,7 +76,7 @@ try
         options.SignIn.RequireConfirmedAccount = false;
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequireUppercase = false;
-    options.Password.RequireDigit = false;
+        options.Password.RequireDigit = false;
     })
     .AddEntityFrameworkStores<CheckpointDbContext>()
     .AddDefaultTokenProviders();
@@ -87,60 +89,53 @@ catch (Exception ex)
     Console.WriteLine($"[STARTUP ERROR] Message: {ex.Message}");
     if (ex.InnerException != null)
     {
- Console.WriteLine($"[STARTUP ERROR] Inner: {ex.InnerException.Message}");
+      Console.WriteLine($"[STARTUP ERROR] Inner: {ex.InnerException.Message}");
     }
     throw;
 }
 
+Console.WriteLine("[STARTUP] Configuring authentication cookies...");
 // Configure cookie behavior: TRUE session-only cookies
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.Name = "Checkpoint.Auth";
     options.LoginPath = "/Account/Login";
     options.LogoutPath = "/Account/Logout";
-    options.Cookie.HttpOnly = true;
+options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     options.Cookie.Path = "/";
     options.Cookie.SameSite = SameSiteMode.Lax;
-  options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
     
-  // CRITICAL: Do NOT set ExpireTimeSpan - this creates persistent cookies
-    // The cookie will expire when browser closes (true session cookie)
     options.SlidingExpiration = false;
-  options.Cookie.MaxAge = null;
-  options.Cookie.Expiration = null;
+    options.Cookie.MaxAge = null;
+    options.Cookie.Expiration = null;
     
-    // Override cookie creation to force session cookies
     options.Events = new CookieAuthenticationEvents
     {
         OnSigningIn = context =>
         {
-        // Always force session cookie (no expiration)
-          context.Properties.IsPersistent = false;
-        context.Properties.ExpiresUtc = null;
- 
-            // Force cookie options to be session-only
-         context.CookieOptions.Expires = null;
+            context.Properties.IsPersistent = false;
+    context.Properties.ExpiresUtc = null;
+            context.CookieOptions.Expires = null;
             context.CookieOptions.MaxAge = null;
-   
-            return Task.CompletedTask;
+         return Task.CompletedTask;
         },
-        OnValidatePrincipal = async context =>
-        {
-            // Validate that cookie is still a session cookie
-     if (context.Properties.IsPersistent)
-            {
-      // Force it back to session-only
-        context.Properties.IsPersistent = false;
-          context.Properties.ExpiresUtc = null;
+      OnValidatePrincipal = async context =>
+    {
+       if (context.Properties.IsPersistent)
+     {
+ context.Properties.IsPersistent = false;
+    context.Properties.ExpiresUtc = null;
   context.ShouldRenew = true;
+       }
+ await Task.CompletedTask;
  }
-            await Task.CompletedTask;
-    }
     };
 });
+Console.WriteLine("[STARTUP] Authentication cookies configured");
 
-// Configure Antiforgery cookies to be session-only
+Console.WriteLine("[STARTUP] Configuring antiforgery...");
 builder.Services.AddAntiforgery(options =>
 {
     options.Cookie.Name = "CheckpointAntiforgery";
@@ -149,28 +144,34 @@ builder.Services.AddAntiforgery(options =>
     options.Cookie.SameSite = SameSiteMode.Lax;
     options.Cookie.MaxAge = null;
     options.Cookie.Expiration = null;
-  options.Cookie.IsEssential = true;
+    options.Cookie.IsEssential = true;
 });
+Console.WriteLine("[STARTUP] Antiforgery configured");
 
-// Require authenticated users by default. AllowAnonymous on specific pages will override.
+Console.WriteLine("[STARTUP] Configuring authorization...");
 builder.Services.AddAuthorization(options =>
 {
-options.FallbackPolicy = new AuthorizationPolicyBuilder()
-      .RequireAuthenticatedUser()
-        .Build();
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+ .Build();
 });
+Console.WriteLine("[STARTUP] Authorization configured");
 
+Console.WriteLine("[STARTUP] Configuring Razor Pages...");
 builder.Services.AddRazorPages(options =>
 {
-    // Allow anonymous access to login/logout and public pages
     options.Conventions.AllowAnonymousToPage("/Account/Login");
     options.Conventions.AllowAnonymousToPage("/Account/Logout");
     options.Conventions.AllowAnonymousToPage("/Privacy");
     options.Conventions.AllowAnonymousToPage("/Account/CookieDiagnostics");
 });
+Console.WriteLine("[STARTUP] Razor Pages configured");
 
+Console.WriteLine("[STARTUP] Adding MVC controllers...");
 builder.Services.AddControllersWithViews();
+Console.WriteLine("[STARTUP] MVC controllers added");
 
+Console.WriteLine("[STARTUP] Registering application services...");
 // Audit service
 builder.Services.AddScoped<IAuditService, AuditService>();
 // Domain services
@@ -185,10 +186,10 @@ builder.Services.AddScoped<IMovimientoService, MovimientoService>();
 builder.Services.AddScoped<ICalidadService, CalidadService>();
 builder.Services.AddScoped<IReporteService, ReporteService>();
 builder.Services.AddScoped<INotificacionService, NotificacionService>();
+Console.WriteLine("[STARTUP] Application services registered");
 
 Console.WriteLine("[STARTUP] Building application...");
 var app = builder.Build();
-
 Console.WriteLine("[STARTUP] Application built successfully");
 
 // ============================================
@@ -198,37 +199,42 @@ Console.WriteLine("[STARTUP] Application built successfully");
 
 if (app.Environment.IsProduction())
 {
-    Console.WriteLine("[STARTUP] Production environment detected");
+Console.WriteLine("[STARTUP] Production environment detected");
     Console.WriteLine("[STARTUP] Testing database connection...");
     
     try
     {
-  using (var scope = app.Services.CreateScope())
+ using (var scope = app.Services.CreateScope())
         {
-            var db = scope.ServiceProvider.GetRequiredService<CheckpointDbContext>();
-   
-        // Solo probar conexión, NO aplicar migraciones
+       Console.WriteLine("[STARTUP] Creating service scope...");
+        var db = scope.ServiceProvider.GetRequiredService<CheckpointDbContext>();
+Console.WriteLine("[STARTUP] DbContext acquired");
+  
+          // Solo probar conexión, NO aplicar migraciones
+    Console.WriteLine("[STARTUP] Testing database connectivity...");
             var canConnect = await db.Database.CanConnectAsync();
+  Console.WriteLine($"[STARTUP] Connection test result: {canConnect}");
        
-            if (canConnect)
-        {
- Console.WriteLine("[STARTUP] ? Database connection successful!");
-    
-          // Verificar que las tablas existen
-                try
-           {
-     var userCount = await db.Users.CountAsync();
-     Console.WriteLine($"[STARTUP] ? Found {userCount} users in database");
-                }
- catch (Exception ex)
-      {
-          Console.WriteLine($"[STARTUP] ?? Could not query users: {ex.Message}");
-            Console.WriteLine("[STARTUP] ?? Please ensure database schema is created using railway-setup-complete.sql");
-     }
-   }
-   else
+    if (canConnect)
             {
-    Console.WriteLine("[STARTUP] ? Database connection FAILED");
+           Console.WriteLine("[STARTUP] ? Database connection successful!");
+         
+        // Verificar que las tablas existen
+             try
+        {
+       Console.WriteLine("[STARTUP] Counting users in database...");
+          var userCount = await db.Users.CountAsync();
+  Console.WriteLine($"[STARTUP] ? Found {userCount} users in database");
+    }
+ catch (Exception ex)
+        {
+     Console.WriteLine($"[STARTUP] ?? Could not query users: {ex.Message}");
+        Console.WriteLine("[STARTUP] ?? Please ensure database schema is created using railway-setup-complete.sql");
+                }
+   }
+            else
+            {
+        Console.WriteLine("[STARTUP] ? Database connection FAILED");
             }
         }
     }
@@ -236,10 +242,10 @@ if (app.Environment.IsProduction())
     {
         Console.WriteLine($"[STARTUP ERROR] Database test failed: {ex.GetType().Name}");
         Console.WriteLine($"[STARTUP ERROR] Message: {ex.Message}");
-   if (ex.InnerException != null)
+     if (ex.InnerException != null)
         {
-    Console.WriteLine($"[STARTUP ERROR] Inner: {ex.InnerException.Message}");
-        }
+      Console.WriteLine($"[STARTUP ERROR] Inner: {ex.InnerException.Message}");
+      }
         Console.WriteLine("[STARTUP] ?? Application will continue but database may not be accessible");
     }
 }
@@ -248,102 +254,111 @@ else
     Console.WriteLine("[STARTUP] Development environment detected");
 }
 
-Console.WriteLine("[STARTUP] Configuring HTTP pipeline...");
+Console.WriteLine("[STARTUP] Configuring HTTP pipeline...
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
+    Console.WriteLine("[STARTUP] Configuring production error handling...");
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
+    Console.WriteLine("[STARTUP] Production error handling configured");
 }
 
 // Only use HTTPS redirection in production with proper certificate
 if (app.Environment.IsProduction())
 {
+    Console.WriteLine("[STARTUP] Enabling HTTPS redirection...");
     app.UseHttpsRedirection();
 }
 
+Console.WriteLine("[STARTUP] Enabling static files...");
 app.UseStaticFiles();
 
+Console.WriteLine("[STARTUP] Configuring routing...");
 app.UseRouting();
 
+Console.WriteLine("[STARTUP] Enabling authentication...");
 app.UseAuthentication();
 
-// Audit middleware (after authentication so we can capture user)
+Console.WriteLine("[STARTUP] Adding audit middleware...");
 app.UseMiddleware<AuditMiddleware>();
 
-// Redirect root '/' to login page for anonymous users only
+Console.WriteLine("[STARTUP] Configuring root redirect...");
 app.Use(async (context, next) =>
 {
     if (context.Request.Path == "/")
     {
-        var user = context.User;
+  var user = context.User;
         if (!(user?.Identity?.IsAuthenticated ?? false))
         {
-  if (!context.Request.Path.StartsWithSegments("/Account/Login", StringComparison.OrdinalIgnoreCase))
+    if (!context.Request.Path.StartsWithSegments("/Account/Login", StringComparison.OrdinalIgnoreCase))
             {
-          context.Response.Redirect("/Account/Login");
-           return;
+context.Response.Redirect("/Account/Login");
+    return;
+      }
   }
-    }
     }
     await next();
 });
 
+Console.WriteLine("[STARTUP] Enabling authorization...");
 app.UseAuthorization();
 
-// Enhanced health check endpoint for Railway
+Console.WriteLine("[STARTUP] Mapping health check endpoint...");
 app.MapGet("/health", async (CheckpointDbContext db) =>
 {
     try
     {
-        // Test database connection
         var canConnect = await db.Database.CanConnectAsync();
-   
+      
         if (!canConnect)
-{
-            return Results.Json(new
-      {
-      status = "unhealthy",
-            timestamp = DateTime.UtcNow,
-                error = "Database connection failed"
-            }, statusCode: 503);
-        }
+   {
+return Results.Json(new
+          {
+              status = "unhealthy",
+      timestamp = DateTime.UtcNow,
+   error = "Database connection failed"
+          }, statusCode: 503);
+  }
 
-        // Check if users table exists and has data
         var userCount = await db.Users.CountAsync();
   
-        return Results.Ok(new
+  return Results.Ok(new
         {
-      status = "healthy",
- timestamp = DateTime.UtcNow,
+            status = "healthy",
+   timestamp = DateTime.UtcNow,
     database = new
     {
-            connected = true,
-                users = userCount,
-       provider = "PostgreSQL"
+     connected = true,
+          users = userCount,
+     provider = "PostgreSQL"
             }
-     });
+        });
     }
     catch (Exception ex)
     {
         return Results.Json(new
         {
-   status = "unhealthy",
-            timestamp = DateTime.UtcNow,
-     error = ex.Message,
-errorType = ex.GetType().Name
+  status = "unhealthy",
+ timestamp = DateTime.UtcNow,
+            error = ex.Message,
+            errorType = ex.GetType().Name
         }, statusCode: 503);
     }
 })
 .AllowAnonymous();
 
+Console.WriteLine("[STARTUP] Mapping Razor Pages...");
 app.MapRazorPages();
+
+Console.WriteLine("[STARTUP] Mapping MVC routes...");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-Console.WriteLine("[STARTUP] Application started successfully!");
-Console.WriteLine("[STARTUP] Ready to accept requests");
+Console.WriteLine("[STARTUP] ? Application configured successfully!");
+Console.WriteLine("[STARTUP] ? Ready to accept requests");
+Console.WriteLine("[STARTUP] ========================================");
 
 app.Run();
