@@ -14,8 +14,25 @@ namespace checkpoint_web.Data
  var userManager = provider.GetRequiredService<UserManager<ApplicationUser>>();
  var roleManager = provider.GetRequiredService<RoleManager<IdentityRole>>();
 
- // Ensure DB
- await context.Database.MigrateAsync();
+        // ============================================
+            // NO aplicar migraciones - la BD se configura manualmente
+   // ============================================
+            
+    // Test connection only
+try
+     {
+    var canConnect = await context.Database.CanConnectAsync();
+        if (!canConnect)
+       {
+               Console.WriteLine("[SEED] Cannot connect to database - skipping seed");
+    return;
+  }
+            }
+       catch (Exception ex)
+      {
+       Console.WriteLine($"[SEED] Database connection failed: {ex.Message}");
+     return;
+     }
 
  // Roles
  string[] roles = new[] { "Administrador", "PersonalBodega", "ControlCalidad" };
@@ -32,7 +49,7 @@ namespace checkpoint_web.Data
  var admin = await userManager.FindByEmailAsync(adminEmail);
  if (admin == null)
  {
- admin = new ApplicationUser { UserName = adminEmail, Email = adminEmail, Nombre = "Admin" };
+ admin = new ApplicationUser { UserName = adminEmail, Email = adminEmail, Nombre = "Admin", Activo = true };
  var result = await userManager.CreateAsync(admin, "Admin123!");
  if (result.Succeeded)
  {
@@ -45,7 +62,7 @@ namespace checkpoint_web.Data
  var bodega = await userManager.FindByEmailAsync(bodegaEmail);
  if (bodega == null)
  {
- bodega = new ApplicationUser { UserName = bodegaEmail, Email = bodegaEmail, Nombre = "Personal Bodega" };
+ bodega = new ApplicationUser { UserName = bodegaEmail, Email = bodegaEmail, Nombre = "Personal Bodega", Activo = true };
  var result = await userManager.CreateAsync(bodega, "Bodega123!");
  if (result.Succeeded)
  {
@@ -58,7 +75,7 @@ namespace checkpoint_web.Data
  var calidad = await userManager.FindByEmailAsync(calidadEmail);
  if (calidad == null)
  {
- calidad = new ApplicationUser { UserName = calidadEmail, Email = calidadEmail, Nombre = "Control Calidad" };
+ calidad = new ApplicationUser { UserName = calidadEmail, Email = calidadEmail, Nombre = "Control Calidad", Activo = true };
  var result = await userManager.CreateAsync(calidad, "Calidad123!");
  if (result.Succeeded)
  {
@@ -66,7 +83,7 @@ namespace checkpoint_web.Data
  }
  }
 
- // Sample Productos
+ // Sample Productos (solo si la tabla está vacía)
  if (!context.Productos.Any())
  {
  context.Productos.AddRange(new Producto
