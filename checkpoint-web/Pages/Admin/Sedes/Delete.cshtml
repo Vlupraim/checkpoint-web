@@ -1,0 +1,25 @@
+@page
+@model checkpoint_web.Pages.Admin.Sedes.DeleteModel
+@{
+ ViewData["Title"] = "Eliminar Sede";
+ Layout = "/Pages/Shared/_DashboardLayout.cshtml";
+}
+<h1>Eliminar Sede</h1>
+<h3>¿Está seguro de que desea eliminar esta sede?</h3>
+<div>
+ <dl class="row">
+ <dt class="col-sm-3">Código</dt>
+ <dd class="col-sm-9">@Model.Sede.Codigo</dd>
+ <dt class="col-sm-3">Nombre</dt>
+ <dd class="col-sm-9">@Model.Sede.Nombre</dd>
+ <dt class="col-sm-3">Dirección</dt>
+ <dd class="col-sm-9">@Model.Sede.Direccion</dd>
+ <dt class="col-sm-3">Activa</dt>
+ <dd class="col-sm-9">@(Model.Sede.Activa ? "Sí" : "No")</dd>
+ </dl>
+ <form method="post">
+ <input type="hidden" asp-for="Sede.Id" />
+ <button type="submit" class="btn btn-danger">Eliminar</button>
+ <a class="btn btn-secondary" asp-page="Index">Cancelar</a>
+ </form>
+</div>

@@ -1,0 +1,84 @@
+@page
+@model checkpoint_web.Pages.Fragments.ProductosModel
+@{
+    Layout = null;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>?? Gestión de Productos</h2>
+    <a href="/Productos/Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Nuevo Producto
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card">
+    <div class="card-body">
+        @if (Model.Productos.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Nombre</th>
+                            <th>Unidad</th>
+                            <th>Vida Útil (días)</th>
+                            <th>Stock Mínimo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var producto in Model.Productos)
+                        {
+                            <tr>
+                                <td><code>@producto.Sku</code></td>
+                                <td><strong>@producto.Nombre</strong></td>
+                                <td>@producto.Unidad</td>
+                                <td>@producto.VidaUtilDias</td>
+                                <td>@producto.StockMinimo</td>
+                                <td>
+                                    @if (producto.Activo)
+                                    {
+                                        <span class="badge bg-success">Activo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactivo</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="/Productos/Details?id=@producto.Id" class="btn btn-outline-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="/Productos/Edit?id=@producto.Id" class="btn btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="/Productos/Delete?id=@producto.Id" class="btn btn-outline-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                No hay productos registrados en el sistema.
+            </div>
+        }
+    </div>
+</div>

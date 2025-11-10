@@ -1,0 +1,204 @@
+@page
+@model checkpoint_web.Pages.Reportes.IndexModel
+@{
+    ViewData["Title"] = "Reportes";
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_Layout.cshtml";
+}
+
+<h2>?? Reportes e Indicadores</h2>
+
+<!-- Resumen Operativo del Día -->
+@if (Model.ResumenHoy != null)
+{
+    <div class="card mb-4">
+   <div class="card-header bg-primary text-white">
+       <h5 class="mb-0">?? Resumen Operativo - @Model.ResumenHoy.Fecha.ToString("dddd, dd MMMM yyyy")</h5>
+  </div>
+  <div class="card-body">
+      <div class="row g-3">
+  <div class="col-md-3">
+    <div class="text-center p-3 border rounded">
+       <h2 class="text-primary">@Model.ResumenHoy.MovimientosDelDia</h2>
+ <small class="text-muted">Movimientos del Día</small>
+  </div>
+   </div>
+   <div class="col-md-3">
+      <div class="text-center p-3 border rounded">
+      <h2 class="text-success">@Model.ResumenHoy.Ingresos</h2>
+    <small class="text-muted">Ingresos</small>
+      </div>
+ </div>
+  <div class="col-md-3">
+  <div class="text-center p-3 border rounded">
+<h2 class="text-danger">@Model.ResumenHoy.Salidas</h2>
+ <small class="text-muted">Salidas</small>
+  </div>
+   </div>
+   <div class="col-md-3">
+       <div class="text-center p-3 border rounded">
+ <h2 class="text-info">@Model.ResumenHoy.Traslados</h2>
+   <small class="text-muted">Traslados</small>
+  </div>
+    </div>
+   </div>
+ <hr />
+   <div class="row g-3">
+<div class="col-md-3">
+  <div class="text-center p-3 border rounded">
+    <h3 class="text-warning">@Model.ResumenHoy.TareasPendientes</h3>
+ <small class="text-muted">Tareas Pendientes</small>
+    </div>
+  </div>
+ <div class="col-md-3">
+       <div class="text-center p-3 border rounded">
+ <h3 class="text-success">@Model.ResumenHoy.TareasCompletadas</h3>
+    <small class="text-muted">Tareas Completadas Hoy</small>
+  </div>
+ </div>
+<div class="col-md-3">
+   <div class="text-center p-3 border rounded">
+      <h3 class="text-info">@Model.ResumenHoy.LotesPendientesCalidad</h3>
+    <small class="text-muted">Lotes Pendientes QC</small>
+  </div>
+ </div>
+ <div class="col-md-3">
+ <div class="text-center p-3 border rounded">
+      <h3 class="text-danger">@Model.ResumenHoy.AjustesPendientes</h3>
+ <small class="text-muted">Ajustes Pendientes</small>
+ </div>
+ </div>
+   </div>
+        </div>
+    </div>
+}
+
+<!-- Inventario Actual -->
+@if (Model.InventarioActual != null)
+{
+<div class="card mb-4">
+   <div class="card-header">
+      <h5 class="mb-0">?? Inventario Actual - Generado: @Model.InventarioActual.FechaGeneracion.ToString("dd/MM/yyyy HH:mm")</h5>
+ </div>
+<div class="card-body">
+<div class="row mb-3">
+  <div class="col-md-4">
+  <div class="text-center p-3 bg-light rounded">
+<h3>@Model.InventarioActual.TotalProductos</h3>
+ <small>Productos Diferentes</small>
+    </div>
+   </div>
+    <div class="col-md-4">
+   <div class="text-center p-3 bg-light rounded">
+     <h3>@Model.InventarioActual.TotalUbicaciones</h3>
+<small>Ubicaciones con Stock</small>
+ </div>
+   </div>
+  <div class="col-md-4">
+  <div class="text-center p-3 bg-light rounded">
+<h3>@Model.InventarioActual.CantidadTotalItems</h3>
+  <small>Items Totales</small>
+  </div>
+ </div>
+   </div>
+
+      <ul class="nav nav-tabs" role="tablist">
+<li class="nav-item" role="presentation">
+ <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#porProducto" type="button">Por Producto</button>
+  </li>
+ <li class="nav-item" role="presentation">
+<button class="nav-link" data-bs-toggle="tab" data-bs-target="#porUbicacion" type="button">Por Ubicación</button>
+  </li>
+   </ul>
+
+<div class="tab-content mt-3">
+<!-- Por Producto -->
+ <div class="tab-pane fade show active" id="porProducto">
+   @if (Model.InventarioActual.StocksPorProducto.Any())
+       {
+    <div class="table-responsive">
+<table class="table table-sm table-hover">
+   <thead>
+     <tr>
+  <th>Producto</th>
+       <th class="text-end">Cantidad Total</th>
+   <th class="text-center">Ubicaciones</th>
+<th class="text-center">Lotes</th>
+  </tr>
+ </thead>
+     <tbody>
+     @foreach (var stock in Model.InventarioActual.StocksPorProducto.OrderByDescending(s => s.CantidadTotal))
+    {
+    <tr>
+    <td><strong>@stock.ProductoNombre</strong></td>
+       <td class="text-end">@stock.CantidadTotal.ToString("N2")</td>
+<td class="text-center"><span class="badge bg-primary">@stock.Ubicaciones</span></td>
+   <td class="text-center"><span class="badge bg-secondary">@stock.Lotes</span></td>
+  </tr>
+      }
+    </tbody>
+    </table>
+  </div>
+  }
+   else
+  {
+   <div class="alert alert-info">No hay stock registrado</div>
+   }
+ </div>
+
+ <!-- Por Ubicación -->
+ <div class="tab-pane fade" id="porUbicacion">
+  @if (Model.InventarioActual.StocksPorUbicacion.Any())
+     {
+    <div class="table-responsive">
+ <table class="table table-sm table-hover">
+    <thead>
+ <tr>
+ <th>Sede</th>
+   <th>Ubicación</th>
+    <th class="text-end">Cantidad Total</th>
+   <th class="text-center">Items Diferentes</th>
+    </tr>
+  </thead>
+    <tbody>
+@foreach (var stock in Model.InventarioActual.StocksPorUbicacion.OrderBy(s => s.SedeNombre).ThenBy(s => s.UbicacionCodigo))
+   {
+ <tr>
+     <td>@stock.SedeNombre</td>
+    <td><strong>@stock.UbicacionCodigo</strong></td>
+  <td class="text-end">@stock.CantidadTotal.ToString("N2")</td>
+    <td class="text-center"><span class="badge bg-info">@stock.Items</span></td>
+      </tr>
+  }
+      </tbody>
+ </table>
+ </div>
+   }
+  else
+       {
+ <div class="alert alert-info">No hay stock registrado</div>
+    }
+   </div>
+   </div>
+  </div>
+    </div>
+}
+
+<!-- Enlaces Rápidos a Otros Reportes -->
+<div class="card">
+    <div class="card-header">
+     <h5 class="mb-0">?? Otros Reportes Disponibles</h5>
+ </div>
+ <div class="card-body">
+   <div class="list-group">
+  <a href="/Reportes/Movimientos" class="list-group-item list-group-item-action">
+    ?? Historial de Movimientos
+ </a>
+   <a href="/Reportes/Tareas" class="list-group-item list-group-item-action">
+ ? Reporte de Tareas
+    </a>
+   <a href="/Admin/AuditLogs/Index" class="list-group-item list-group-item-action">
+?? Auditoría del Sistema
+</a>
+   </div>
+ </div>
+</div>

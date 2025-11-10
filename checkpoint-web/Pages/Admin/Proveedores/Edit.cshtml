@@ -1,0 +1,109 @@
+@page
+@model checkpoint_web.Pages.Admin.Proveedores.EditModel
+@{
+    ViewData["Title"] = "Editar Proveedor";
+    Layout = "/Pages/Shared/_DashboardLayout.cshtml";
+}
+
+<h2>?? Editar Proveedor</h2>
+
+<div class="card">
+    <div class="card-body">
+   <form method="post">
+      <input type="hidden" asp-for="Proveedor.Id" />
+<input type="hidden" asp-for="Proveedor.FechaRegistro" />
+  <input type="hidden" asp-for="Proveedor.Activo" />
+
+  <div class="row">
+      <div class="col-md-6 mb-3">
+   <label asp-for="Proveedor.Nombre"></label>
+     <input asp-for="Proveedor.Nombre" class="form-control" required />
+    </div>
+  <div class="col-md-6 mb-3">
+    <label asp-for="Proveedor.NombreComercial"></label>
+<input asp-for="Proveedor.NombreComercial" class="form-control" />
+  </div>
+  </div>
+
+ <div class="row">
+    <div class="col-md-4 mb-3">
+      <label asp-for="Proveedor.Categoria"></label>
+ <select asp-for="Proveedor.Categoria" class="form-select">
+   <option value="">-- Seleccione --</option>
+   <option value="MaterialPrima">Materia Prima</option>
+ <option value="Embalaje">Embalaje</option>
+  <option value="Servicios">Servicios</option>
+ <option value="Logistica">Logística</option>
+   </select>
+  </div>
+  <div class="col-md-4 mb-3">
+   <label asp-for="Proveedor.Calificacion"></label>
+  <select asp-for="Proveedor.Calificacion" class="form-select">
+   <option value="">Sin calificar</option>
+<option value="1">? 1 estrella</option>
+<option value="2">?? 2 estrellas</option>
+<option value="3">??? 3 estrellas</option>
+  <option value="4">???? 4 estrellas</option>
+<option value="5">????? 5 estrellas</option>
+  </select>
+ </div>
+      <div class="col-md-4 mb-3">
+    <label asp-for="Proveedor.Estado"></label>
+  <select asp-for="Proveedor.Estado" class="form-select">
+  <option value="Activo">Activo</option>
+    <option value="Inactivo">Inactivo</option>
+    <option value="Suspendido">Suspendido</option>
+ <option value="Homologado">Homologado</option>
+   </select>
+ </div>
+  </div>
+
+   <div class="row">
+ <div class="col-md-6 mb-3">
+<label asp-for="Proveedor.IdentificadorFiscal"></label>
+ <input asp-for="Proveedor.IdentificadorFiscal" class="form-control" />
+     </div>
+    <div class="col-md-6 mb-3">
+  <label asp-for="Proveedor.Telefono"></label>
+      <input asp-for="Proveedor.Telefono" class="form-control" />
+ </div>
+  </div>
+
+  <div class="mb-3">
+<label asp-for="Proveedor.Email"></label>
+ <input asp-for="Proveedor.Email" type="email" class="form-control" />
+</div>
+
+<div class="mb-3">
+<label asp-for="Proveedor.PersonaContacto"></label>
+<input asp-for="Proveedor.PersonaContacto" class="form-control" />
+</div>
+
+<div class="mb-3">
+   <label asp-for="Proveedor.Direccion"></label>
+   <textarea asp-for="Proveedor.Direccion" class="form-control" rows="2"></textarea>
+   </div>
+
+  <div class="row">
+      <div class="col-md-6 mb-3">
+    <label asp-for="Proveedor.Ciudad"></label>
+     <input asp-for="Proveedor.Ciudad" class="form-control" />
+  </div>
+   <div class="col-md-6 mb-3">
+  <label asp-for="Proveedor.Pais"></label>
+<input asp-for="Proveedor.Pais" class="form-control" />
+    </div>
+   </div>
+
+<div class="mb-3">
+  <label asp-for="Proveedor.Observaciones"></label>
+<textarea asp-for="Proveedor.Observaciones" class="form-control" rows="3"></textarea>
+ </div>
+
+   <div class="d-flex justify-content-between mt-4">
+  <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
+ <button type="submit" class="btn btn-primary">Actualizar</button>
+ </div>
+</form>
+ </div>
+</div>

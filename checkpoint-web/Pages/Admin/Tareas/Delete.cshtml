@@ -1,0 +1,39 @@
+@page
+@model checkpoint_web.Pages.Admin.Tareas.DeleteModel
+@{
+    ViewData["Title"] = "Eliminar Tarea";
+    Layout = "/Pages/Shared/_DashboardLayout.cshtml";
+}
+
+<h2>??? Eliminar Tarea</h2>
+
+<div class="alert alert-danger">
+    <h5>¿Está seguro que desea eliminar esta tarea?</h5>
+  <p>Esta acción no se puede deshacer.</p>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <dl class="row">
+   <dt class="col-sm-3">Título</dt>
+      <dd class="col-sm-9">@Model.Tarea.Titulo</dd>
+
+  <dt class="col-sm-3">Descripción</dt>
+<dd class="col-sm-9">@Model.Tarea.Descripcion</dd>
+
+  <dt class="col-sm-3">Estado</dt>
+   <dd class="col-sm-9">@Model.Tarea.Estado</dd>
+
+            <dt class="col-sm-3">Prioridad</dt>
+      <dd class="col-sm-9">@Model.Tarea.Prioridad</dd>
+ </dl>
+
+       <form method="post">
+        <input type="hidden" asp-for="Tarea.Id" />
+<div class="d-flex justify-content-between">
+    <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
+<button type="submit" class="btn btn-danger">Confirmar Eliminación</button>
+        </div>
+     </form>
+    </div>
+</div>

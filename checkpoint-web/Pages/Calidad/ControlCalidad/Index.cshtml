@@ -1,0 +1,218 @@
+@page
+@model checkpoint_web.Pages.Calidad.ControlCalidad.IndexModel
+@{
+    ViewData["Title"] = "Control de Calidad";
+  Layout = "/Pages/Shared/_Layout.cshtml";
+}
+
+<h2>?? Control de Calidad</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+ @TempData["SuccessMessage"]
+   <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["ErrorMessage"]
+ <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Estadísticas -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark">
+   <div class="card-body">
+    <h6>Pendientes</h6>
+       <h3>@Model.Estadisticas.GetValueOrDefault("LotesPendientes", 0)</h3>
+   </div>
+  </div>
+ </div>
+ <div class="col-md-3">
+  <div class="card bg-success text-white">
+     <div class="card-body">
+    <h6>Aprobados</h6>
+       <h3>@Model.Estadisticas.GetValueOrDefault("LotesAprobados", 0)</h3>
+   </div>
+  </div>
+ </div>
+    <div class="col-md-3">
+ <div class="card bg-danger text-white">
+       <div class="card-body">
+     <h6>Rechazados</h6>
+  <h3>@Model.Estadisticas.GetValueOrDefault("LotesRechazados", 0)</h3>
+   </div>
+ </div>
+    </div>
+<div class="col-md-3">
+  <div class="card bg-dark text-white">
+  <div class="card-body">
+       <h6>Bloqueados</h6>
+ <h3>@Model.Estadisticas.GetValueOrDefault("LotesBloqueados", 0)</h3>
+</div>
+   </div>
+    </div>
+</div>
+
+<!-- Lotes Pendientes de Revisión -->
+<div class="card mb-4">
+    <div class="card-header bg-warning">
+        <h5 class="mb-0">?? Lotes Pendientes de Revisión</h5>
+    </div>
+    <div class="card-body">
+ @if (Model.LotesPendientes.Any())
+        {
+        <div class="table-responsive">
+ <table class="table table-hover">
+ <thead>
+   <tr>
+        <th>Código Lote</th>
+<th>Producto</th>
+  <th>Proveedor</th>
+  <th>Fecha Ingreso</th>
+   <th>Cantidad</th>
+ <th>Acciones</th>
+ </tr>
+   </thead>
+   <tbody>
+  @foreach (var lote in Model.LotesPendientes)
+    {
+       <tr>
+     <td><strong>@lote.CodigoLote</strong></td>
+ <td>@lote.Producto?.Nombre</td>
+        <td>@(lote.Proveedor?.Nombre ?? "-")</td>
+  <td>@lote.FechaIngreso.ToString("dd/MM/yyyy")</td>
+<td>@lote.CantidadInicial</td>
+    <td>
+ <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" 
+ data-bs-target="#revisionModal" data-lote-id="@lote.Id" data-lote-codigo="@lote.CodigoLote" 
+     data-producto="@lote.Producto?.Nombre">
+    ? Revisar
+  </button>
+   </td>
+       </tr>
+  }
+ </tbody>
+       </table>
+  </div>
+        }
+else
+        {
+ <div class="alert alert-info">No hay lotes pendientes de revisión</div>
+        }
+ </div>
+</div>
+
+<!-- Historial Reciente -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">?? Historial de Revisiones (Últimos 30)</h5>
+ </div>
+    <div class="card-body">
+    @if (Model.Historial.Any())
+ {
+       <div class="table-responsive">
+  <table class="table table-sm">
+  <thead>
+     <tr>
+ <th>Fecha</th>
+     <th>Lote</th>
+       <th>Producto</th>
+  <th>Resultado</th>
+     <th>Observaciones</th>
+ <th>Revisado por</th>
+      </tr>
+  </thead>
+ <tbody>
+        @foreach (var rev in Model.Historial)
+{
+      var estadoClass = rev.Estado switch
+        {
+    "Aprobado" => "badge bg-success",
+      "Rechazado" => "badge bg-danger",
+"Bloqueado" => "badge bg-dark",
+ _ => "badge bg-secondary"
+      };
+    <tr>
+<td>@rev.Fecha.ToString("dd/MM/yyyy")</td>
+    <td>@rev.Lote?.CodigoLote</td>
+ <td>@rev.Lote?.Producto?.Nombre</td>
+  <td><span class="@estadoClass">@rev.Estado</span></td>
+  <td><small>@rev.Observacion</small></td>
+   <td><small>@rev.UsuarioId</small></td>
+ </tr>
+ }
+    </tbody>
+ </table>
+   </div>
+        }
+  else
+ {
+     <div class="alert alert-info">No hay historial de revisiones</div>
+        }
+  </div>
+</div>
+
+<!-- Modal de Revisión -->
+<div class="modal fade" id="revisionModal" tabindex="-1">
+    <div class="modal-dialog">
+ <div class="modal-content">
+ <form method="post">
+  <div class="modal-header">
+      <h5 class="modal-title">?? Revisión de Calidad</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body">
+  <input type="hidden" asp-for="LoteId" id="loteIdInput" />
+     <input type="hidden" asp-for="Accion" id="accionInput" />
+    
+       <div class="mb-3">
+     <strong>Lote:</strong> <span id="loteCodigoSpan"></span>
+  </div>
+     <div class="mb-3">
+     <strong>Producto:</strong> <span id="productoSpan"></span>
+ </div>
+    
+        <div class="mb-3">
+        <label asp-for="Observacion" class="form-label">Observaciones</label>
+ <textarea asp-for="Observacion" class="form-control" rows="4" 
+ placeholder="Registre sus observaciones sobre la calidad del lote..."></textarea>
+ <small class="text-muted">Requerido para rechazo o bloqueo</small>
+   </div>
+   </div>
+  <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+ <button type="submit" class="btn btn-success" onclick="document.getElementById('accionInput').value='Aprobar';">
+   ? Aprobar Lote
+ </button>
+ <button type="submit" class="btn btn-danger" onclick="document.getElementById('accionInput').value='Rechazar';">
+  ? Rechazar
+</button>
+ <button type="submit" class="btn btn-dark" onclick="document.getElementById('accionInput').value='Bloquear';">
+ ?? Bloquear
+   </button>
+ </div>
+ </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+ document.getElementById('revisionModal').addEventListener('show.bs.modal', function (event) {
+   var button = event.relatedTarget;
+var loteId = button.getAttribute('data-lote-id');
+   var loteCodigo = button.getAttribute('data-lote-codigo');
+    var producto = button.getAttribute('data-producto');
+        
+ document.getElementById('loteIdInput').value = loteId;
+   document.getElementById('loteCodigoSpan').textContent = loteCodigo;
+document.getElementById('productoSpan').textContent = producto;
+        });
+    </script>
+}

@@ -1,0 +1,107 @@
+@page
+@model checkpoint_web.Pages.Calidad.DashboardModel
+@{
+    ViewData["Title"] = "Dashboard Control de Calidad";
+    Layout = "/Pages/Shared/_Layout.cshtml";
+}
+
+<h2>?? Dashboard Control de Calidad</h2>
+
+@if (Model.Estadisticas != null)
+{
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body text-center">
+                    <h6 class="mb-2">Lotes Pendientes</h6>
+                    <h2 class="mb-0">@Model.Estadisticas.GetValueOrDefault("LotesPendientes", 0)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h6 class="mb-2">Lotes Aprobados</h6>
+                    <h2 class="mb-0">@Model.Estadisticas.GetValueOrDefault("LotesAprobados", 0)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <h6 class="mb-2">Lotes Rechazados</h6>
+                    <h2 class="mb-0">@Model.Estadisticas.GetValueOrDefault("LotesRechazados", 0)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark text-white">
+                <div class="card-body text-center">
+                    <h6 class="mb-2">Lotes Bloqueados</h6>
+                    <h2 class="mb-0">@Model.Estadisticas.GetValueOrDefault("LotesBloqueados", 0)</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones Rápidas -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">? Acciones Rápidas</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <a href="/Calidad/ControlCalidad" class="btn btn-primary w-100">
+                        ?? Revisar Lotes Pendientes
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="/Calidad/Liberacion" class="btn btn-success w-100">
+                        ? Historial de Liberaciones
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="/Reportes" class="btn btn-info w-100">
+                        ?? Ver Reportes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas Visuales -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">?? Resumen de Revisiones</h5>
+        </div>
+        <div class="card-body">
+            @{
+                var total = Model.Estadisticas.GetValueOrDefault("LotesAprobados", 0) +
+                            Model.Estadisticas.GetValueOrDefault("LotesRechazados", 0) +
+                            Model.Estadisticas.GetValueOrDefault("LotesBloqueados", 0);
+            }
+            <div class="progress" style="height: 30px;">
+                @if (total > 0)
+                {
+                    var aprobadosPct = (Model.Estadisticas.GetValueOrDefault("LotesAprobados", 0) * 100.0 / total);
+                    var rechazadosPct = (Model.Estadisticas.GetValueOrDefault("LotesRechazados", 0) * 100.0 / total);
+                    var bloqueadosPct = (Model.Estadisticas.GetValueOrDefault("LotesBloqueados", 0) * 100.0 / total);
+
+                    <div class="progress-bar bg-success" style="width: @aprobadosPct%">
+                        @Model.Estadisticas.GetValueOrDefault("LotesAprobados", 0) Aprobados
+                    </div>
+                    <div class="progress-bar bg-danger" style="width: @rechazadosPct%">
+                        @Model.Estadisticas.GetValueOrDefault("LotesRechazados", 0) Rechazados
+                    </div>
+                    <div class="progress-bar bg-dark" style="width: @bloqueadosPct%">
+                        @Model.Estadisticas.GetValueOrDefault("LotesBloqueados", 0) Bloqueados
+                    </div>
+                }
+            </div>
+            <div class="mt-3 text-center">
+                <strong>Total Revisado:</strong> @total lote(s)
+            </div>
+        </div>
+    </div>
+}

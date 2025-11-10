@@ -1,0 +1,103 @@
+@page
+@model checkpoint_web.Pages.Bodega.DashboardModel
+@{
+  ViewData["Title"] = "Dashboard Bodega";
+  Layout = "/Pages/Shared/_Layout.cshtml";
+}
+
+<h2>?? Dashboard Bodega</h2>
+
+@if (Model.Resumen != null)
+{
+ <div class="row g-3 mb-4">
+   <div class="col-md-3">
+      <div class="card bg-success text-white">
+   <div class="card-body text-center">
+<h6 class="mb-2">Ingresos Hoy</h6>
+      <h2 class="mb-0">@Model.Resumen.Ingresos</h2>
+</div>
+ </div>
+   </div>
+ <div class="col-md-3">
+  <div class="card bg-danger text-white">
+ <div class="card-body text-center">
+    <h6 class="mb-2">Salidas Hoy</h6>
+<h2 class="mb-0">@Model.Resumen.Salidas</h2>
+   </div>
+ </div>
+    </div>
+    <div class="col-md-3">
+   <div class="card bg-primary text-white">
+   <div class="card-body text-center">
+       <h6 class="mb-2">Traslados Hoy</h6>
+  <h2 class="mb-0">@Model.Resumen.Traslados</h2>
+ </div>
+    </div>
+ </div>
+   <div class="col-md-3">
+  <div class="card bg-warning text-dark">
+  <div class="card-body text-center">
+    <h6 class="mb-2">Ajustes Pendientes</h6>
+   <h2 class="mb-0">@Model.Resumen.AjustesPendientes</h2>
+ </div>
+  </div>
+ </div>
+    </div>
+
+<!-- Acciones Rápidas -->
+ <div class="card mb-4">
+   <div class="card-header">
+      <h5 class="mb-0">? Acciones Rápidas</h5>
+ </div>
+<div class="card-body">
+<div class="row g-2">
+     <div class="col-md-3">
+<a href="/Bodega/Recepcion" class="btn btn-success w-100">
+ ?? Nueva Recepción
+ </a>
+    </div>
+  <div class="col-md-3">
+   <a href="/Bodega/Movimientos" class="btn btn-primary w-100">
+    ?? Registrar Movimiento
+  </a>
+   </div>
+   <div class="col-md-3">
+ <a href="/Bodega/Ajustes/Create" class="btn btn-warning w-100">
+?? Solicitar Ajuste
+  </a>
+    </div>
+ <div class="col-md-3">
+  <a href="/Reportes" class="btn btn-info w-100">
+    ?? Ver Reportes
+    </a>
+  </div>
+   </div>
+  </div>
+    </div>
+
+    <!-- Estadísticas -->
+    @if (Model.EstadisticasMovimientos != null)
+  {
+  <div class="card">
+ <div class="card-header">
+<h5 class="mb-0">?? Estadísticas Generales</h5>
+</div>
+  <div class="card-body">
+   <div class="row text-center">
+  <div class="col-md-4">
+    <h4>@Model.EstadisticasMovimientos.GetValueOrDefault("TotalMovimientos", 0)</h4>
+   <small class="text-muted">Total Movimientos Registrados</small>
+ </div>
+   <div class="col-md-4">
+      <h4>@Model.EstadisticasMovimientos.GetValueOrDefault("MovimientosHoy", 0)</h4>
+    <small class="text-muted">Movimientos Hoy</small>
+   </div>
+   <div class="col-md-4">
+    <h4>@Model.EstadisticasMovimientos.GetValueOrDefault("AjustesPendientes", 0)</h4>
+     <small class="text-muted">Ajustes por Aprobar</small>
+  </div>
+   </div>
+  </div>
+        </div>
+    }
+}

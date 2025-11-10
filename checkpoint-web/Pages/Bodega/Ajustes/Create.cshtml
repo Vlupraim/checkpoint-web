@@ -1,0 +1,59 @@
+@page
+@model checkpoint_web.Pages.Bodega.Ajustes.CreateModel
+@{
+    ViewData["Title"] = "Nuevo Ajuste de Inventario";
+    Layout = "/Pages/Shared/_Layout.cshtml";
+}
+
+<h2>?? Nuevo Ajuste de Inventario</h2>
+
+<div class="alert alert-warning">
+    <strong>?? Nota:</strong> Los ajustes de inventario requieren aprobación de un administrador antes de aplicarse.
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<div class="card">
+ <div class="card-body">
+        <form method="post">
+       <div class="mb-3">
+    <label asp-for="LoteId" class="form-label">Lote</label>
+      <select asp-for="LoteId" asp-items="Model.LotesSelectList" class="form-select" required>
+    <option value="">-- Seleccione un lote --</option>
+  </select>
+ </div>
+
+ <div class="mb-3">
+     <label asp-for="UbicacionId" class="form-label">Ubicación</label>
+     <select asp-for="UbicacionId" asp-items="Model.UbicacionesSelectList" class="form-select" required>
+      <option value="">-- Seleccione una ubicación --</option>
+ </select>
+</div>
+
+       <div class="mb-3">
+  <label asp-for="Cantidad" class="form-label">Cantidad de Ajuste</label>
+       <input asp-for="Cantidad" type="number" step="0.001" class="form-control" required />
+    <small class="text-muted">
+    Use números positivos para incrementar stock, negativos para decrementar.
+ Ejemplo: +10 aumenta, -5 disminuye
+ </small>
+  </div>
+
+<div class="mb-3">
+  <label asp-for="Motivo" class="form-label">Motivo del Ajuste</label>
+     <textarea asp-for="Motivo" class="form-control" rows="3" required></textarea>
+ <small class="text-muted">
+        Explique detalladamente la razón del ajuste (ej: Conteo físico, Merma, Corrección de error, etc.)
+  </small>
+  </div>
+
+       <div class="d-flex justify-content-between mt-4">
+     <a href="/Bodega/Ajustes" class="btn btn-secondary">Cancelar</a>
+ <button type="submit" class="btn btn-primary">Solicitar Ajuste</button>
+  </div>
+ </form>
+    </div>
+</div>

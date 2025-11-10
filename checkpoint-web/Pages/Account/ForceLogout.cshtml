@@ -1,0 +1,25 @@
+@page
+@model checkpoint_web.Pages.Account.ForceLogoutModel
+@{
+ Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+<div class="container mt-3">
+ <h3>Forzando cierre de sesión...</h3>
+ <p>Si no se redirige automáticamente, <a href="/Account/Login">haz clic aquí</a>.</p>
+</div>
+@section Scripts {
+ <script>
+ (function(){
+ var names = ['Checkpoint.Auth','AspNetCore.Identity.Application','.AspNetCore.Identity.Application','AspNetCore.Cookies','.AspNetCore.Cookies'];
+ function expire(name){
+ try{
+ document.cookie = name + "=; Path=/; Expires=Thu,01 Jan197000:00:00 GMT";
+ document.cookie = name + "=; Path=/; Domain=localhost; Expires=Thu,01 Jan197000:00:00 GMT";
+ document.cookie = name + "=; Path=/; Domain=127.0.0.1; Expires=Thu,01 Jan197000:00:00 GMT";
+ }catch(e){}
+ }
+ names.forEach(expire);
+ setTimeout(function(){ window.location = '/Account/Login'; },700);
+ })();
+ </script>
+}

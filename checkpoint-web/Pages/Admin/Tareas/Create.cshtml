@@ -1,0 +1,105 @@
+@page
+@model checkpoint_web.Pages.Admin.Tareas.CreateModel
+@{
+    ViewData["Title"] = "Nueva Tarea";
+    Layout = "/Pages/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="mb-4">
+    <h2>?? Nueva Tarea</h2>
+    <nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+  <li class="breadcrumb-item"><a asp-page="Index">Tareas</a></li>
+  <li class="breadcrumb-item active">Nueva</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="card">
+    <div class="card-body">
+      <form method="post">
+ <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+       <div class="row">
+      <div class="col-md-8 mb-3">
+       <label asp-for="Tarea.Titulo" class="form-label"></label>
+           <input asp-for="Tarea.Titulo" class="form-control" required />
+ <span asp-validation-for="Tarea.Titulo" class="text-danger"></span>
+   </div>
+
+    <div class="col-md-4 mb-3">
+        <label asp-for="Tarea.Prioridad" class="form-label"></label>
+      <select asp-for="Tarea.Prioridad" asp-items="Model.PrioridadesSelectList" class="form-select">
+      </select>
+</div>
+  </div>
+
+     <div class="mb-3">
+      <label asp-for="Tarea.Descripcion" class="form-label"></label>
+    <textarea asp-for="Tarea.Descripcion" class="form-control" rows="4"></textarea>
+  <span asp-validation-for="Tarea.Descripcion" class="text-danger"></span>
+     </div>
+
+<div class="row">
+   <div class="col-md-4 mb-3">
+    <label asp-for="Tarea.Estado" class="form-label"></label>
+  <select asp-for="Tarea.Estado" asp-items="Model.EstadosSelectList" class="form-select">
+  </select>
+  </div>
+
+       <div class="col-md-4 mb-3">
+    <label asp-for="Tarea.Tipo" class="form-label"></label>
+      <select asp-for="Tarea.Tipo" asp-items="Model.TiposSelectList" class="form-select">
+       <option value="">-- Seleccione --</option>
+  </select>
+  </div>
+
+<div class="col-md-4 mb-3">
+     <label asp-for="Tarea.FechaLimite" class="form-label"></label>
+ <input asp-for="Tarea.FechaLimite" type="datetime-local" class="form-control" />
+      <span asp-validation-for="Tarea.FechaLimite" class="text-danger"></span>
+      </div>
+      </div>
+
+   <div class="row">
+  <div class="col-md-6 mb-3">
+        <label asp-for="Tarea.ProductoId" class="form-label">Producto (opcional)</label>
+     <select asp-for="Tarea.ProductoId" asp-items="Model.ProductosSelectList" class="form-select">
+          <option value="">-- Ninguno --</option>
+          </select>
+    </div>
+
+      <div class="col-md-6 mb-3">
+    <label asp-for="Tarea.LoteId" class="form-label">Lote (opcional)</label>
+   <select asp-for="Tarea.LoteId" asp-items="Model.LotesSelectList" class="form-select">
+       <option value="">-- Ninguno --</option>
+    </select>
+   </div>
+ </div>
+
+    <div class="mb-3">
+     <label asp-for="Tarea.ResponsableId" class="form-label"></label>
+        <input asp-for="Tarea.ResponsableId" class="form-control" placeholder="Usuario responsable" />
+     <span asp-validation-for="Tarea.ResponsableId" class="text-danger"></span>
+   </div>
+
+       <div class="mb-3">
+        <label asp-for="Tarea.Observaciones" class="form-label"></label>
+       <textarea asp-for="Tarea.Observaciones" class="form-control" rows="3"></textarea>
+    </div>
+
+         <div class="d-flex justify-content-between mt-4">
+    <a asp-page="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Cancelar
+       </a>
+    <button type="submit" class="btn btn-primary">
+  <i class="bi bi-save"></i> Guardar Tarea
+  </button>
+    </div>
+   </form>
+  </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,48 @@
+@page "{id:guid}"
+@model checkpoint_web.Pages.Productos.EditModel
+@{
+ ViewData["Title"] = "Editar Producto";
+}
+<h1>Editar Producto</h1>
+<form method="post">
+ <input type="hidden" asp-for="Producto.Id" />
+ <div class="mb-3">
+ <label asp-for="Producto.Sku" class="form-label"></label>
+ <input asp-for="Producto.Sku" class="form-control" />
+ <span asp-validation-for="Producto.Sku" class="text-danger"></span>
+ </div>
+ <div class="mb-3">
+ <label asp-for="Producto.Nombre" class="form-label"></label>
+ <input asp-for="Producto.Nombre" class="form-control" />
+ <span asp-validation-for="Producto.Nombre" class="text-danger"></span>
+ </div>
+ <div class="mb-3">
+ <label asp-for="Producto.Unidad" class="form-label"></label>
+ <input asp-for="Producto.Unidad" class="form-control" />
+ </div>
+ <div class="mb-3">
+ <label asp-for="Producto.VidaUtilDias" class="form-label"></label>
+ <input asp-for="Producto.VidaUtilDias" class="form-control" />
+ </div>
+ <div class="mb-3">
+ <label asp-for="Producto.TempMin" class="form-label"></label>
+ <input asp-for="Producto.TempMin" class="form-control" />
+ </div>
+ <div class="mb-3">
+ <label asp-for="Producto.TempMax" class="form-label"></label>
+ <input asp-for="Producto.TempMax" class="form-control" />
+ </div>
+ <div class="mb-3">
+ <label asp-for="Producto.StockMinimo" class="form-label"></label>
+ <input asp-for="Producto.StockMinimo" class="form-control" />
+ </div>
+ <div class="mb-3 form-check">
+ <input asp-for="Producto.Activo" class="form-check-input" />
+ <label asp-for="Producto.Activo" class="form-check-label"></label>
+ </div>
+ <button type="submit" class="btn btn-primary">Guardar</button>
+ <a class="btn btn-secondary" asp-page="Index">Cancelar</a>
+</form>
+@section Scripts {
+ <partial name="_ValidationScriptsPartial" />
+}

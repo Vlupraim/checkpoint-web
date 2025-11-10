@@ -1,0 +1,32 @@
+@page
+@model checkpoint_web.Pages.Admin.Sedes.CreateModel
+@{
+ ViewData["Title"] = "Crear Sede";
+ Layout = "/Pages/Shared/_DashboardLayout.cshtml";
+}
+<h1>Crear Sede</h1>
+<form method="post">
+ <div class="mb-3">
+ <label asp-for="Sede.Codigo" class="form-label"></label>
+ <input asp-for="Sede.Codigo" class="form-control" />
+ <span asp-validation-for="Sede.Codigo" class="text-danger"></span>
+ </div>
+ <div class="mb-3">
+ <label asp-for="Sede.Nombre" class="form-label"></label>
+ <input asp-for="Sede.Nombre" class="form-control" />
+ <span asp-validation-for="Sede.Nombre" class="text-danger"></span>
+ </div>
+ <div class="mb-3">
+ <label asp-for="Sede.Direccion" class="form-label"></label>
+ <input asp-for="Sede.Direccion" class="form-control" />
+ </div>
+ <div class="form-check mb-3">
+ <input asp-for="Sede.Activa" class="form-check-input" />
+ <label asp-for="Sede.Activa" class="form-check-label"></label>
+ </div>
+ <button type="submit" class="btn btn-primary">Crear</button>
+ <a class="btn btn-secondary" asp-page="Index">Cancelar</a>
+</form>
+@section Scripts {
+ @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

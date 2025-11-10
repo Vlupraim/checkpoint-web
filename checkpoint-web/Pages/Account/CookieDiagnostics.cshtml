@@ -1,0 +1,37 @@
+@page
+@model checkpoint_web.Pages.Account.CookieDiagnosticsModel
+@{
+    ViewData["Title"] = "Cookie Diagnostics";
+    Layout = "/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>?? Cookie Diagnostics</h2>
+    
+    <div class="alert alert-info">
+        <strong>Status:</strong> 
+        @if (Model.IsAuthenticated)
+        {
+  <span class="badge bg-success">Authenticated as @Model.UserName</span>
+ }
+        else
+     {
+<span class="badge bg-secondary">Not Authenticated</span>
+        }
+    </div>
+
+    <div class="card">
+ <div class="card-body">
+            <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 0.9rem;">@Model.DiagnosticInfo</pre>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a href="/Account/Login" class="btn btn-primary">Go to Login</a>
+        <a href="/Admin/Dashboard" class="btn btn-secondary">Go to Dashboard</a>
+        <form method="post" asp-page="/Account/Logout" class="d-inline">
+    @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
+    </div>
+</div>

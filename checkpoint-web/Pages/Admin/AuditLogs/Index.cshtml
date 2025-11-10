@@ -1,0 +1,30 @@
+@page
+@model checkpoint_web.Pages.Admin.AuditLogs.IndexModel
+@{
+    ViewData["Title"] = "Audit Logs";
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_DashboardLayout.cshtml";
+}
+<h1>Audit Logs</h1>
+<form method="get" class="row g-2 mb-3">
+ <div class="col-md-3"><input asp-for="UserFilter" class="form-control" placeholder="User" /></div>
+ <div class="col-md-3"><input asp-for="ActionFilter" class="form-control" placeholder="Action" /></div>
+ <div class="col-md-2"><input asp-for="From" type="date" class="form-control" /></div>
+ <div class="col-md-2"><input asp-for="To" type="date" class="form-control" /></div>
+ <div class="col-md-2"><button class="btn btn-primary">Filter</button></div>
+</form>
+<table class="table table-sm">
+ <thead>
+ <tr><th>Time</th><th>User</th><th>Action</th><th>Details</th></tr>
+ </thead>
+ <tbody>
+ @foreach(var l in Model.Logs)
+ {
+ <tr>
+ <td>@l.Timestamp.ToLocalTime().ToString("g")</td>
+ <td>@l.UserId</td>
+ <td>@l.Action</td>
+ <td><pre style="max-height:200px;overflow:auto;">@l.Details</pre></td>
+ </tr>
+ }
+ </tbody>
+</table>

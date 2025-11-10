@@ -1,0 +1,29 @@
+@page
+@model checkpoint_web.Pages.Admin.Users.IndexModel
+@{
+ ViewData["Title"] = "Usuarios";
+}
+<h1>Usuarios</h1>
+<table class="table">
+ <thead>
+ <tr>
+ <th>Email</th>
+ <th>Nombre</th>
+ <th>Roles</th>
+ <th></th>
+ </tr>
+ </thead>
+ <tbody>
+ @foreach (var user in Model.Users)
+ {
+ <tr>
+ <td>@user.Email</td>
+ <td>@user.Nombre</td>
+ <td>@string.Join(", ", Model.RolesForUser[user.Id])</td>
+ <td>
+ <a class="btn btn-sm btn-primary" asp-page="EditRoles" asp-route-id="@user.Id">Editar roles</a>
+ </td>
+ </tr>
+ }
+ </tbody>
+</table>

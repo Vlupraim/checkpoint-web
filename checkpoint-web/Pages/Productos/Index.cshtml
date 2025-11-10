@@ -1,0 +1,48 @@
+@page
+@model checkpoint_web.Pages.Productos.IndexModel
+@{
+ var isPartial = Request.Query["partial"] == "true";
+ if (isPartial)
+ {
+ Layout = null;
+ }
+ else
+ {
+ Layout = "/Pages/Shared/_DashboardLayout.cshtml";
+ }
+}
+<h1>Productos</h1>
+<p>
+ <a class="btn btn-primary" asp-page="Create">Crear nuevo Producto</a>
+</p>
+<table class="table">
+ <thead>
+ <tr>
+ <th>Sku</th>
+ <th>Nombre</th>
+ <th>Unidad</th>
+ <th>Vida útil (días)</th>
+ <th>Stock Min</th>
+ <th>Activo</th>
+ <th></th>
+ </tr>
+ </thead>
+ <tbody>
+ @foreach (var item in Model.Productos)
+ {
+ <tr>
+ <td>@item.Sku</td>
+ <td>@item.Nombre</td>
+ <td>@item.Unidad</td>
+ <td>@item.VidaUtilDias</td>
+ <td>@item.StockMinimo</td>
+ <td>@(item.Activo ? "Sí" : "No")</td>
+ <td>
+ <a class="btn btn-secondary btn-sm" asp-page="Details" asp-route-id="@item.Id">Detalles</a>
+ <a class="btn btn-primary btn-sm" asp-page="Edit" asp-route-id="@item.Id">Editar</a>
+ <a class="btn btn-danger btn-sm" asp-page="Delete" asp-route-id="@item.Id">Eliminar</a>
+ </td>
+ </tr>
+ }
+ </tbody>
+</table>

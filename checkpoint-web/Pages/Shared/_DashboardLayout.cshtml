@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - checkpoint_web</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/checkpoint_web.styles.css" asp-append-version="true" />
+    <style>
+        .sidebar {
+            background-color: #f8f9fa;
+            min-height: calc(100vh - 56px);
+            position: sticky;
+            top: 56px;
+        }
+
+        .sidebar-section-header {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #6c757d;
+            padding: 0.5rem 1rem;
+            margin-top: 1rem;
+        }
+
+        .sidebar-section-header:first-child {
+            margin-top: 0;
+        }
+
+        .sidebar .nav-link {
+            color: #495057;
+            padding: 0.5rem 1rem;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #e9ecef;
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #0d6efd;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Single Header -->
+    <header>
+        <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom box-shadow mb-0">
+            <div class="container-fluid">
+                <a class="navbar-brand me-3" href="/Admin/Dashboard">checkpoint_web</a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavbar"
+                    aria-controls="#topNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="topNavbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Admin/Dashboard">Home</a>
+                        </li>
+                    </ul>
+
+                    <form class="d-none d-md-flex mx-auto" method="get">
+                        <input class="form-control me-2" type="search" placeholder="Search..." aria-label="Search" />
+                        <button class="btn btn-outline-secondary" type="submit">Search</button>
+                    </form>
+
+                    <ul class="navbar-nav ms-auto">
+                        @if (User.Identity?.IsAuthenticated == true) {
+                        @await Component.InvokeAsync("Notifications")
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Hola, @User.Identity.Name
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                                <li><a class="dropdown-item" href="/Account/DashboardRedirect">Mi Dashboard</a></li>
+                                @if (User.IsInRole("Administrador")) {
+                                <li><a class="dropdown-item" href="/Admin/Dashboard">Admin Dashboard</a></li>
+                                }
+                                @if (User.IsInRole("PersonalBodega")) {
+                                <li><a class="dropdown-item" href="/Bodega/Dashboard">Bodega Dashboard</a></li>
+                                }
+                                @if (User.IsInRole("ControlCalidad")) {
+                                <li><a class="dropdown-item" href="/Calidad/Dashboard">Calidad Dashboard</a></li>
+                                }
+                                <li><hr class="dropdown-divider" /></li>
+                                <li>
+                                    <form method="post" asp-page="/Account/Logout" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit"
+                                            class="btn btn-link dropdown-item text-start">Logout</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Dashboard Layout -->
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block sidebar py-3">
+                <div class="nav flex-column">
+                    <div class="sidebar-section-header">?? Panel Principal</div>
+                    <a class="nav-link active" href="#" data-url="/Admin/Dashboard" data-path="/Admin/Dashboard">Dashboard
+                    </a>
+
+                    <div class="sidebar-section-header">?? Gestión de Accesos</div>
+                    <a class="nav-link" href="#" data-url="/Fragments/Usuarios" data-path="/Admin/Users">Usuarios y
+                        Roles</a>
+
+                    <div class="sidebar-section-header">?? Infraestructura</div>
+                    <a class="nav-link" href="#" data-url="/Admin/Sedes/Index" data-path="/Admin/Sedes">Sedes</a>
+                    <a class="nav-link" href="#" data-url="/Admin/Ubicaciones/Index" data-path="/Admin/Ubicaciones">
+                        Ubicaciones</a>
+
+                    <div class="sidebar-section-header">?? Gestión de Procesos</div>
+                    <a class="nav-link" href="#" data-url="/Admin/Tareas/Index" data-path="/Admin/Tareas">Tareas y
+                        Procesos</a>
+
+                    <div class="sidebar-section-header">?? Catálogos</div>
+                    <a class="nav-link" href="#" data-url="/Fragments/Productos" data-path="/Productos">Productos</a>
+                    <a class="nav-link" href="#" data-url="/Admin/Clientes/Index" data-path="/Admin/Clientes">Clientes</a>
+                    <a class="nav-link" href="#" data-url="/Admin/Proveedores/Index" data-path="/Admin/Proveedores">
+                        Proveedores</a>
+
+                    <div class="sidebar-section-header">?? Reportes</div>
+                    <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes">Dashboard de Reportes
+                    </a>
+
+                    <div class="sidebar-section-header">?? Auditoría</div>
+                    <a class="nav-link" href="#" data-url="/Admin/AuditLogs/Index" data-path="/Admin/AuditLogs">Registro
+                        de Auditoría</a>
+                </div>
+            </nav>
+            <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-3">
+                <div id="dashboardContent">
+                    @RenderBody()
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        (function() {
+            const mapping = {
+                '/Productos': '/Fragments/Productos',
+                '/Admin/Users': '/Fragments/Usuarios',
+                '/Admin/Dashboard': '/Admin/Dashboard',
+                '/Admin/Sedes': '/Admin/Sedes/Index',
+                '/Admin/Ubicaciones': '/Admin/Ubicaciones/Index',
+                '/Admin/Tareas': '/Admin/Tareas/Index',
+                '/Admin/Clientes': '/Admin/Clientes/Index',
+                '/Admin/Proveedores': '/Admin/Proveedores/Index',
+                '/Reportes': '/Reportes/Index',
+                '/Admin/AuditLogs': '/Admin/AuditLogs/Index'
+            };
+
+            function loadUrl(url, replaceState) {
+                fetch(url, {
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(function(resp) {
+                        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                        return resp.text();
+                    })
+                    .then(function(html) {
+                        document.getElementById('dashboardContent').innerHTML = html;
+                        if (replaceState) {
+                            history.replaceState({
+                                url: url
+                            }, '', location.pathname);
+                        }
+                    })
+                    .catch(function(err) {
+                        console.error('Load error:', err);
+                        document.getElementById('dashboardContent').innerHTML =
+                            '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>';
+                    });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                // Click handlers for sidebar links
+                document.querySelectorAll('.sidebar a[data-url]').forEach(function(a) {
+                    a.addEventListener('click', function(e) {
+                        e.preventDefault();
+
+                        // Update active state
+                        document.querySelectorAll('.sidebar a').forEach(function(link) {
+                            link.classList.remove('active');
+                        });
+                        a.classList.add('active');
+
+                        var url = a.getAttribute('data-url');
+                        var path = a.getAttribute('data-path') || url;
+
+                        fetch(url, {
+                                credentials: 'same-origin',
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                            .then(function(resp) {
+                                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                                return resp.text();
+                            })
+                            .then(function(html) {
+                                document.getElementById('dashboardContent').innerHTML = html;
+                                history.pushState({
+                                    url: url
+                                }, '', path);
+                            })
+                            .catch(function(err) {
+                                console.error('Navigation error:', err);
+                                document.getElementById('dashboardContent').innerHTML =
+                                    '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>';
+                            });
+                    });
+                });
+
+                // Handle browser back/forward
+                window.addEventListener('popstate', function(event) {
+                    var state = event.state;
+                    if (state && state.url) {
+                        loadUrl(state.url, false);
+                    } else {
+                        var frag = mapping[location.pathname];
+                        if (frag) {
+                            loadUrl(frag, true);
+                        } else {
+                            window.location = location.pathname;
+                        }
+                    }
+                });
+
+                // Initial load: if not on dashboard root, load mapped fragment
+                var initial = location.pathname;
+                if (initial && initial !== '/Admin/Dashboard' && mapping[initial]) {
+                    loadUrl(mapping[initial], true);
+                }
+            });
+        })();
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>
