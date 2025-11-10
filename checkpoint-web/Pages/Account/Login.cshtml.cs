@@ -31,54 +31,70 @@ namespace checkpoint_web.Pages.Account
  public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
  {
     ReturnUrl = returnUrl ?? Url.Content("~/");
-            
-      if (!ModelState.IsValid)
+    
+    _logger.LogInformation("[LOGIN] Starting login attempt for {email}, ReturnUrl: {returnUrl}", Email, ReturnUrl);
+    
+    if (!ModelState.IsValid)
    {
+        _logger.LogWarning("[LOGIN] ModelState invalid for {email}", Email);
             return Page();
       }
 
-      _logger.LogInformation("Login attempt for {email}", Email);
+      _logger.LogInformation("[LOGIN] Login attempt for {email}", Email);
    
             // Ensure clean state
   await _signInManager.SignOutAsync();
-        
+    _logger.LogInformation("[LOGIN] Signed out any existing session for {email}", Email);
+    
             var user = await _userManager.FindByEmailAsync(Email);
      if (user == null)
     {
+      _logger.LogWarning("[LOGIN] User not found: {email}", Email);
        ModelState.AddModelError(string.Empty, "Inicio de sesión inválido.");
   return Page();
          }
 
+    _logger.LogInformation("[LOGIN] User found: {email}, checking password...", Email);
+    
          var result = await _signInManager.CheckPasswordSignInAsync(user, Password, lockoutOnFailure: false);
         if (!result.Succeeded)
     {
+    _logger.LogWarning("[LOGIN] Password check failed for {email}. Result: {result}", Email, result);
     ModelState.AddModelError(string.Empty, "Inicio de sesión inválido.");
          return Page();
     }
 
-// Sign in with session-only cookie (expires when browser closes)
+    _logger.LogInformation("[LOGIN] Password correct for {email}, signing in...", Email);
+
+    // Sign in with session-only cookie (expires when browser closes)
   // DO NOT set IsPersistent = true, this would create a persistent cookie
        await _signInManager.SignInAsync(user, isPersistent: false);
 
     var roles = await _userManager.GetRolesAsync(user);
-   _logger.LogInformation("User {email} signed in successfully with session-only cookie. Roles: {roles}", 
+   _logger.LogInformation("[LOGIN] User {email} signed in successfully with session-only cookie. Roles: {roles}", 
         Email, string.Join(", ", roles));
 
     // Redirect based on role
-   if (roles.Contains("Administrador"))
-        {
-     return LocalRedirect("/Admin/Dashboard");
-            }
-        else if (roles.Contains("PersonalBodega"))
-         {
-  return LocalRedirect("/Bodega/Dashboard");
-            }
-            else if (roles.Contains("ControlCalidad"))
-       {
-    return LocalRedirect("/Calidad/Dashboard");
-       }
-
-            return LocalRedirect(ReturnUrl);
-        }
+    string redirectUrl;
+  if (roles.Contains("Administrador"))
+    {
+     redirectUrl = "/Admin/Dashboard";
+    }
+    else if (roles.Contains("PersonalBodega"))
+    {
+        redirectUrl = "/Bodega/Dashboard";
+    }
+    else if (roles.Contains("ControlCalidad"))
+    {
+        redirectUrl = "/Calidad/Dashboard";
+    }
+    else
+    {
+        redirectUrl = ReturnUrl;
+    }
+    
+    _logger.LogInformation("[LOGIN] Redirecting {email} to {url}", Email, redirectUrl);
+    return LocalRedirect(redirectUrl);
+}
     }
 }
