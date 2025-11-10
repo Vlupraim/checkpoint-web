@@ -186,16 +186,22 @@ Console.WriteLine("[STARTUP] Application built successfully");
 // Apply migrations and seed data in production
 if (app.Environment.IsProduction())
 {
- Console.WriteLine("[STARTUP] Production environment detected, applying migrations...");
+ Console.WriteLine("[STARTUP] Production environment detected");
+    Console.WriteLine("[STARTUP] SKIPPING automatic migrations for now - will apply manually");
+    
+    // TODO: Apply migrations manually via Railway CLI:
+    // railway run dotnet ef database update --project checkpoint-web
+    
+  /*
     using (var scope = app.Services.CreateScope())
     {
       try
 {
    var db = scope.ServiceProvider.GetRequiredService<CheckpointDbContext>();
  Console.WriteLine("[STARTUP] DbContext acquired, checking database connection...");
-     
+   
  // Test connection
-          await db.Database.CanConnectAsync();
+      await db.Database.CanConnectAsync();
    Console.WriteLine("[STARTUP] Database connection successful");
             
    Console.WriteLine("[STARTUP] Applying migrations...");
@@ -206,21 +212,22 @@ if (app.Environment.IsProduction())
       await SeedData.InitializeAsync(scope.ServiceProvider);
        Console.WriteLine("[STARTUP] Database seeded successfully");
         }
-        catch (Exception ex)
+catch (Exception ex)
   {
       Console.WriteLine($"[STARTUP ERROR] Database initialization failed: {ex.GetType().Name}");
             Console.WriteLine($"[STARTUP ERROR] Message: {ex.Message}");
       if (ex.InnerException != null)
-            {
+    {
     Console.WriteLine($"[STARTUP ERROR] Inner: {ex.InnerException.Message}");
    }
   Console.WriteLine("[STARTUP] Application will continue without database initialization");
       }
     }
+    */
 }
 else
 {
-    Console.WriteLine("[STARTUP] Development environment, skipping automatic migrations");
+Console.WriteLine("[STARTUP] Development environment, skipping automatic migrations");
 }
 
 Console.WriteLine("[STARTUP] Configuring HTTP pipeline...");
