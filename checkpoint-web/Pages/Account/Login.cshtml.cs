@@ -70,12 +70,12 @@ return Page();
     _logger.LogInformation("[LOGIN] Password correct for {email}, signing in...", Email);
 
     // CRÍTICO: isPersistent controla si la cookie es temporal o persistente
-    // - false (sin RememberMe): Cookie de sesión, expira en 1 minuto de inactividad
+    // - false (sin RememberMe): Cookie de sesión, expira en 10 minutos de inactividad
     // - true (con RememberMe): Cookie persistente, dura 30 días
     await _signInManager.SignInAsync(user, isPersistent: RememberMe);
 
     var roles = await _userManager.GetRolesAsync(user);
-    var sessionType = RememberMe ? "persistent cookie (30 days)" : "session cookie (1 min timeout)";
+    var sessionType = RememberMe ? "persistent cookie (30 days)" : "session cookie (10 min timeout)";
    _logger.LogInformation("[LOGIN] User {email} signed in successfully with {sessionType}. Roles: {roles}", 
         Email, sessionType, string.Join(", ", roles));
 
