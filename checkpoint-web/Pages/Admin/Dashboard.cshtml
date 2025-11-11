@@ -6,23 +6,38 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-<h2>Panel de Administración</h2>
+<h2>Panel de Administraci&oacute;n</h2>
     <small class="text-muted">@DateTime.Now.ToString("dddd, dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-ES"))</small>
 </div>
 
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
  <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>Atención:</strong> @Model.ErrorMessage
+        <strong>Atenci&oacute;n:</strong> @Model.ErrorMessage
      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
     </div>
     
     <div class="card">
   <div class="card-body text-center py-5">
    <h3>Bienvenido al Sistema Checkpoint</h3>
-  <p class="lead">Login exitoso! Estás autenticado como <strong>@User.Identity?.Name</strong></p>
+  <p class="lead">Login exitoso! Est&aacute;s autenticado como <strong>@User.Identity?.Name</strong></p>
         <hr class="my-4">
-            <p>El sistema está configurándose. Algunas funcionalidades estarán disponibles pronto.</p>
+            <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
+            <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
+            <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
+            <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
+            <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
+            <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
+            <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
+            <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
+            <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
+            <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
+            <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
+            <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
+            <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
+            <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
+            <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
+            <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
       <div class="row g-3 mt-4">
            <div class="col-md-4">
           <a href="/Admin/Users" class="btn btn-primary btn-lg w-100">
@@ -35,7 +50,7 @@
       </a>
             </div>
                 <div class="col-md-4">
-              <a href="/Admin/Productos" class="btn btn-success btn-lg w-100">
+              <a href="/Productos" class="btn btn-success btn-lg w-100">
     Gestionar Productos
            </a>
       </div>
@@ -72,7 +87,7 @@
   <div class="text-center">
                <h6 class="text-muted mb-2">Lotes en QC</h6>
            <h2 class="text-info mb-0">@Model.Resumen.LotesPendientesCalidad</h2>
-          <small>Pendientes de revisión</small>
+          <small>Pendientes de revisi&oacute;n</small>
      </div>
         </div>
     </div>
@@ -81,18 +96,18 @@
         <div class="text-center">
    <h6 class="text-muted mb-2">Ajustes Pendientes</h6>
         <h2 class="text-danger mb-0">@Model.Resumen.AjustesPendientes</h2>
-        <small>Requieren aprobación</small>
+        <small>Requieren aprobaci&oacute;n</small>
          </div>
             </div>
    </div>
     </div>
 
-    <!-- Acciones Rápidas -->
+    <!-- Acciones RÃ¡pidas -->
     <div class="row g-3 mb-4">
         <div class="col-md-12">
          <div class="card">
             <div class="card-header">
-     <h5 class="mb-0">Acciones Rápidas</h5>
+     <h5 class="mb-0">Acciones R&aacute;pidas</h5>
      </div>
        <div class="card-body">
           <div class="row g-2">
@@ -123,7 +138,7 @@
              </div>
                  <div class="col-md-2">
         <a href="/Admin/AuditLogs" class="btn btn-outline-dark w-100">
-             Auditoría
+             Auditor&iacute;a
    </a>
        </div>
 </div>
@@ -135,7 +150,7 @@
 else
 {
     <div class="alert alert-warning">
-     <strong>Cargando datos...</strong> El sistema está generando las estadísticas.
+     <strong>Cargando datos...</strong> El sistema est&aacute; generando las estad&iacute;sticas.
     </div>
 }
 

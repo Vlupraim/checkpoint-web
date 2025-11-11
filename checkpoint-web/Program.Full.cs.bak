@@ -23,7 +23,7 @@ var configuration = builder.Configuration;
 // ============================================
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
-// Si DATABASE_URL no está o es la red interna, usar DATABASE_PUBLIC_URL
+// Si DATABASE_URL no esta o es la red interna, usar DATABASE_PUBLIC_URL
 if (string.IsNullOrEmpty(databaseUrl) || databaseUrl.Contains("railway.internal"))
 {
     Console.WriteLine("[STARTUP] DATABASE_URL is internal or missing, trying DATABASE_PUBLIC_URL...");
@@ -217,7 +217,7 @@ Console.WriteLine("[STARTUP] Production environment detected");
         var db = scope.ServiceProvider.GetRequiredService<CheckpointDbContext>();
 Console.WriteLine("[STARTUP] DbContext acquired");
   
-          // Solo probar conexión, NO aplicar migraciones
+          // Solo probar conexion, NO aplicar migraciones
     Console.WriteLine("[STARTUP] Testing database connectivity...");
             var canConnect = await db.Database.CanConnectAsync();
   Console.WriteLine($"[STARTUP] Connection test result: {canConnect}");

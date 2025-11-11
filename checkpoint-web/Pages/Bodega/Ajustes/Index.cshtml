@@ -23,10 +23,10 @@
     </div>
 }
 
-<!-- Ajustes Pendientes de Aprobación -->
+<!-- Ajustes Pendientes de Aprobacion -->
 <div class="card mb-4">
     <div class="card-header bg-warning">
-     <h5 class="mb-0">? Pendientes de Aprobación (@Model.AjustesPendientes.Count())</h5>
+     <h5 class="mb-0">? Pendientes de Aprobaci&oacute;n (@Model.AjustesPendientes.Count())</h5>
     </div>
  <div class="card-body">
    @if (Model.AjustesPendientes.Any())
@@ -37,7 +37,7 @@
   <tr>
  <th>Fecha</th>
        <th>Lote</th>
-    <th>Ubicación</th>
+    <th>Ubicaci&oacute;n</th>
          <th>Cantidad</th>
      <th>Tipo Ajuste</th>
     <th>Motivo</th>
@@ -80,14 +80,14 @@
        @if (User.IsInRole("Administrador"))
    {
  <form method="post" asp-page-handler="Aprobar" asp-route-id="@ajuste.Id" class="d-inline">
- <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('¿Aprobar este ajuste?');">
+ <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Â¿Aprobar este ajuste?');">
    ? Aprobar
 </button>
        </form>
      }
    else
        {
-  <span class="text-muted">Esperando aprobación</span>
+  <span class="text-muted">Esperando aprobaci&oacute;n</span>
     }
  </td>
          </tr>
@@ -98,7 +98,7 @@
         }
  else
   {
- <div class="alert alert-info">No hay ajustes pendientes de aprobación</div>
+ <div class="alert alert-info">No hay ajustes pendientes de aprobaci&oacute;n</div>
   }
     </div>
 </div>
@@ -106,7 +106,7 @@
 <!-- Ajustes Aprobados Recientes -->
 <div class="card">
     <div class="card-header bg-success text-white">
-        <h5 class="mb-0">? Ajustes Aprobados (Últimos 20)</h5>
+        <h5 class="mb-0">? Ajustes Aprobados (&Uacute;ltimos 20)</h5>
     </div>
  <div class="card-body">
   @if (Model.AjustesAprobados.Any())

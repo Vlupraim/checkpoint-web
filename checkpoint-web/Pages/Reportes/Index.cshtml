@@ -5,9 +5,9 @@
     Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_Layout.cshtml";
 }
 
-<h2>?? Reportes e Indicadores</h2>
+<h2>Reportes e Indicadores</h2>
 
-<!-- Resumen Operativo del Día -->
+<!-- Resumen Operativo del Dia -->
 @if (Model.ResumenHoy != null)
 {
     <div class="card mb-4">
@@ -19,7 +19,7 @@
   <div class="col-md-3">
     <div class="text-center p-3 border rounded">
        <h2 class="text-primary">@Model.ResumenHoy.MovimientosDelDia</h2>
- <small class="text-muted">Movimientos del Día</small>
+ <small class="text-muted">Movimientos del D&iacute;a</small>
   </div>
    </div>
    <div class="col-md-3">
@@ -106,7 +106,7 @@
  <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#porProducto" type="button">Por Producto</button>
   </li>
  <li class="nav-item" role="presentation">
-<button class="nav-link" data-bs-toggle="tab" data-bs-target="#porUbicacion" type="button">Por Ubicación</button>
+<button class="nav-link" data-bs-toggle="tab" data-bs-target="#porUbicacion" type="button">Por Ubicaci&oacute;n</button>
   </li>
    </ul>
 
@@ -145,7 +145,7 @@
    }
  </div>
 
- <!-- Por Ubicación -->
+ <!-- Por Ubicacion -->
  <div class="tab-pane fade" id="porUbicacion">
   @if (Model.InventarioActual.StocksPorUbicacion.Any())
      {
@@ -154,7 +154,7 @@
     <thead>
  <tr>
  <th>Sede</th>
-   <th>Ubicación</th>
+   <th>Ubicaci&oacute;n</th>
     <th class="text-end">Cantidad Total</th>
    <th class="text-center">Items Diferentes</th>
     </tr>
@@ -183,7 +183,7 @@
     </div>
 }
 
-<!-- Enlaces Rápidos a Otros Reportes -->
+<!-- Enlaces Rapidos a Otros Reportes -->
 <div class="card">
     <div class="card-header">
      <h5 class="mb-0">?? Otros Reportes Disponibles</h5>
@@ -191,13 +191,13 @@
  <div class="card-body">
    <div class="list-group">
   <a href="/Reportes/Movimientos" class="list-group-item list-group-item-action">
-    ?? Historial de Movimientos
+    Historial de Movimientos
  </a>
    <a href="/Reportes/Tareas" class="list-group-item list-group-item-action">
- ? Reporte de Tareas
+ Reporte de Tareas
     </a>
    <a href="/Admin/AuditLogs/Index" class="list-group-item list-group-item-action">
-?? Auditoría del Sistema
+Auditor&iacute;a del Sistema
 </a>
    </div>
  </div>

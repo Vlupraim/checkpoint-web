@@ -29,10 +29,10 @@ public DbSet<Parametro> Parametros { get; set; } = null!;
  {
  base.OnModelCreating(builder);
 
-            // Configurar esquema público para PostgreSQL
+            // Configurar esquema publico para PostgreSQL
             builder.HasDefaultSchema("public");
 
-        // Índices útiles
+        // Indices utiles
      builder.Entity<Producto>().HasIndex(p => p.Sku).IsUnique(false);
  builder.Entity<Lote>().HasIndex(l => l.CodigoLote);
     builder.Entity<Lote>().HasIndex(l => l.FechaVencimiento);
@@ -116,14 +116,14 @@ builder.Entity<Cliente>().HasIndex(c => c.IdentificadorFiscal);
    .HasForeignKey(t => t.LoteId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            // Relación Notificacion -> Usuario
+            // Relacion Notificacion -> Usuario
       builder.Entity<Notificacion>()
 .HasOne(n => n.Usuario)
      .WithMany()
     .HasForeignKey(n => n.UsuarioId)
         .OnDelete(DeleteBehavior.Cascade);
 
-         // Precisión de decimales por defecto
+         // Precision de decimales por defecto
     builder.Entity<Producto>().Property(p => p.StockMinimo).HasPrecision(18,3);
  builder.Entity<Lote>().Property(l => l.CantidadInicial).HasPrecision(18,3);
    builder.Entity<Lote>().Property(l => l.CantidadDisponible).HasPrecision(18,3);
