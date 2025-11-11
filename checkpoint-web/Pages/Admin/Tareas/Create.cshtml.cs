@@ -6,6 +6,7 @@ using checkpoint_web.Models;
 using checkpoint_web.Services;
 using checkpoint_web.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace checkpoint_web.Pages.Admin.Tareas
 {
@@ -18,14 +19,14 @@ namespace checkpoint_web.Pages.Admin.Tareas
 public CreateModel(ITareaService tareaService, CheckpointDbContext context)
         {
    _tareaService = tareaService;
-        _context = context;
+      _context = context;
         }
 
  [BindProperty]
  public Tarea Tarea { get; set; } = new();
 
         public SelectList? EstadosSelectList { get; set; }
-        public SelectList? PrioridadesSelectList { get; set; }
+   public SelectList? PrioridadesSelectList { get; set; }
 public SelectList? TiposSelectList { get; set; }
  public SelectList? ProductosSelectList { get; set; }
  public SelectList? LotesSelectList { get; set; }
@@ -33,17 +34,18 @@ public SelectList? TiposSelectList { get; set; }
   public async Task OnGetAsync()
         {
   await LoadSelectListsAsync();
-        }
+     }
 
-     public async Task<IActionResult> OnPostAsync()
+   public async Task<IActionResult> OnPostAsync()
         {
  if (!ModelState.IsValid)
   {
       await LoadSelectListsAsync();
       return Page();
-    }
+ }
 
-      Tarea.CreadoPor = User.Identity?.Name ?? "admin";
+      // CORREGIDO: Usar UserId (ClaimTypes.NameIdentifier) en lugar de User.Identity?.Name (email)
+      Tarea.CreadoPor = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "admin";
      await _tareaService.CreateAsync(Tarea);
 
      TempData["SuccessMessage"] = "Tarea creada exitosamente";

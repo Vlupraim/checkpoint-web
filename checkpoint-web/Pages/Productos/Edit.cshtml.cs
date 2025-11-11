@@ -4,6 +4,7 @@ using checkpoint_web.Models;
 using checkpoint_web.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.Json;
+using System.Security.Claims;
 
 namespace checkpoint_web.Pages.Productos
 {
@@ -33,7 +34,9 @@ namespace checkpoint_web.Pages.Productos
  await _productoService.UpdateAsync(Producto);
  var after = await _productoService.GetByIdAsync(Producto.Id);
  var details = JsonSerializer.Serialize(new { Before = before, After = after });
- await _auditService.LogAsync(User.Identity?.Name ?? "anonymous", $"UpdateProducto:{Producto.Id}", details);
+ // CORREGIDO: Usar UserId (ClaimTypes.NameIdentifier) en lugar de User.Identity?.Name (email)
+ var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous";
+ await _auditService.LogAsync(userId, $"UpdateProducto:{Producto.Id}", details);
  return RedirectToPage("Index");
  }
  }

@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using checkpoint_web.Services;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace checkpoint_web.Middleware
 {
@@ -33,7 +34,8 @@ namespace checkpoint_web.Middleware
                 // Solo auditar si el usuario está autenticado (evita problemas con foreign key)
                 if (context.User?.Identity?.IsAuthenticated == true)
                 {
-                    var userId = context.User.Identity.Name ?? "system";
+                    // CORREGIDO: Usar UserId (ClaimTypes.NameIdentifier) en lugar de User.Identity.Name (email)
+                    var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";
                     var action = $"{context.Request.Method} {path}";
 
                     // Fire and forget - no esperar ni bloquear

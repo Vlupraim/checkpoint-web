@@ -5,9 +5,9 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Gesti&oacute;n de Usuarios y Roles</h2>
+    <h2>?? Gestión de Usuarios y Roles</h2>
     <a href="/Admin/Users/Create" class="btn btn-primary">
-        <i class="bi bi-plus-circle"></i> Nuevo Usuario
+ <i class="bi bi-plus-circle"></i> Nuevo Usuario
     </a>
 </div>
 
@@ -22,76 +22,78 @@
 <div class="card">
     <div class="card-body">
         @if (Model.Usuarios.Any())
-        {
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Email</th>
-                            <th>Nombre de Usuario</th>
-                            <th>Roles</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
+   {
+       <div class="table-responsive">
+    <table class="table table-hover">
+             <thead>
+    <tr>
+       <th>Email</th>
+        <th>Nombre de Usuario</th>
+   <th>Roles</th>
+          <th>Acciones</th>
+     </tr>
+       </thead>
                     <tbody>
-                        @foreach (var usuario in Model.Usuarios)
-                        {
-                            <tr>
-                                <td>@usuario.Email</td>
-                                <td>@usuario.Nombre</td>
-                                <td>
-                                    @if (usuario.Roles.Any())
-                                    {
-                                        @foreach (var role in usuario.Roles)
-                                        {
-                                            <span class="badge bg-primary me-1">@role</span>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted">Sin roles</span>
-                                    }
-                                </td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <a href="/Admin/Users/EditRoles?email=@usuario.Email" class="btn btn-outline-primary">
-                                            <i class="bi bi-pencil"></i> Editar Roles
-                                        </a>
-                                        <button type="button" class="btn btn-outline-danger" onclick="if(confirm('Â¿Eliminar usuario @usuario.Email?')) { deleteUser('@usuario.Email'); }">
-                                            <i class="bi bi-trash"></i> Eliminar
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+  @foreach (var usuario in Model.Usuarios)
+   {
+   <tr>
+       <td>@usuario.Email</td>
+            <td>@usuario.Nombre</td>
+     <td>
+           @if (usuario.Roles.Any())
+     {
+      @foreach (var role in usuario.Roles)
+ {
+        <span class="badge bg-primary me-1">@role</span>
+       }
+      }
+   else
+         {
+       <span class="text-muted">Sin roles</span>
+             }
+         </td>
+    <td>
+         <div class="btn-group btn-group-sm">
+     @* CORREGIDO: Usar Id en lugar de Email *@
+               <a href="/Admin/Users/EditRoles?id=@usuario.Id" class="btn btn-outline-primary">
+    <i class="bi bi-pencil"></i> Editar Roles
+         </a>
+              <button type="button" class="btn btn-outline-danger" onclick="if(confirm('¿Eliminar usuario @usuario.Email?')) { deleteUser('@usuario.Id'); }">
+         <i class="bi bi-trash"></i> Eliminar
+            </button>
+   </div>
+   </td>
+    </tr>
+           }
+           </tbody>
+  </table>
             </div>
         }
-        else
+ else
         {
-            <div class="alert alert-info">
-                No hay usuarios registrados en el sistema.
-            </div>
-        }
-    </div>
+         <div class="alert alert-info">
+       No hay usuarios registrados en el sistema.
+  </div>
+  }
+ </div>
 </div>
 
 <script>
-    function deleteUser(email) {
-        fetch('/Admin/Users/Delete?email=' + encodeURIComponent(email), {
+    // CORREGIDO: Usar userId en lugar de email
+    function deleteUser(userId) {
+ fetch('/Admin/Users/Delete?id=' + encodeURIComponent(userId), {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+      'Content-Type': 'application/json',
+     'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
             }
         })
         .then(resp => {
-            if(resp.ok) {
-                location.reload();
-            } else {
-                alert('Error al eliminar usuario');
-            }
+ if(resp.ok) {
+         location.reload();
+  } else {
+    alert('Error al eliminar usuario');
+ }
         });
     }
 </script>
