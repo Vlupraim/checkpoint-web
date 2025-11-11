@@ -1,12 +1,12 @@
 @page
 @model checkpoint_web.Pages.Admin.Proveedores.IndexModel
 @{
-    ViewData["Title"] = "Gestión de Proveedores";
+    ViewData["Title"] = "Gestion de Proveedores";
     Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_DashboardLayout.cshtml";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
- <h2>Gestión de Proveedores</h2>
+ <h2>Gesti&oacute;n de Proveedores</h2>
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoProveedorModal">
    <i class="bi bi-plus-circle"></i> Nuevo Proveedor
     </button>
@@ -20,7 +20,7 @@
     </div>
 }
 
-<!-- Estadísticas -->
+<!-- Estadisticas -->
 <div class="row g-3 mb-4">
     <div class="col-md-4">
         <div class="card bg-primary text-white">
@@ -48,9 +48,9 @@
       <thead>
         <tr>
           <th>Nombre</th>
-             <th>Categoría</th>
+             <th>Categor&iacute;a</th>
     <th>Contacto</th>
-          <th>Calificación</th>
+          <th>Calificaci&oacute;n</th>
        <th>Estado</th>
       <th>Acciones</th>
        </tr>
@@ -82,7 +82,7 @@
       <td>
           <div class="btn-group btn-group-sm">
        <a asp-page="Edit" asp-route-id="@proveedor.Id" class="btn btn-outline-primary"><i class="bi bi-pencil"></i></a>
-       <form method="post" asp-page-handler="Delete" asp-route-id="@proveedor.Id" class="d-inline" onsubmit="return confirm('¿Eliminar?');">
+       <form method="post" asp-page-handler="Delete" asp-route-id="@proveedor.Id" class="d-inline" onsubmit="return confirm('Â¿Eliminar?');">
 <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></button>
          </form>
             </div>
@@ -119,7 +119,7 @@
           <option value="MaterialPrima">Materia Prima</option>
           <option value="Embalaje">Embalaje</option>
            <option value="Servicios">Servicios</option>
-    <option value="Logistica">Logística</option>
+    <option value="Logistica">Log&iacute;stica</option>
           </select>
              </div>
        </div>
