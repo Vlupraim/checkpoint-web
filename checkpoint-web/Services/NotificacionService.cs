@@ -50,7 +50,7 @@ Tipo = tipo,
 Titulo = titulo,
 Mensaje = mensaje,
      Url = url,
-   FechaCreacion = DateTime.Now,
+   FechaCreacion = DateTime.UtcNow, // CORREGIDO: UTC
   Leida = false,
       Activa = true,
    Prioridad = tipo == "Alerta" ? "Alta" : "Media"
@@ -67,7 +67,7 @@ public async Task MarcarComoLeidaAsync(int notificacionId)
 if (notificacion != null)
    {
  notificacion.Leida = true;
-     notificacion.FechaLeida = DateTime.Now;
+     notificacion.FechaLeida = DateTime.UtcNow; // CORREGIDO: UTC
     await _context.SaveChangesAsync();
  }
 }
@@ -81,7 +81,7 @@ if (notificacion != null)
    foreach (var n in notificaciones)
  {
    n.Leida = true;
-      n.FechaLeida = DateTime.Now;
+      n.FechaLeida = DateTime.UtcNow; // CORREGIDO: UTC
  }
 
       await _context.SaveChangesAsync();
@@ -89,14 +89,21 @@ if (notificacion != null)
 
  public async Task GenerarNotificacionesAutomaticasAsync()
  {
+  // CORREGIDO: Usar DateTime.UtcNow en todas las comparaciones
+    var ahora = DateTime.UtcNow;
+    var dosDiasDespues = ahora.AddDays(2);
+    var sieteDiasDespues = ahora.AddDays(7);
+    var doceHorasAtras = ahora.AddHours(-12);
+    var seisHorasAtras = ahora.AddHours(-6);
+    
   // Tareas próximas a vencer (2 días)
     var tareasProximasVencer = await _context.Tareas
       .Where(t => t.Activo 
-       && t.Estado != "Finalizada" 
+  && t.Estado != "Finalizada" 
       && t.Estado != "Cancelada"
        && t.FechaLimite.HasValue 
-    && t.FechaLimite.Value <= DateTime.Now.AddDays(2)
-    && t.FechaLimite.Value > DateTime.Now)
+ && t.FechaLimite.Value <= dosDiasDespues
+    && t.FechaLimite.Value > ahora)
       .ToListAsync();
 
   foreach (var tarea in tareasProximasVencer)
@@ -104,10 +111,10 @@ if (notificacion != null)
       if (!string.IsNullOrEmpty(tarea.ResponsableId))
     {
  // Verificar si ya existe notificación reciente
-     var existeNotificacion = await _context.Notificaciones
+  var existeNotificacion = await _context.Notificaciones
    .AnyAsync(n => n.UsuarioId == tarea.ResponsableId
         && n.ReferenciaId == tarea.Id.ToString()
-      && n.FechaCreacion >= DateTime.Now.AddHours(-12));
+ && n.FechaCreacion >= doceHorasAtras);
 
       if (!existeNotificacion)
  {
@@ -125,8 +132,8 @@ if (notificacion != null)
     // Lotes próximos a vencer (7 días)
    var lotesProximosVencer = await _context.Lotes
    .Where(l => l.FechaVencimiento.HasValue 
-    && l.FechaVencimiento.Value <= DateTime.Now.AddDays(7)
-   && l.FechaVencimiento.Value > DateTime.Now
+    && l.FechaVencimiento.Value <= sieteDiasDespues
+   && l.FechaVencimiento.Value > ahora
      && l.Estado == "Liberado")
         .ToListAsync();
 
@@ -142,9 +149,9 @@ if (notificacion != null)
 
       foreach (var adminId in admins)
 {
-       await CrearNotificacionAsync(
+await CrearNotificacionAsync(
     adminId,
-      "Advertencia",
+    "Advertencia",
    $"?? {lotesProximosVencer.Count} lote(s) próximo(s) a vencer",
     "Revise el inventario para tomar acciones",
  "/Bodega/Recepcion"
@@ -163,14 +170,14 @@ if (notificacion != null)
   _context.Roles.First(r => r.Name == "Administrador").Id
 ))
      .Select(ur => ur.UserId)
-     .ToListAsync();
+   .ToListAsync();
 
 foreach (var adminId in admins)
     {
   var existeNotificacion = await _context.Notificaciones
     .AnyAsync(n => n.UsuarioId == adminId
        && n.Categoria == "Inventario"
-      && n.FechaCreacion >= DateTime.Now.AddHours(-6));
+      && n.FechaCreacion >= seisHorasAtras);
 
      if (!existeNotificacion)
   {
@@ -184,6 +191,6 @@ foreach (var adminId in admins)
   }
    }
  }
-        }
+     }
     }
 }
