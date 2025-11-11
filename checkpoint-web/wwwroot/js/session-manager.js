@@ -56,19 +56,23 @@
         }
     });
 
-    // También detectar visibilitychange para cerrar sesión cuando se oculta completamente
+    // ============================================
+    // DESHABILITADO: Este listener cierra la sesión cada vez que cambias de pestaña
+    // Lo cual es demasiado agresivo para una aplicación web normal
+    // ============================================
+  /*
     document.addEventListener('visibilitychange', function() {
         if (document.visibilityState === 'hidden') {
-            console.log('[SESSION-MANAGER] Página oculta - preparando logout');
-            // Usar un timeout pequeño para enviar logout si la página no vuelve
+      console.log('[SESSION-MANAGER] Página oculta - preparando logout');
             setTimeout(function() {
-                if (document.visibilityState === 'hidden' && navigator.sendBeacon) {
-                    console.log('[SESSION-MANAGER] Página sigue oculta - enviando logout');
-                    navigator.sendBeacon(logoutEndpoint, new Blob(['{}'], { type: 'application/json' }));
-                }
-            }, 100); // 100ms de gracia
+     if (document.visibilityState === 'hidden' && navigator.sendBeacon) {
+     console.log('[SESSION-MANAGER] Página sigue oculta - enviando logout');
+      navigator.sendBeacon(logoutEndpoint, new Blob(['{}'], { type: 'application/json' }));
+     }
+   }, 100);
         }
     });
+    */
 
     console.log('[SESSION-MANAGER] Todos los listeners registrados correctamente');
     console.log('[SESSION-MANAGER] Endpoint configurado:', logoutEndpoint);
