@@ -1,0 +1,74 @@
+@page
+@model checkpoint_web.Pages.Bodega.TrasladosModel
+@{
+ ViewData["Title"] = "Traslados entre Ubicaciones";
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_BodegaLayout.cshtml";
+}
+
+<h2>Traslados entre Ubicaciones</h2>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+   <div class="card">
+        <div class="card-header">
+      <h5 class="mb-0">Registrar Traslado</h5>
+   </div>
+     <div class="card-body">
+       <form method="post">
+         <div class="row">
+   <div class="col-md-3">
+  <label class="form-label">Lote</label>
+     <select class="form-select" name="loteId" required>
+  <option value="">Seleccionar Lote...</option>
+      </select>
+     </div>
+     <div class="col-md-3">
+      <label class="form-label">Ubicación Origen</label>
+       <select class="form-select" name="origenId" required>
+    <option value="">Seleccionar...</option>
+       </select>
+ </div>
+            <div class="col-md-3">
+   <label class="form-label">Ubicación Destino</label>
+        <select class="form-select" name="destinoId" required>
+      <option value="">Seleccionar...</option>
+    </select>
+   </div>
+   <div class="col-md-3">
+  <label class="form-label">Cantidad</label>
+       <input type="number" class="form-control" name="cantidad" step="0.01" required />
+          </div>
+       </div>
+ <div class="mt-3">
+    <button type="submit" class="btn btn-primary">Ejecutar Traslado</button>
+  </div>
+     </form>
+       </div>
+</div>
+ </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+<h5 class="mb-0">Traslados Recientes</h5>
+  </div>
+    <div class="card-body">
+ <table class="table table-striped">
+      <thead>
+   <tr>
+   <th>Fecha</th>
+      <th>Lote</th>
+            <th>Origen</th>
+  <th>Destino</th>
+    <th>Cantidad</th>
+   <th>Usuario</th>
+       </tr>
+ </thead>
+    <tbody>
+        <tr>
+      <td colspan="6" class="text-center text-muted">No hay traslados registrados</td>
+     </tr>
+   </tbody>
+</table>
+    </div>
+</div>

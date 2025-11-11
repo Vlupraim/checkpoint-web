@@ -2,7 +2,7 @@
 @model checkpoint_web.Pages.Bodega.RecepcionModel
 @{
  ViewData["Title"] = "Recepci&oacute;n de Mercader&iacute;a";
- Layout = "/Pages/Shared/_BodegaLayout.cshtml";
+ Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_BodegaLayout.cshtml";
 }
 <h1>Recepci&oacute;n de Mercader&iacute;a</h1>
 @if (TempData["Message"] != null)

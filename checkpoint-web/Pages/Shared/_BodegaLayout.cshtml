@@ -15,106 +15,213 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/theme-minimal.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/checkpoint_web.styles.css" asp-append-version="true" />
+  <link rel="stylesheet" href="~/checkpoint_web.styles.css" asp-append-version="true" />
 </head>
 
 <body data-authenticated="@(User.Identity?.IsAuthenticated == true ? "True" : "False")" data-persistent="@(isPersistent ? "True" : "False")">
     <!-- Header -->
-    <header>
-     <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom box-shadow mb-0">
-    <div class="container-fluid">
-       <a class="navbar-brand me-3 d-flex align-items-center" href="/Bodega/Dashboard">
-          <img src="~/images/logo-icon.png" alt="Logo Checkpoint" class="logo-mini me-1" />
-         <img src="~/images/logo-text.png" alt="Texto Checkpoint" class="logo-text" />
-             </a>
+  <header>
+        <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom box-shadow mb-0">
+        <div class="container-fluid">
+    <a class="navbar-brand me-3 d-flex align-items-center" href="/Bodega/Dashboard">
+     <img src="~/images/logo-icon.png" alt="Logo Checkpoint" class="logo-mini me-1" />
+<img src="~/images/logo-text.png" alt="Texto Checkpoint" class="logo-text" />
+      </a>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavbar"
- aria-controls="#topNavbar" aria-expanded="false" aria-label="Toggle navigation">
-         <span class="navbar-toggler-icon"></span>
-  </button>
+       aria-controls="#topNavbar" aria-expanded="false" aria-label="Toggle navigation">
+             <span class="navbar-toggler-icon"></span>
+      </button>
 
-        <div class="collapse navbar-collapse" id="topNavbar">
-    <ul class="navbar-nav me-auto mb-2 mb-md-0">
-            <li class="nav-item">
-     <a class="nav-link" href="/Bodega/Dashboard">Inicio</a>
-          </li>
-      </ul>
+    <div class="collapse navbar-collapse" id="topNavbar">
+   <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          <li class="nav-item">
+       <a class="nav-link" href="/Bodega/Dashboard">Inicio</a>
+            </li>
+   </ul>
 
-  <form class="d-none d-md-flex mx-auto" method="get">
-             <input class="form-control me-2 search-bar" type="search" placeholder="Buscar..." aria-label="Buscar" />
-          <button class="btn btn-outline-secondary" type="submit">Buscar</button>
-        </form>
+   <form class="d-none d-md-flex mx-auto" method="get">
+      <input class="form-control me-2 search-bar" type="search" placeholder="Buscar..." aria-label="Buscar" />
+      <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+         </form>
 
-        <ul class="navbar-nav ms-auto">
-              @if (User.Identity?.IsAuthenticated == true)
-    {
-           @await Component.InvokeAsync("Notifications")
-      <li class="nav-item dropdown">
-       <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-           Hola, @User.Identity.Name
-   </a>
- <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                 <li><a class="dropdown-item" href="/Bodega/Dashboard">Mi Panel</a></li>
- @if (User.IsInRole("Administrador"))
-           {
-    <li><a class="dropdown-item" href="/Admin/Dashboard">Panel Administrador</a></li>
-                    }
-          @if (User.IsInRole("ControlCalidad"))
-               {
-<li><a class="dropdown-item" href="/Calidad/Dashboard">Panel Calidad</a></li>
-  }
-         <li><hr class="dropdown-divider" /></li>
-          <li>
-             <form method="post" asp-page="/Account/Logout" class="d-inline">
-       @Html.AntiForgeryToken()
-      <button type="submit" class="btn btn-link dropdown-item text-start">Cerrar Sesión</button>
-          </form>
-    </li>
+    <ul class="navbar-nav ms-auto">
+           @if (User.Identity?.IsAuthenticated == true)
+            {
+                   @await Component.InvokeAsync("Notifications")
+<li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button"
+      data-bs-toggle="dropdown" aria-expanded="false">
+             Hola, @User.Identity.Name
+           </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+    <li><a class="dropdown-item" href="/Bodega/Dashboard">Mi Panel</a></li>
+             @if (User.IsInRole("Administrador"))
+     {
+     <li><a class="dropdown-item" href="/Admin/Dashboard">Panel Administrador</a></li>
+        }
+       @if (User.IsInRole("ControlCalidad"))
+  {
+ <li><a class="dropdown-item" href="/Calidad/Dashboard">Panel Calidad</a></li>
+      }
+       <li><hr class="dropdown-divider" /></li>
+      <li>
+  <form method="post" asp-page="/Account/Logout" class="d-inline">
+             @Html.AntiForgeryToken()
+             <button type="submit" class="btn btn-link dropdown-item text-start">Cerrar Sesión</button>
+     </form>
+                  </li>
            </ul>
-         </li>
-                  }
-                    </ul>
-                </div>
+            </li>
+             }
+    </ul>
   </div>
+   </div>
         </nav>
     </header>
 
-    <!-- Bodega Layout with Sidebar -->
+    <!-- Bodega Dashboard Layout with SPA Navigation -->
     <div class="container-fluid">
-        <div class="row">
-            <nav class="col-md-2 d-none d-md-block sidebar py-3">
-      <div class="nav flex-column">
-           <div class="sidebar-section-header">PANEL BODEGA</div>
- <a class="nav-link active" href="/Bodega/Dashboard">Dashboard</a>
+  <div class="row">
+ <nav class="col-md-2 d-none d-md-block sidebar py-3">
+       <div class="nav flex-column">
+       <div class="sidebar-section-header">PANEL BODEGA</div>
+          <a class="nav-link active" href="#" data-url="/Bodega/Dashboard" data-path="/Bodega/Dashboard">Dashboard</a>
 
-        <div class="sidebar-section-header">OPERACIONES</div>
-           <a class="nav-link" href="/Bodega/Recepcion">Nueva Recepción</a>
-            <a class="nav-link" href="/Bodega/Movimientos">Registrar Movimiento</a>
-            <a class="nav-link" href="/Bodega/Traslados">Traslados</a>
+      <div class="sidebar-section-header">OPERACIONES</div>
+   <a class="nav-link" href="#" data-url="/Bodega/Recepcion" data-path="/Bodega/Recepcion">Nueva Recepción</a>
+<a class="nav-link" href="#" data-url="/Bodega/Movimientos" data-path="/Bodega/Movimientos">Movimientos</a>
+            <a class="nav-link" href="#" data-url="/Bodega/Traslados" data-path="/Bodega/Traslados">Traslados</a>
+      <a class="nav-link" href="#" data-url="/Bodega/Ajustes" data-path="/Bodega/Ajustes">Ajustes</a>
 
-         <div class="sidebar-section-header">AJUSTES</div>
-<a class="nav-link" href="/Bodega/Ajustes">Ver Ajustes</a>
-       <a class="nav-link" href="/Bodega/Ajustes/Create">Solicitar Ajuste</a>
+               <div class="sidebar-section-header">CONSULTAS</div>
+       <a class="nav-link" href="#" data-url="/Bodega/Stock" data-path="/Bodega/Stock">Stock Actual</a>
+            <a class="nav-link" href="#" data-url="/Bodega/Lotes" data-path="/Bodega/Lotes">Lotes</a>
 
-                  <div class="sidebar-section-header">CONSULTAS</div>
-    <a class="nav-link" href="/Bodega/Stock">Consultar Stock</a>
- <a class="nav-link" href="/Bodega/Lotes">Consultar Lotes</a>
-
-                <div class="sidebar-section-header">REPORTES</div>
-         <a class="nav-link" href="/Reportes">Dashboard de Reportes</a>
-     </div>
-            </nav>
-       <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-3">
-       @RenderBody()
-            </main>
+            <div class="sidebar-section-header">REPORTES</div>
+            <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes">Reportes</a>
+    </div>
+        </nav>
+   <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-3">
+    <div id="bodegaContent">
+@RenderBody()
+           </div>
+  </main>
         </div>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
 
-@await RenderSectionAsync("Scripts", required: false)
+    <script>
+   (function () {
+       const mapping = {
+      '/Bodega/Dashboard': '/Bodega/Dashboard',
+  '/Bodega/Recepcion': '/Bodega/Recepcion',
+   '/Bodega/Movimientos': '/Bodega/Movimientos',
+       '/Bodega/Traslados': '/Bodega/Traslados',
+                '/Bodega/Ajustes': '/Bodega/Ajustes',
+          '/Bodega/Stock': '/Bodega/Stock',
+       '/Bodega/Lotes': '/Bodega/Lotes',
+     '/Reportes': '/Reportes/Index'
+      };
+
+  function loadUrl(url, replaceState) {
+         fetch(url, {
+ credentials: 'same-origin',
+     headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+   })
+         .then(function (resp) {
+         if (!resp.ok) {
+ console.error('HTTP error:', resp.status, resp.statusText);
+              throw new Error('HTTP ' + resp.status);
+         }
+     return resp.text();
+                    })
+  .then(function (html) {
+      document.getElementById('bodegaContent').innerHTML = html;
+           if (replaceState) {
+ history.replaceState({
+                  url: url
+   }, '', location.pathname);
+        }
+   })
+         .catch(function (err) {
+  console.error('Load error:', err);
+document.getElementById('bodegaContent').innerHTML =
+       '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>';
+         });
+            }
+
+          document.addEventListener('DOMContentLoaded', function () {
+          // Click handlers for sidebar links
+        document.querySelectorAll('.sidebar a[data-url]').forEach(function (a) {
+     a.addEventListener('click', function (e) {
+           e.preventDefault();
+
+         // Update active state
+            document.querySelectorAll('.sidebar a').forEach(function (link) {
+     link.classList.remove('active');
+         });
+   a.classList.add('active');
+
+           var url = a.getAttribute('data-url');
+       var path = a.getAttribute('data-path') || url;
+
+   fetch(url, {
+          credentials: 'same-origin',
+       headers: {
+             'X-Requested-With': 'XMLHttpRequest'
+     }
+         })
+    .then(function (resp) {
+          if (!resp.ok) {
+     console.error('Navigation error - HTTP:', resp.status, resp.statusText);
+      throw new Error('HTTP ' + resp.status);
+   }
+               return resp.text();
+          })
+          .then(function (html) {
+    document.getElementById('bodegaContent').innerHTML = html;
+        history.pushState({
+     url: url
+          }, '', path);
+        })
+     .catch(function (err) {
+                   console.error('Navigation error:', err);
+     document.getElementById('bodegaContent').innerHTML =
+        '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>';
+                 });
+          });
+  });
+
+       // Handle browser back/forward
+        window.addEventListener('popstate', function (event) {
+ var state = event.state;
+         if (state && state.url) {
+  loadUrl(state.url, false);
+ } else {
+  var frag = mapping[location.pathname];
+                if (frag) {
+    loadUrl(frag, true);
+      } else {
+     window.location = location.pathname;
+                  }
+        }
+       });
+
+       // Initial load: if not on dashboard root, load mapped fragment
+                var initial = location.pathname;
+     if (initial && initial !== '/Bodega/Dashboard' && mapping[initial]) {
+        loadUrl(mapping[initial], true);
+       }
+  });
+        })();
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -2,7 +2,7 @@
 @model checkpoint_web.Pages.Bodega.DashboardModel
 @{
   ViewData["Title"] = "Dashboard Bodega";
-  Layout = "/Pages/Shared/_Layout.cshtml";
+  Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_BodegaLayout.cshtml";
 }
 
 <h2>Panel de Bodega</h2>

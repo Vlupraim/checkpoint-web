@@ -1,0 +1,75 @@
+@page
+@model checkpoint_web.Pages.Bodega.MovimientosModel
+@{
+    ViewData["Title"] = "Movimientos de Inventario";
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_BodegaLayout.cshtml";
+}
+
+<h2>Movimientos de Inventario</h2>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="card">
+     <div class="card-header">
+      <h5 class="mb-0">Registrar Nuevo Movimiento</h5>
+ </div>
+       <div class="card-body">
+  <form method="post">
+      <div class="row">
+  <div class="col-md-3">
+        <label class="form-label">Tipo de Movimiento</label>
+   <select class="form-select" name="tipo" required>
+     <option value="">Seleccionar...</option>
+      <option value="Entrada">Entrada</option>
+      <option value="Salida">Salida</option>
+               <option value="Ajuste">Ajuste</option>
+    </select>
+       </div>
+     <div class="col-md-3">
+     <label class="form-label">Lote</label>
+  <select class="form-select" name="loteId" required>
+           <option value="">Seleccionar Lote...</option>
+         </select>
+ </div>
+        <div class="col-md-2">
+ <label class="form-label">Cantidad</label>
+          <input type="number" class="form-control" name="cantidad" step="0.01" required />
+        </div>
+     <div class="col-md-4">
+   <label class="form-label">Observaciones</label>
+      <input type="text" class="form-control" name="observaciones" placeholder="Opcional" />
+   </div>
+    </div>
+<div class="mt-3">
+     <button type="submit" class="btn btn-primary">Registrar Movimiento</button>
+     </div>
+       </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+        <h5 class="mb-0">Historial de Movimientos Hoy</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped">
+    <thead>
+                <tr>
+        <th>Hora</th>
+          <th>Tipo</th>
+   <th>Producto</th>
+   <th>Lote</th>
+  <th>Cantidad</th>
+    <th>Usuario</th>
+            </tr>
+ </thead>
+      <tbody>
+<tr>
+      <td colspan="6" class="text-center text-muted">No hay movimientos registrados hoy</td>
+   </tr>
+         </tbody>
+     </table>
+    </div>
+</div>

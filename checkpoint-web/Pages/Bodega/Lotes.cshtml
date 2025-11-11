@@ -1,0 +1,101 @@
+@page
+@model checkpoint_web.Pages.Bodega.LotesModel
+@{
+ ViewData["Title"] = "Consulta de Lotes";
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_BodegaLayout.cshtml";
+}
+
+<h2>Consulta de Lotes</h2>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+  <div class="card">
+    <div class="card-header">
+     <h5 class="mb-0">Filtros de Búsqueda</h5>
+ </div>
+   <div class="card-body">
+      <form method="get">
+       <div class="row">
+    <div class="col-md-3">
+  <label class="form-label">Código de Lote</label>
+<input type="text" class="form-control" name="codigoLote" placeholder="Ej: LOT-2024-001" />
+        </div>
+  <div class="col-md-3">
+       <label class="form-label">Producto</label>
+  <input type="text" class="form-control" name="producto" placeholder="Nombre o SKU" />
+        </div>
+       <div class="col-md-2">
+ <label class="form-label">Estado</label>
+  <select class="form-select" name="estado">
+        <option value="">Todos</option>
+ <option value="Cuarentena">Cuarentena</option>
+      <option value="Liberado">Liberado</option>
+       <option value="Rechazado">Rechazado</option>
+<option value="Bloqueado">Bloqueado</option>
+</select>
+   </div>
+    <div class="col-md-2">
+    <label class="form-label">Vencimiento</label>
+  <select class="form-select" name="vencimiento">
+ <option value="">Todos</option>
+     <option value="proximo">Próximos a vencer (7 días)</option>
+     <option value="vencido">Vencidos</option>
+     </select>
+    </div>
+       <div class="col-md-2">
+   <label class="form-label">&nbsp;</label>
+  <button type="submit" class="btn btn-primary w-100">Buscar</button>
+     </div>
+  </div>
+       </form>
+  </div>
+   </div>
+  </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+ <h5 class="mb-0">Lotes Registrados</h5>
+  <div>
+         <span class="badge bg-warning me-2">Cuarentena: 0</span>
+       <span class="badge bg-success me-2">Liberado: 0</span>
+   <span class="badge bg-danger me-2">Rechazado: 0</span>
+      <span class="badge bg-dark">Bloqueado: 0</span>
+       </div>
+    </div>
+    <div class="card-body">
+ <div class="table-responsive">
+    <table class="table table-striped table-hover">
+ <thead>
+ <tr>
+       <th>Código Lote</th>
+      <th>Producto</th>
+      <th>Fecha Ingreso</th>
+   <th>Fecha Vencimiento</th>
+         <th>Cantidad Disponible</th>
+  <th>Estado</th>
+    <th>Temperatura</th>
+      <th>Acciones</th>
+      </tr>
+         </thead>
+      <tbody>
+   <tr>
+      <td colspan="8" class="text-center text-muted">
+     <p class="my-4">No hay lotes registrados o no coinciden con los filtros</p>
+     <small>Los lotes se crean automáticamente al registrar una recepción</small>
+        </td>
+ </tr>
+     </tbody>
+    </table>
+   </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+     // Resaltar lotes próximos a vencer
+        document.addEventListener('DOMContentLoaded', function() {
+   // Lógica para resaltar visualmente lotes con vencimiento próximo
+        });
+  </script>
+}
