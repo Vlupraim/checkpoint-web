@@ -6,51 +6,51 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8" />
+  <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Checkpoint - Iniciar Sesión</title>
     <link rel="stylesheet" href="~/css/login-cyberpunk.css" asp-append-version="true" />
 </head>
 <body>
     <div class="login-minimal">
-     <div class="login-container">
-   <h1 class="login-title">Sign In</h1>
-   
-            @if (!ModelState.IsValid)
+        <div class="login-container">
+      <h1 class="login-title">Iniciar Sesión</h1>
+            
+@if (!ModelState.IsValid)
    {
-                <div class="error-message">
+        <div class="error-message">
         @foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-            {
-       <div>@error.ErrorMessage</div>
-          }
-   </div>
-        }
-   
-            <form method="post" class="login-form">
-      <div class="form-group">
-      <input asp-for="Email" 
-      class="form-input" 
-          placeholder="Username"
-            autocomplete="username" />
-       </div>
-  
-            <div class="form-group">
-        <input asp-for="Password" 
-          type="password" 
-     class="form-input" 
-       placeholder="Password"
- autocomplete="current-password" />
-                </div>
-    
-     <button type="submit" class="login-button">
-        Log In
-  </button>
-                
-       <div class="login-footer">
-            CHECKPOINT SYSTEM
+     {
+                  <div>@error.ErrorMessage</div>
+             }
           </div>
-            </form>
-      </div>
+            }
+ 
+            <form method="post" class="login-form">
+     <div class="form-group">
+    <input asp-for="Email" 
+          class="form-input" 
+            placeholder="Usuario"
+          autocomplete="username" />
+        </div>
+              
+    <div class="form-group">
+   <input asp-for="Password" 
+   type="password" 
+         class="form-input" 
+          placeholder="Contraseña"
+     autocomplete="current-password" />
+    </div>
+          
+    <button type="submit" class="login-button">
+             Ingresar
+     </button>
+             
+    <div class="login-footer">
+          CHECKPOINT SYSTEM
+          </div>
+    </form>
+        </div>
     </div>
 </body>
 </html>

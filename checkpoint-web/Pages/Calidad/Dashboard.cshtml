@@ -5,7 +5,24 @@
     Layout = "/Pages/Shared/_Layout.cshtml";
 }
 
-<h2>?? Dashboard Control de Calidad</h2>
+<h2>Panel de Control de Calidad</h2>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Atención:</strong> @Model.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+    
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <h3>Bienvenido al Panel de Control de Calidad</h3>
+            <p class="lead">Estás autenticado como <strong>@User.Identity?.Name</strong></p>
+            <hr class="my-4">
+            <p>El sistema está configurándose. Algunas funcionalidades estarán disponibles pronto.</p>
+        </div>
+    </div>
+}
 
 @if (Model.Estadisticas != null)
 {
@@ -70,7 +87,7 @@
         </div>
     </div>
 
-    <!-- Estadásticas Visuales -->
+    <!-- Estadísticas Visuales -->
     <div class="card">
         <div class="card-header">
             <h5 class="mb-0">?? Resumen de Revisiones</h5>
