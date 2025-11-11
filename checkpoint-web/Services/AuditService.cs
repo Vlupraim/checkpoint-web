@@ -11,11 +11,27 @@ namespace checkpoint_web.Services
 
  public async Task LogAsync(string userId, string action, string? details = null)
         {
-    //En la base de dato se almacena el Id del usuario como string, pero en cambio se esta mandando el correo del usuario
-    //PENDIENTE: Cambiar esto para que se mande el Id del usuario
- var entry = new AuditLog { Id = Guid.NewGuid(), UserId = userId ?? string.Empty, Action = action, Details = details };
- _context.AuditLogs.Add(entry);
- await _context.SaveChangesAsync();
+ // CRÍTICO: NO intentar guardar logs para usuarios anonymous o sin autenticar
+       // Esto evita violaciones de FK constraint con AspNetUsers
+            if (string.IsNullOrEmpty(userId) || 
+      userId == "anonymous" || 
+    userId == "system")
+     {
+    // Ignorar silenciosamente - estos no son usuarios reales en AspNetUsers
+    return;
+         }
+      
+            var entry = new AuditLog 
+       { 
+    Id = Guid.NewGuid(), 
+         UserId = userId, 
+       Action = action, 
+                Details = details,
+       Timestamp = DateTime.UtcNow  // CRÍTICO: Usar UTC explícitamente
+            };
+        
+        _context.AuditLogs.Add(entry);
+   await _context.SaveChangesAsync();
  }
  }
 }

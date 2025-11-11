@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using checkpoint_web.Models;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 
 namespace checkpoint_web.Data
 {
- public class CheckpointDbContext : IdentityDbContext<ApplicationUser>
+ public class CheckpointDbContext : IdentityDbContext<ApplicationUser>, IDataProtectionKeyContext
  {
  public CheckpointDbContext(DbContextOptions<CheckpointDbContext> options) : base(options) { }
 
@@ -24,42 +25,45 @@ namespace checkpoint_web.Data
         public DbSet<Procedimiento> Procedimientos { get; set; } = null!;
 public DbSet<Parametro> Parametros { get; set; } = null!;
     public DbSet<Notificacion> Notificaciones { get; set; } = null!;
+    
+    // DataProtection keys
+    public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 
  protected override void OnModelCreating(ModelBuilder builder)
  {
  base.OnModelCreating(builder);
 
             // Configurar esquema publico para PostgreSQL
-            builder.HasDefaultSchema("public");
+   builder.HasDefaultSchema("public");
 
-        // Indices utiles
+   // Indices utiles
      builder.Entity<Producto>().HasIndex(p => p.Sku).IsUnique(false);
  builder.Entity<Lote>().HasIndex(l => l.CodigoLote);
     builder.Entity<Lote>().HasIndex(l => l.FechaVencimiento);
         builder.Entity<Ubicacion>().HasIndex(u => new { u.SedeId, u.Codigo });
      builder.Entity<AuditLog>().HasIndex(a => a.UserId);
   builder.Entity<Tarea>().HasIndex(t => t.Estado);
-         builder.Entity<Tarea>().HasIndex(t => t.ResponsableId);
+ builder.Entity<Tarea>().HasIndex(t => t.ResponsableId);
        builder.Entity<Tarea>().HasIndex(t => t.FechaLimite);
 builder.Entity<Cliente>().HasIndex(c => c.IdentificadorFiscal);
   builder.Entity<Proveedor>().HasIndex(p => p.IdentificadorFiscal);
      builder.Entity<Procedimiento>().HasIndex(p => p.Codigo).IsUnique();
-            builder.Entity<Parametro>().HasIndex(p => p.Clave).IsUnique();
+builder.Entity<Parametro>().HasIndex(p => p.Clave).IsUnique();
          builder.Entity<Notificacion>().HasIndex(n => n.UsuarioId);
-      builder.Entity<Notificacion>().HasIndex(n => n.Leida);
+    builder.Entity<Notificacion>().HasIndex(n => n.Leida);
 
-            // Relaciones existentes
+      // Relaciones existentes
       builder.Entity<Lote>()
     .HasOne(l => l.Producto)
      .WithMany(p => p.Lotes)
-          .HasForeignKey(l => l.ProductoId)
+    .HasForeignKey(l => l.ProductoId)
        .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Lote>()
-     .HasOne(l => l.Proveedor)
-          .WithMany(p => p.Lotes)
-        .HasForeignKey(l => l.ProveedorId)
-       .OnDelete(DeleteBehavior.SetNull);
+   .HasOne(l => l.Proveedor)
+.WithMany(p => p.Lotes)
+ .HasForeignKey(l => l.ProveedorId)
+    .OnDelete(DeleteBehavior.SetNull);
 
    builder.Entity<Ubicacion>()
    .HasOne(u => u.Sede)
@@ -75,8 +79,8 @@ builder.Entity<Cliente>().HasIndex(c => c.IdentificadorFiscal);
 
     builder.Entity<Movimiento>()
            .HasOne(m => m.OrigenUbicacion)
-   .WithMany(u => u.MovimientosOrigen)
-          .HasForeignKey(m => m.OrigenUbicacionId)
+.WithMany(u => u.MovimientosOrigen)
+   .HasForeignKey(m => m.OrigenUbicacionId)
     .OnDelete(DeleteBehavior.Restrict);
 
      builder.Entity<Movimiento>()
@@ -86,8 +90,8 @@ builder.Entity<Cliente>().HasIndex(c => c.IdentificadorFiscal);
      .OnDelete(DeleteBehavior.Restrict);
 
     builder.Entity<Movimiento>()
-          .HasOne(m => m.Cliente)
-           .WithMany(c => c.Movimientos)
+       .HasOne(m => m.Cliente)
+ .WithMany(c => c.Movimientos)
      .HasForeignKey(m => m.ClienteId)
     .OnDelete(DeleteBehavior.SetNull);
 
@@ -114,9 +118,9 @@ builder.Entity<Cliente>().HasIndex(c => c.IdentificadorFiscal);
       .HasOne(t => t.Lote)
       .WithMany()
    .HasForeignKey(t => t.LoteId)
-                .OnDelete(DeleteBehavior.SetNull);
+         .OnDelete(DeleteBehavior.SetNull);
 
-            // Relacion Notificacion -> Usuario
+     // Relacion Notificacion -> Usuario
       builder.Entity<Notificacion>()
 .HasOne(n => n.Usuario)
      .WithMany()

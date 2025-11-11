@@ -55,7 +55,7 @@ SedeNombre = g.Key.Nombre,
 
       return new InventarioReporte
      {
-  FechaGeneracion = DateTime.Now,
+  FechaGeneracion = DateTime.UtcNow, // CORREGIDO: Usar UTC
     TotalProductos = stocksPorProducto.Count,
    TotalUbicaciones = stocksPorUbicacion.Count,
 CantidadTotalItems = (int)stocks.Sum(s => s.Cantidad),
@@ -107,14 +107,15 @@ CantidadTotalItems = (int)stocks.Sum(s => s.Cantidad),
 
      public async Task<ResumenOperativo> GetResumenOperativoAsync(DateTime? fecha = null)
         {
-   var fechaBase = fecha ?? DateTime.Today;
-       var fechaInicio = fechaBase.Date;
-    var fechaFin = fechaInicio.AddDays(1);
+   // CORREGIDO: Usar UTC
+   var fechaBase = fecha ?? DateTime.UtcNow.Date;
+ var fechaInicio = fechaBase.Date;
+ var fechaFin = fechaInicio.AddDays(1);
 
 return new ResumenOperativo
  {
-    Fecha = fechaBase,
-    MovimientosDelDia = await _context.Movimientos.CountAsync(m => m.Fecha >= fechaInicio && m.Fecha < fechaFin),
+ Fecha = fechaBase,
+  MovimientosDelDia = await _context.Movimientos.CountAsync(m => m.Fecha >= fechaInicio && m.Fecha < fechaFin),
 Ingresos = await _context.Movimientos.CountAsync(m => m.Fecha >= fechaInicio && m.Fecha < fechaFin && m.Tipo == "Ingreso"),
        Salidas = await _context.Movimientos.CountAsync(m => m.Fecha >= fechaInicio && m.Fecha < fechaFin && m.Tipo == "Salida"),
  Traslados = await _context.Movimientos.CountAsync(m => m.Fecha >= fechaInicio && m.Fecha < fechaFin && m.Tipo == "Traslado"),
