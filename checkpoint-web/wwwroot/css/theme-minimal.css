@@ -399,6 +399,28 @@ a:hover {
     background: var(--accent-blue);
 }
 
+.logo-mini {
+    height: 30px;     /* Ajuste del tamaño del ícono */
+    width: auto;
+}
+
+.logo-text {
+    height: 24px;     /* Tamaño levemente menor para alinear visualmente */
+    width: auto;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 6px;         /* Espacio entre imágenes */
+}
+
+.navbar-brand:hover img {
+    filter: brightness(1.2);
+    transition: 0.3s ease-in-out;
+}
+
+
 /* Responsive */
 @media (max-width: 768px) {
     .sidebar {
