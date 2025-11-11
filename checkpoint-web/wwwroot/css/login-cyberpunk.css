@@ -110,6 +110,18 @@ color: #00a8ff;
     font-size: 0.75rem;
   letter-spacing: 1px;
 }
+.login-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.login-logo img {
+    width: 120px; /* tamaño logo */
+    height: auto;
+    border-radius: 10px; /* Borde de la imagen */
+}
+
 
 /* Responsive */
 @media (max-width: 480px) {
