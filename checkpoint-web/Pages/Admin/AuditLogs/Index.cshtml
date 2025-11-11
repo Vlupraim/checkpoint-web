@@ -2,7 +2,7 @@
 @model checkpoint_web.Pages.Admin.AuditLogs.IndexModel
 @{
     ViewData["Title"] = "Registro de Auditoría";
-    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_DashboardLayout.cshtml";
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_AdminLayout.cshtml";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -141,3 +141,4 @@
         }
   </div>
 </div>
+

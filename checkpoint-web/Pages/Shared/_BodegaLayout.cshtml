@@ -1,0 +1,120 @@
+@using Microsoft.AspNetCore.Authentication
+
+@{
+    // Verificar si la sesión es persistente
+    var authProperties = await Context.AuthenticateAsync();
+    var isPersistent = authProperties?.Properties?.IsPersistent ?? false;
+}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Checkpoint Bodega</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/theme-minimal.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/checkpoint_web.styles.css" asp-append-version="true" />
+</head>
+
+<body data-authenticated="@(User.Identity?.IsAuthenticated == true ? "True" : "False")" data-persistent="@(isPersistent ? "True" : "False")">
+    <!-- Header -->
+    <header>
+     <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom box-shadow mb-0">
+    <div class="container-fluid">
+       <a class="navbar-brand me-3 d-flex align-items-center" href="/Bodega/Dashboard">
+          <img src="~/images/logo-icon.png" alt="Logo Checkpoint" class="logo-mini me-1" />
+         <img src="~/images/logo-text.png" alt="Texto Checkpoint" class="logo-text" />
+             </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavbar"
+ aria-controls="#topNavbar" aria-expanded="false" aria-label="Toggle navigation">
+         <span class="navbar-toggler-icon"></span>
+  </button>
+
+        <div class="collapse navbar-collapse" id="topNavbar">
+    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+            <li class="nav-item">
+     <a class="nav-link" href="/Bodega/Dashboard">Inicio</a>
+          </li>
+      </ul>
+
+  <form class="d-none d-md-flex mx-auto" method="get">
+             <input class="form-control me-2 search-bar" type="search" placeholder="Buscar..." aria-label="Buscar" />
+          <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+        </form>
+
+        <ul class="navbar-nav ms-auto">
+              @if (User.Identity?.IsAuthenticated == true)
+    {
+           @await Component.InvokeAsync("Notifications")
+      <li class="nav-item dropdown">
+       <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+           Hola, @User.Identity.Name
+   </a>
+ <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                 <li><a class="dropdown-item" href="/Bodega/Dashboard">Mi Panel</a></li>
+ @if (User.IsInRole("Administrador"))
+           {
+    <li><a class="dropdown-item" href="/Admin/Dashboard">Panel Administrador</a></li>
+                    }
+          @if (User.IsInRole("ControlCalidad"))
+               {
+<li><a class="dropdown-item" href="/Calidad/Dashboard">Panel Calidad</a></li>
+  }
+         <li><hr class="dropdown-divider" /></li>
+          <li>
+             <form method="post" asp-page="/Account/Logout" class="d-inline">
+       @Html.AntiForgeryToken()
+      <button type="submit" class="btn btn-link dropdown-item text-start">Cerrar Sesión</button>
+          </form>
+    </li>
+           </ul>
+         </li>
+                  }
+                    </ul>
+                </div>
+  </div>
+        </nav>
+    </header>
+
+    <!-- Bodega Layout with Sidebar -->
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block sidebar py-3">
+      <div class="nav flex-column">
+           <div class="sidebar-section-header">PANEL BODEGA</div>
+ <a class="nav-link active" href="/Bodega/Dashboard">Dashboard</a>
+
+        <div class="sidebar-section-header">OPERACIONES</div>
+           <a class="nav-link" href="/Bodega/Recepcion">Nueva Recepción</a>
+            <a class="nav-link" href="/Bodega/Movimientos">Registrar Movimiento</a>
+            <a class="nav-link" href="/Bodega/Traslados">Traslados</a>
+
+         <div class="sidebar-section-header">AJUSTES</div>
+<a class="nav-link" href="/Bodega/Ajustes">Ver Ajustes</a>
+       <a class="nav-link" href="/Bodega/Ajustes/Create">Solicitar Ajuste</a>
+
+                  <div class="sidebar-section-header">CONSULTAS</div>
+    <a class="nav-link" href="/Bodega/Stock">Consultar Stock</a>
+ <a class="nav-link" href="/Bodega/Lotes">Consultar Lotes</a>
+
+                <div class="sidebar-section-header">REPORTES</div>
+         <a class="nav-link" href="/Reportes">Dashboard de Reportes</a>
+     </div>
+            </nav>
+       <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-3">
+       @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
