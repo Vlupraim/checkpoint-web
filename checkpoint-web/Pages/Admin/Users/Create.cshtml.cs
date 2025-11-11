@@ -83,14 +83,15 @@ namespace checkpoint_web.Pages.Admin.Users
 
             // Auditar la creación
   var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";
+  var rolesString = SelectedRoles != null && SelectedRoles.Any() ? string.Join(", ", SelectedRoles) : "Ninguno";
        await _auditService.LogAsync(
        userId,
      $"CreateUser:{user.Id}",
-      $"Usuario creado: {user.Email}, Roles: {string.Join(", ", SelectedRoles)}"
-            );
+      $"Usuario creado: {user.Email}, Roles: {rolesString}"
+  );
 
  TempData["SuccessMessage"] = $"Usuario {user.Email} creado exitosamente";
-            return RedirectToPage("/Fragments/Usuarios");
+       return RedirectToPage("/Admin/Users/Index");
     }
 
         public class InputModel
