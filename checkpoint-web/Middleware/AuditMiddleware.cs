@@ -20,7 +20,7 @@ namespace checkpoint_web.Middleware
             // Ejecutar el request PRIMERO
             await _next(context);
 
-            // DESPU…S intentar auditar (async, sin bloquear)
+            // DESPUES intentar auditar (async, sin bloquear)
             // Solo audit non-static and non-GET requests
             var path = context.Request.Path.Value ?? string.Empty;
             if (context.Request.Method != HttpMethods.Get &&
@@ -30,7 +30,7 @@ namespace checkpoint_web.Middleware
                 !path.StartsWith("/debug") &&
                 !path.StartsWith("/health"))
             {
-                // Solo auditar si el usuario est· autenticado (evita problemas con foreign key)
+                // Solo auditar si el usuario est√° autenticado (evita problemas con foreign key)
                 if (context.User?.Identity?.IsAuthenticated == true)
                 {
                     var userId = context.User.Identity.Name ?? "system";
@@ -45,7 +45,7 @@ namespace checkpoint_web.Middleware
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogWarning(ex, "Failed to write audit log for {userId} {action}", userId, action);
+                            _logger.LogWarning(ex, "Error al escribir el registro de auditoria para el usuario {userId} {action}", userId, action);
                         }
                     });
                 }
