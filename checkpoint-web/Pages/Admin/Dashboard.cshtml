@@ -6,205 +6,205 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Panel de Administración</h2>
-  <small class="text-muted">@DateTime.Now.ToString("dddd, dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-ES"))</small>
+  <h2>Panel de Administración</h2>
+    <small class="text-muted">@DateTime.Now.ToString("dddd, dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-ES"))</small>
 </div>
 
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>Atención:</strong> @Model.ErrorMessage
-     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+  <strong>Atención:</strong> @Model.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
     </div>
     
- <div class="card">
-   <div class="card-body text-center py-5">
+    <div class="card">
+        <div class="card-body text-center py-5">
             <h3>Bienvenido al Sistema Checkpoint</h3>
-      <p class="lead">¡Login exitoso! Estás autenticado como <strong>@User.Identity?.Name</strong></p>
+      <p class="lead">Login exitoso! Estás autenticado como <strong>@User.Identity?.Name</strong></p>
             <hr class="my-4">
-  <p>El sistema está configurándose. Algunas funcionalidades estarán disponibles pronto.</p>
-    <div class="row g-3 mt-4">
-           <div class="col-md-4">
-    <a href="/Admin/Users" class="btn btn-primary btn-lg w-100">
+            <p>El sistema está configurándose. Algunas funcionalidades estarán disponibles pronto.</p>
+       <div class="row g-3 mt-4">
+        <div class="col-md-4">
+       <a href="/Admin/Users" class="btn btn-primary btn-lg w-100">
       Gestionar Usuarios
-   </a>
-      </div>
-     <div class="col-md-4">
-    <a href="/Admin/Sedes" class="btn btn-info btn-lg w-100">
-       Gestionar Sedes
-        </a>
-    </div>
-    <div class="col-md-4">
-       <a href="/Admin/Productos" class="btn btn-success btn-lg w-100">
-     Gestionar Productos
       </a>
-  </div>
-  </div>
+             </div>
+   <div class="col-md-4">
+    <a href="/Admin/Sedes" class="btn btn-info btn-lg w-100">
+         Gestionar Sedes
+        </a>
+           </div>
+           <div class="col-md-4">
+  <a href="/Admin/Productos" class="btn btn-success btn-lg w-100">
+         Gestionar Productos
+        </a>
+             </div>
      </div>
-  </div>
+ </div>
+    </div>
 }
 
 @if (Model.Resumen != null)
 {
     <!-- KPIs Principales -->
     <div class="row g-3 mb-4">
-  <div class="col-md-3">
-      <div class="card border-primary">
-  <div class="card-body text-center">
-  <h6 class="text-muted mb-2">Movimientos Hoy</h6>
-       <h2 class="text-primary mb-0">@Model.Resumen.MovimientosDelDia</h2>
-   <small class="text-success">Ingresos: @Model.Resumen.Ingresos</small><br/>
-   <small class="text-danger">Salidas: @Model.Resumen.Salidas</small>
-      </div>
+        <div class="col-md-3">
+    <div class="card border-primary">
+       <div class="card-body text-center">
+         <h6 class="text-muted mb-2">Movimientos Hoy</h6>
+    <h2 class="text-primary mb-0">@Model.Resumen.MovimientosDelDia</h2>
+  <small class="text-success">Ingresos: @Model.Resumen.Ingresos</small><br/>
+               <small class="text-danger">Salidas: @Model.Resumen.Salidas</small>
+        </div>
+            </div>
+        </div>
+   <div class="col-md-3">
+         <div class="card border-warning">
+       <div class="card-body text-center">
+      <h6 class="text-muted mb-2">Tareas Pendientes</h6>
+  <h2 class="text-warning mb-0">@Model.Resumen.TareasPendientes</h2>
+     <small>Completadas hoy: @Model.Resumen.TareasCompletadas</small>
+       </div>
+        </div>
+        </div>
+   <div class="col-md-3">
+ <div class="card border-info">
+   <div class="card-body text-center">
+     <h6 class="text-muted mb-2">Lotes en QC</h6>
+   <h2 class="text-info mb-0">@Model.Resumen.LotesPendientesCalidad</h2>
+        <small>Pendientes de revisión</small>
+     </div>
 </div>
+   </div>
+        <div class="col-md-3">
+       <div class="card border-danger">
+         <div class="card-body text-center">
+      <h6 class="text-muted mb-2">Ajustes Pendientes</h6>
+     <h2 class="text-danger mb-0">@Model.Resumen.AjustesPendientes</h2>
+ <small>Requieren aprobación</small>
+       </div>
+          </div>
+        </div>
     </div>
- <div class="col-md-3">
-  <div class="card border-warning">
-  <div class="card-body text-center">
-   <h6 class="text-muted mb-2">Tareas Pendientes</h6>
-   <h2 class="text-warning mb-0">@Model.Resumen.TareasPendientes</h2>
-  <small>Completadas hoy: @Model.Resumen.TareasCompletadas</small>
-   </div>
-  </div>
-  </div>
- <div class="col-md-3">
-  <div class="card border-info">
- <div class="card-body text-center">
-<h6 class="text-muted mb-2">Lotes en QC</h6>
- <h2 class="text-info mb-0">@Model.Resumen.LotesPendientesCalidad</h2>
-  <small>Pendientes de revisión</small>
-  </div>
-   </div>
-    </div>
-    <div class="col-md-3">
- <div class="card border-danger">
-  <div class="card-body text-center">
-    <h6 class="text-muted mb-2">Ajustes Pendientes</h6>
- <h2 class="text-danger mb-0">@Model.Resumen.AjustesPendientes</h2>
-      <small>Requieren aprobación</small>
-  </div>
-   </div>
- </div>
-</div>
 
     <!-- Acciones Rápidas -->
- <div class="row g-3 mb-4">
-    <div class="col-md-12">
-<div class="card">
-   <div class="card-header">
-   <h5 class="mb-0">Acciones Rápidas</h5>
-    </div>
-   <div class="card-body">
+    <div class="row g-3 mb-4">
+  <div class="col-md-12">
+   <div class="card">
+        <div class="card-header">
+              <h5 class="mb-0">Acciones Rápidas</h5>
+             </div>
+       <div class="card-body">
      <div class="row g-2">
- <div class="col-md-2">
-<a href="/Admin/Tareas" class="btn btn-outline-primary w-100">
-     Gestionar Tareas
-    </a>
-   </div>
   <div class="col-md-2">
-<a href="/Bodega/Ajustes" class="btn btn-outline-warning w-100">
- Aprobar Ajustes
-    </a>
-  </div>
- <div class="col-md-2">
-  <a href="/Calidad/ControlCalidad" class="btn btn-outline-info w-100">
-    Control Calidad
-  </a>
+   <a href="/Admin/Tareas" class="btn btn-outline-primary w-100">
+           Gestionar Tareas
+               </a>
     </div>
+         <div class="col-md-2">
+         <a href="/Bodega/Ajustes" class="btn btn-outline-warning w-100">
+                  Aprobar Ajustes
+        </a>
+     </div>
 <div class="col-md-2">
- <a href="/Reportes" class="btn btn-outline-success w-100">
-Ver Reportes
- </a>
+    <a href="/Calidad/ControlCalidad" class="btn btn-outline-info w-100">
+ Control Calidad
+     </a>
+       </div>
+       <div class="col-md-2">
+    <a href="/Reportes" class="btn btn-outline-success w-100">
+   Ver Reportes
+           </a>
+   </div>
+          <div class="col-md-2">
+            <a href="/Admin/Users" class="btn btn-outline-secondary w-100">
+     Gestionar Usuarios
+            </a>
+           </div>
+          <div class="col-md-2">
+           <a href="/Admin/AuditLogs" class="btn btn-outline-dark w-100">
+            Auditoría
+        </a>
+          </div>
+         </div>
+     </div>
+            </div>
+  </div>
 </div>
-  <div class="col-md-2">
-    <a href="/Admin/Users" class="btn btn-outline-secondary w-100">
-Gestionar Usuarios
-    </a>
-   </div>
-    <div class="col-md-2">
-  <a href="/Admin/AuditLogs" class="btn btn-outline-dark w-100">
-   Auditoría
- </a>
-  </div>
-   </div>
-  </div>
-  </div>
- </div>
-    </div>
 
-   <!-- Resumen de Inventario -->
+    <!-- Resumen de Inventario -->
     @if (Model.Inventario != null)
     {
    <div class="row g-3 mb-4">
-<div class="col-md-6">
-  <div class="card">
- <div class="card-header">
-       <h5 class="mb-0">Inventario Actual</h5>
-  </div>
- <div class="card-body">
- <div class="row text-center">
-    <div class="col-4">
-     <h3 class="text-primary">@Model.Inventario.TotalProductos</h3>
- <small class="text-muted">Productos</small>
-   </div>
+            <div class="col-md-6">
+         <div class="card">
+           <div class="card-header">
+     <h5 class="mb-0">Inventario Actual</h5>
+           </div>
+      <div class="card-body">
+        <div class="row text-center">
 <div class="col-4">
-      <h3 class="text-success">@Model.Inventario.TotalUbicaciones</h3>
-<small class="text-muted">Ubicaciones</small>
- </div>
- <div class="col-4">
-   <h3 class="text-info">@Model.Inventario.CantidadTotalItems</h3>
-     <small class="text-muted">Items Total</small>
-    </div>
+     <h3 class="text-primary">@Model.Inventario.TotalProductos</h3>
+    <small class="text-muted">Productos</small>
+      </div>
+          <div class="col-4">
+           <h3 class="text-success">@Model.Inventario.TotalUbicaciones</h3>
+   <small class="text-muted">Ubicaciones</small>
+           </div>
+        <div class="col-4">
+         <h3 class="text-info">@Model.Inventario.CantidadTotalItems</h3>
+           <small class="text-muted">Items Total</small>
    </div>
-<hr/>
-<a href="/Reportes" class="btn btn-sm btn-primary w-100">Ver Reporte Completo</a>
-     </div>
-  </div>
+    </div>
+       <hr/>
+      <a href="/Reportes" class="btn btn-sm btn-primary w-100">Ver Reporte Completo</a>
+          </div>
+                </div>
 </div>
 
- <div class="col-md-6">
- <div class="card">
- <div class="card-header">
-   <h5 class="mb-0">Top 5 Productos en Stock</h5>
-    </div>
-<div class="card-body">
-@if (Model.Inventario.StocksPorProducto.Any())
-   {
-<div class="list-group list-group-flush">
- @foreach (var stock in Model.Inventario.StocksPorProducto.OrderByDescending(s => s.CantidadTotal).Take(5))
-     {
-      <div class="list-group-item d-flex justify-content-between align-items-center">
-<div>
-    <strong>@stock.ProductoNombre</strong>
- <br/><small class="text-muted">@stock.Lotes lote(s) en @stock.Ubicaciones ubicación(es)</small>
-  </div>
-   <span class="badge bg-primary rounded-pill">@stock.CantidadTotal.ToString("N0")</span>
-  </div>
-   }
-       </div>
-  }
-   else
-    {
-     <div class="alert alert-info mb-0">No hay stock registrado</div>
-      }
+    <div class="col-md-6">
+     <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0">Top 5 Productos en Stock</h5>
  </div>
-      </div>
-    </div>
-    </div>
- }
+           <div class="card-body">
+               @if (Model.Inventario.StocksPorProducto.Any())
+       {
+   <div class="list-group list-group-flush">
+  @foreach (var stock in Model.Inventario.StocksPorProducto.OrderByDescending(s => s.CantidadTotal).Take(5))
+     {
+  <div class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+              <strong>@stock.ProductoNombre</strong>
+      <br/><small class="text-muted">@stock.Lotes lote(s) en @stock.Ubicaciones ubicación(es)</small>
+        </div>
+    <span class="badge bg-primary rounded-pill">@stock.CantidadTotal.ToString("N0")</span>
+              </div>
+        }
+            </div>
+          }
+     else
+     {
+           <div class="alert alert-info mb-0">No hay stock registrado</div>
+            }
+           </div>
+     </div>
+       </div>
+        </div>
+    }
 }
 else
 {
     <div class="alert alert-warning">
-   <strong>?? Cargando datos...</strong> El sistema está generando las estadísticas.
+    <strong>Cargando datos...</strong> El sistema está generando las estadísticas.
  </div>
 }
 
 @section Scripts {
- <script>
- // Auto-refresh cada 5 minutos
-     setTimeout(function() {
-  location.reload();
-     }, 300000);
-  </script>
+    <script>
+        // Auto-refresh cada 5 minutos
+        setTimeout(function() {
+            location.reload();
+        }, 300000);
+    </script>
 }

@@ -2,65 +2,65 @@
 
 <div class="dropdown">
     <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    ??
-     @if (Model.Count > 0)
- {
-   <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-     @Model.Count
-      <span class="visually-hidden">notificaciones no leídas</span>
-   </span>
-     }
-  </a>
-    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
- <li class="dropdown-header">
-      <strong>Notificaciones</strong>
-  @if (Model.Count > 0)
-     {
-   <span class="badge bg-primary">@Model.Count nuevas</span>
-        }
-  </li>
-  <li><hr class="dropdown-divider" /></li>
-     
- @if (Model.Notificaciones.Any())
- {
-   foreach (var notif in Model.Notificaciones.Take(10))
-    {
-     var tipoClass = notif.Tipo switch
+     ??
+   @if (Model.Count > 0)
    {
-    "Alerta" => "text-danger",
-"Advertencia" => "text-warning",
-    "Éxito" => "text-success",
- _ => "text-info"
-      };
-    
-  <li>
-   <a class="dropdown-item @tipoClass" href="@(notif.Url ?? "#")">
-    <div class="d-flex justify-content-between align-items-start">
-     <div>
-    <strong>@notif.Titulo</strong>
-@if (!string.IsNullOrEmpty(notif.Mensaje))
+     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+        @Model.Count
+         <span class="visually-hidden">notificaciones no leídas</span>
+       </span>
+        }
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+        <li class="dropdown-header">
+       <strong>Notificaciones</strong>
+  @if (Model.Count > 0)
+        {
+     <span class="badge bg-primary">@Model.Count nuevas</span>
+        }
+        </li>
+   <li><hr class="dropdown-divider" /></li>
+      
+     @if (Model.Notificaciones.Any())
+        {
+     foreach (var notif in Model.Notificaciones.Take(10))
     {
- <div><small>@notif.Mensaje</small></div>
- }
-       <div><small class="text-muted">@notif.FechaCreacion.ToString("dd/MM HH:mm")</small></div>
+       var tipoClass = notif.Tipo switch
+  {
+    "Alerta" => "text-danger",
+         "Advertencia" => "text-warning",
+     "Éxito" => "text-success",
+    _ => "text-info"
+       };
+            
+    <li>
+     <a class="dropdown-item @tipoClass" href="@(notif.Url ?? "#")">
+       <div class="d-flex justify-content-between align-items-start">
+      <div>
+           <strong>@notif.Titulo</strong>
+             @if (!string.IsNullOrEmpty(notif.Mensaje))
+     {
+         <div><small>@notif.Mensaje</small></div>
+      }
+            <div><small class="text-muted">@notif.FechaCreacion.ToString("dd/MM HH:mm")</small></div>
     </div>
-  </div>
- </a>
- </li>
- }
+         </div>
+        </a>
+      </li>
+         }
         }
         else
- {
-  <li class="dropdown-item text-muted">
- <small>No hay notificaciones nuevas</small>
+     {
+            <li class="dropdown-item text-muted">
+          <small>No hay notificaciones nuevas</small>
    </li>
-  }
-      
+        }
+        
    <li><hr class="dropdown-divider" /></li>
         <li>
      <a class="dropdown-item text-center" href="/Notificaciones">
- Ver todas las notificaciones ?
-  </a>
+       Ver todas las notificaciones ?
+      </a>
         </li>
- </ul>
+    </ul>
 </div>
