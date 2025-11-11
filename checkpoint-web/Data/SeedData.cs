@@ -83,7 +83,7 @@ try
  }
  }
 
- // Sample Productos (solo si la tabla está vacía)
+ // Sample Productos (solo si la tabla esta vacia)
  if (!context.Productos.Any())
  {
  context.Productos.AddRange(new Producto

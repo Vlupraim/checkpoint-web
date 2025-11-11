@@ -5,7 +5,7 @@
   Layout = "/Pages/Shared/_Layout.cshtml";
 }
 
-<h2>?? Control de Calidad</h2>
+<h2> Control de Calidad</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -23,7 +23,7 @@
     </div>
 }
 
-<!-- Estadísticas -->
+<!-- Estadisticas -->
 <div class="row g-3 mb-4">
     <div class="col-md-3">
         <div class="card bg-warning text-dark">
@@ -59,10 +59,10 @@
     </div>
 </div>
 
-<!-- Lotes Pendientes de Revisión -->
+<!-- Lotes Pendientes de Revision -->
 <div class="card mb-4">
     <div class="card-header bg-warning">
-        <h5 class="mb-0">?? Lotes Pendientes de Revisión</h5>
+        <h5 class="mb-0"> Lotes Pendientes de Revisi&oacute;n</h5>
     </div>
     <div class="card-body">
  @if (Model.LotesPendientes.Any())
@@ -71,7 +71,7 @@
  <table class="table table-hover">
  <thead>
    <tr>
-        <th>Código Lote</th>
+        <th>C&oacute;digo Lote</th>
 <th>Producto</th>
   <th>Proveedor</th>
   <th>Fecha Ingreso</th>
@@ -103,7 +103,7 @@
         }
 else
         {
- <div class="alert alert-info">No hay lotes pendientes de revisión</div>
+ <div class="alert alert-info">No hay lotes pendientes de revisi&oacute;n</div>
         }
  </div>
 </div>
@@ -111,7 +111,7 @@ else
 <!-- Historial Reciente -->
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">?? Historial de Revisiones (Últimos 30)</h5>
+        <h5 class="mb-0">?? Historial de Revisiones (&Uacute;ltimos 30)</h5>
  </div>
     <div class="card-body">
     @if (Model.Historial.Any())
@@ -158,13 +158,13 @@ else
   </div>
 </div>
 
-<!-- Modal de Revisión -->
+<!-- Modal de Revision -->
 <div class="modal fade" id="revisionModal" tabindex="-1">
     <div class="modal-dialog">
  <div class="modal-content">
  <form method="post">
   <div class="modal-header">
-      <h5 class="modal-title">?? Revisión de Calidad</h5>
+      <h5 class="modal-title">?? Revisi&oacute;n de Calidad</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
   </div>
   <div class="modal-body">
