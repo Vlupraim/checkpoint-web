@@ -16,24 +16,63 @@ namespace checkpoint_web.Pages.Account
         {
             try
             {
-                var options = new Microsoft.AspNetCore.Http.CookieOptions { Path = "/", HttpOnly = true, Secure = Request.IsHttps };
-                Response.Cookies.Delete(name, options);
-                _logger.LogInformation("Requested deletion of cookie {cookie}", name);
+                // Intentar eliminar con diferentes opciones para asegurar
+                Response.Cookies.Delete(name);
+                Response.Cookies.Delete(name, new Microsoft.AspNetCore.Http.CookieOptions
+                {
+                    Path = "/",
+                    HttpOnly = true,
+                    Secure = Request.IsHttps,
+                    SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax
+                });
+                // También intentar con Secure=false por si acaso
+                Response.Cookies.Delete(name, new Microsoft.AspNetCore.Http.CookieOptions
+                {
+                    Path = "/",
+                    HttpOnly = true,
+                    Secure = false
+                });
+                _logger.LogInformation("Eliminando cookie {cookie}", name);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed deleting cookie {cookie}", name);
+                _logger.LogWarning(ex, "Error eliminando cookie {cookie}", name);
             }
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            _logger.LogInformation("Logout POST invoked for {user}", User?.Identity?.Name ?? "anonymous");
+            _logger.LogInformation("Logout POST para {user}", User?.Identity?.Name ?? "anonymous");
+
+            // Primero hacer SignOut de Identity
             await _signInManager.SignOutAsync();
-            var known = new[] { "Checkpoint.Auth", "AspNetCore.Identity.Application", ".AspNetCore.Identity.Application", "AspNetCore.Cookies", ".AspNetCore.Cookies" };
-            foreach (var c in known) TryDeleteCookie(c);
-            _logger.LogInformation("Logout completed and requested cookie deletions");
+
+            // Luego eliminar explícitamente todas las cookies conocidas
+            var known = new[]
+            {
+                "Checkpoint.Auth",
+                "CheckpointAuth",
+                "AspNetCore.Identity.Application",
+                ".AspNetCore.Identity.Application",
+                "AspNetCore.Cookies",
+                ".AspNetCore.Cookies",
+                "CheckpointAntiforgery",
+                ".AspNetCore.Antiforgery"
+            };
+
+            foreach (var c in known)
+            {
+                TryDeleteCookie(c);
+            }
+
+            _logger.LogInformation("Logout completado - cookies eliminadas");
             return RedirectToPage("/Account/Login");
+        }
+
+        // También permitir logout por GET para facilitar limpieza
+        public async Task<IActionResult> OnGetAsync()
+        {
+            return await OnPostAsync();
         }
     }
 }
