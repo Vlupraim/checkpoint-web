@@ -1,7 +1,12 @@
 ﻿@using System.Globalization;
+@using Microsoft.AspNetCore.Authentication;
 
 @{
     var isLoginPage = Context.Request.Path.StartsWithSegments("/Account/Login", StringComparison.OrdinalIgnoreCase);
+
+    // Verificar si la sesión es persistente
+    var authProperties = await Context.AuthenticateAsync();
+    var isPersistent = authProperties?.Properties?.IsPersistent ?? false;
 }
 <!DOCTYPE html>
 <html lang="es">
@@ -15,40 +20,40 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/checkpoint_web.styles.css" asp-append-version="true" />
 </head>
-<body>
+<body data-authenticated="@(User.Identity?.IsAuthenticated == true ? "True" : "False")" data-persistent="@(isPersistent ? "True" : "False")">
     <header>
         <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand me-3" asp-area="" asp-page="/Account/DashboardRedirect">Checkpoint</a>
+         <div class="container">
+            <a class="navbar-brand me-3" asp-area="" asp-page="/Account/DashboardRedirect">Checkpoint</a>
 
-           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavbar" aria-controls="#topNavbar" aria-expanded="false" aria-label="Alternar navegación">
-            <span class="navbar-toggler-icon"></span>
+   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavbar" aria-controls="#topNavbar" aria-expanded="false" aria-label="Alternar navegación">
+   <span class="navbar-toggler-icon"></span>
  </button>
 
-       <div class="collapse navbar-collapse" id="topNavbar">
-          <ul class="navbar-nav me-auto mb-2 mb-md-0">
-              <li class="nav-item">
-          <a class="nav-link" asp-area="" asp-page="/Account/DashboardRedirect">Inicio</a>
-            </li>
+     <div class="collapse navbar-collapse" id="topNavbar">
+   <ul class="navbar-nav me-auto mb-2 mb-md-0">
+       <li class="nav-item">
+       <a class="nav-link" asp-area="" asp-page="/Account/DashboardRedirect">Inicio</a>
+</li>
   <li class="nav-item">
         <a class="nav-link" asp-area="" asp-page="/Privacy">Privacidad</a>
      </li>
-            </ul>
+    </ul>
 
  @* center search for md+ screens, hide on login page *@
    @if (!isLoginPage)
-            {
+ {
         <form class="d-none d-md-flex mx-auto" method="get" asp-page="/Account/DashboardRedirect">
-       <input class="form-control me-2 search-bar" type="search" placeholder="Buscar..." aria-label="Buscar" />
+    <input class="form-control me-2 search-bar" type="search" placeholder="Buscar..." aria-label="Buscar" />
       <button class="btn btn-outline-secondary" type="submit">Buscar</button>
-                 </form>
-     }
+</form>
+   }
 
             <ul class="navbar-nav ms-auto">
-        @if (!isLoginPage && User.Identity?.IsAuthenticated == true)
-                   {
-                  @await Component.InvokeAsync("Notifications")
-               <li class="nav-item dropdown">
+      @if (!isLoginPage && User.Identity?.IsAuthenticated == true)
+      {
+        @await Component.InvokeAsync("Notifications")
+     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
       Hola, @User.Identity.Name
    </a>
@@ -56,39 +61,39 @@
     <li><a class="dropdown-item" asp-page="/Account/DashboardRedirect">Mi Panel</a></li>
          @if (User.IsInRole("Administrador"))
            {
-     <li><a class="dropdown-item" asp-page="/Admin/Dashboard">Panel Administrador</a></li>
+<li><a class="dropdown-item" asp-page="/Admin/Dashboard">Panel Administrador</a></li>
      }
          @if (User.IsInRole("PersonalBodega"))
    {
      <li><a class="dropdown-item" asp-page="/Bodega/Dashboard">Panel Bodega</a></li>
      }
          @if (User.IsInRole("ControlCalidad"))
-         {
+       {
        <li><a class="dropdown-item" asp-page="/Calidad/Dashboard">Panel Calidad</a></li>
   }
-            <li><hr class="dropdown-divider" /></li>
-        <li>
+      <li><hr class="dropdown-divider" /></li>
+ <li>
          <form method="post" asp-page="/Account/Logout" class="px-3" id="logoutForm">
       @Html.AntiForgeryToken()
-           <button type="submit" class="btn btn-link dropdown-item">Cerrar Sesión</button>
-                </form>
-       </li>
-   </ul>
-               </li>
-               }
+         <button type="submit" class="btn btn-link dropdown-item">Cerrar Sesión</button>
+  </form>
+     </li>
+ </ul>
+      </li>
+ }
 else if (!isLoginPage)
-               {
+   {
         <li class="nav-item">
             <a class="nav-link" asp-page="/Account/Login">Iniciar Sesión</a>
            </li>
-           }
+  }
 </ul>
-                </div>
-            </div>
+  </div>
+  </div>
         </nav>
-    </header>
+ </header>
   <div class="container">
-        <main role="main" class="pb-3">
+    <main role="main" class="pb-3">
   @RenderBody()
         </main>
     </div>
@@ -102,6 +107,10 @@ else if (!isLoginPage)
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+ @if (User.Identity?.IsAuthenticated == true)
+    {
+     <script src="~/js/session-manager.js" asp-append-version="true"></script>
+    }
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
