@@ -47,9 +47,12 @@ namespace checkpoint_web.Pages.Account
             // Primero hacer SignOut de Identity
             await _signInManager.SignOutAsync();
 
-            // Luego eliminar explícitamente todas las cookies conocidas
+            // Luego eliminar explícitamente TODAS las cookies conocidas (viejas y nuevas)
             var known = new[]
             {
+                // Cookies nuevas
+                "Checkpoint.Session",
+                // Cookies viejas
                 "Checkpoint.Auth",
                 "CheckpointAuth",
                 "AspNetCore.Identity.Application",
@@ -65,7 +68,7 @@ namespace checkpoint_web.Pages.Account
                 TryDeleteCookie(c);
             }
 
-            _logger.LogInformation("Logout completado - cookies eliminadas");
+            _logger.LogInformation("Logout completado - todas las cookies eliminadas");
             return RedirectToPage("/Account/Login");
         }
 
