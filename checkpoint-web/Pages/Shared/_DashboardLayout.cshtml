@@ -11,42 +11,41 @@
     <link rel="stylesheet" href="~/checkpoint_web.styles.css" asp-append-version="true" />
 </head>
 
-<body>
+<body data-authenticated="@User.Identity?.IsAuthenticated">
     <!-- Single Header -->
     <header>
         <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom box-shadow mb-0">
        <div class="container-fluid">
-            <a class="navbar-brand me-3 d-flex align-items-center" href="/Admin/Dashboard">
+        <a class="navbar-brand me-3 d-flex align-items-center" href="/Admin/Dashboard">
             <img src="~/images/logo-icon.png" alt="Logo Checkpoint" class="logo-mini me-1" />
-            <img src="~/images/logo-text.png" alt="Texto Checkpoint" class="logo-text" />
+       <img src="~/images/logo-text.png" alt="Texto Checkpoint" class="logo-text" />
         </a>
 
-
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavbar"
-             aria-controls="#topNavbar" aria-expanded="false" aria-label="Toggle navigation">
+   aria-controls="#topNavbar" aria-expanded="false" aria-label="Toggle navigation">
   <span class="navbar-toggler-icon"></span>
     </button>
 
      <div class="collapse navbar-collapse" id="topNavbar">
     <ul class="navbar-nav me-auto mb-2 mb-md-0">
    <li class="nav-item">
-       <a class="nav-link" href="/Admin/Dashboard">Inicio</a>
-        </li>
-         </ul>
+    <a class="nav-link" href="/Admin/Dashboard">Inicio</a>
+     </li>
+       </ul>
 
  <form class="d-none d-md-flex mx-auto" method="get">
-                   <input class="form-control me-2 search-bar" type="search" placeholder="Buscar..." aria-label="Buscar" />
+          <input class="form-control me-2 search-bar" type="search" placeholder="Buscar..." aria-label="Buscar" />
     <button class="btn btn-outline-secondary" type="submit">Buscar</button>
  </form>
 
 <ul class="navbar-nav ms-auto">
-           @if (User.Identity?.IsAuthenticated == true) {
+         @if (User.Identity?.IsAuthenticated == true) {
             @await Component.InvokeAsync("Notifications")
     <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button"
-          data-bs-toggle="dropdown" aria-expanded="false">
+ <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button"
+   data-bs-toggle="dropdown" aria-expanded="false">
  Hola, @User.Identity.Name
-      </a>
+    </a>
        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
      <li><a class="dropdown-item" href="/Account/DashboardRedirect">Mi Panel</a></li>
  @if (User.IsInRole("Administrador")) {
@@ -54,11 +53,11 @@
     }
        @if (User.IsInRole("PersonalBodega")) {
          <li><a class="dropdown-item" href="/Bodega/Dashboard">Panel Bodega</a></li>
-            }
+    }
   @if (User.IsInRole("ControlCalidad")) {
-             <li><a class="dropdown-item" href="/Calidad/Dashboard">Panel Calidad</a></li>
+          <li><a class="dropdown-item" href="/Calidad/Dashboard">Panel Calidad</a></li>
 }
-   <li><hr class="dropdown-divider" /></li>
+ <li><hr class="dropdown-divider" /></li>
       <li>
     <form method="post" asp-page="/Account/Logout" class="d-inline">
            @Html.AntiForgeryToken()
@@ -69,7 +68,7 @@
        </ul>
      </li>
       }
-         </ul>
+     </ul>
            </div>
     </div>
         </nav>
@@ -81,12 +80,12 @@
   <nav class="col-md-2 d-none d-md-block sidebar py-3">
       <div class="nav flex-column">
      <div class="sidebar-section-header">PANEL PRINCIPAL</div>
-           <a class="nav-link active" href="#" data-url="/Admin/Dashboard" data-path="/Admin/Dashboard">Dashboard
-          </a>
+   <a class="nav-link active" href="#" data-url="/Admin/Dashboard" data-path="/Admin/Dashboard">Dashboard
+    </a>
 
         <div class="sidebar-section-header">GESTION DE ACCESOS</div>
   <a class="nav-link" href="#" data-url="/Fragments/Usuarios" data-path="/Admin/Users">Usuarios y
-           Roles</a>
+       Roles</a>
 
    <div class="sidebar-section-header">INFRAESTRUCTURA</div>
          <a class="nav-link" href="#" data-url="/Admin/Sedes/Index" data-path="/Admin/Sedes">Sedes</a>
@@ -101,7 +100,7 @@
    <a class="nav-link" href="#" data-url="/Fragments/Productos" data-path="/Productos">Productos</a>
   <a class="nav-link" href="#" data-url="/Admin/Clientes/Index" data-path="/Admin/Clientes">Clientes</a>
           <a class="nav-link" href="#" data-url="/Admin/Proveedores/Index" data-path="/Admin/Proveedores">
-         Proveedores</a>
+     Proveedores</a>
 
   <div class="sidebar-section-header">REPORTES</div>
        <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes">Dashboard de Reportes
@@ -115,7 +114,7 @@
  <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-3">
      <div id="dashboardContent">
            @RenderBody()
-                </div>
+ </div>
             </main>
         </div>
     </div>
@@ -123,112 +122,115 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    
+  @* GESTIÓN DE SESIÓN: Logout automático al cerrar pestaña *@
+    <script src="~/js/session-manager.js" asp-append-version="true"></script>
 
     <script>
   (function() {
-            const mapping = {
-                '/Productos': '/Fragments/Productos',
-                '/Admin/Users': '/Fragments/Usuarios',
-                '/Admin/Dashboard': '/Admin/Dashboard',
-                '/Admin/Sedes': '/Admin/Sedes/Index',
+  const mapping = {
+     '/Productos': '/Fragments/Productos',
+'/Admin/Users': '/Fragments/Usuarios',
+       '/Admin/Dashboard': '/Admin/Dashboard',
+        '/Admin/Sedes': '/Admin/Sedes/Index',
                 '/Admin/Ubicaciones': '/Admin/Ubicaciones/Index',
-                '/Admin/Tareas': '/Admin/Tareas/Index',
+      '/Admin/Tareas': '/Admin/Tareas/Index',
                 '/Admin/Clientes': '/Admin/Clientes/Index',
-                '/Admin/Proveedores': '/Admin/Proveedores/Index',
-                '/Reportes': '/Reportes/Index',
-                '/Admin/AuditLogs': '/Admin/AuditLogs/Index'
+    '/Admin/Proveedores': '/Admin/Proveedores/Index',
+    '/Reportes': '/Reportes/Index',
+         '/Admin/AuditLogs': '/Admin/AuditLogs/Index'
             };
 
-            function loadUrl(url, replaceState) {
+         function loadUrl(url, replaceState) {
                 fetch(url, {
-                        credentials: 'same-origin',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                    .then(function(resp) {
-                        if (!resp.ok) throw new Error('HTTP ' + resp.status);
-                        return resp.text();
-                    })
-                    .then(function(html) {
-                        document.getElementById('dashboardContent').innerHTML = html;
-                        if (replaceState) {
-                            history.replaceState({
-                                url: url
-                            }, '', location.pathname);
-                        }
-                    })
-                    .catch(function(err) {
-                        console.error('Load error:', err);
-                        document.getElementById('dashboardContent').innerHTML =
-                            '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>';
-                    });
+   credentials: 'same-origin',
+   headers: {
+           'X-Requested-With': 'XMLHttpRequest'
+            }
+       })
+    .then(function(resp) {
+   if (!resp.ok) throw new Error('HTTP ' + resp.status);
+           return resp.text();
+    })
+      .then(function(html) {
+   document.getElementById('dashboardContent').innerHTML = html;
+             if (replaceState) {
+          history.replaceState({
+    url: url
+       }, '', location.pathname);
+ }
+     })
+      .catch(function(err) {
+       console.error('Load error:', err);
+     document.getElementById('dashboardContent').innerHTML =
+      '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>';
+        });
             }
 
             document.addEventListener('DOMContentLoaded', function() {
-                // Click handlers for sidebar links
-                document.querySelectorAll('.sidebar a[data-url]').forEach(function(a) {
-                    a.addEventListener('click', function(e) {
-                        e.preventDefault();
+      // Click handlers for sidebar links
+         document.querySelectorAll('.sidebar a[data-url]').forEach(function(a) {
+       a.addEventListener('click', function(e) {
+             e.preventDefault();
 
-                        // Update active state
-                        document.querySelectorAll('.sidebar a').forEach(function(link) {
-                            link.classList.remove('active');
-                        });
-                        a.classList.add('active');
+    // Update active state
+      document.querySelectorAll('.sidebar a').forEach(function(link) {
+           link.classList.remove('active');
+                 });
+            a.classList.add('active');
 
-                        var url = a.getAttribute('data-url');
-                        var path = a.getAttribute('data-path') || url;
+         var url = a.getAttribute('data-url');
+      var path = a.getAttribute('data-path') || url;
 
-                        fetch(url, {
-                                credentials: 'same-origin',
-                                headers: {
-                                    'X-Requested-With': 'XMLHttpRequest'
-                                }
-                            })
-                            .then(function(resp) {
-                                if (!resp.ok) throw new Error('HTTP ' + resp.status);
-                                return resp.text();
-                            })
-                            .then(function(html) {
-                                document.getElementById('dashboardContent').innerHTML = html;
-                                history.pushState({
-                                    url: url
-                                }, '', path);
-                            })
-                            .catch(function(err) {
-                                console.error('Navigation error:', err);
-                                document.getElementById('dashboardContent').innerHTML =
-                                    '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>';
-                            });
-                    });
-                });
+         fetch(url, {
+     credentials: 'same-origin',
+          headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+ }
+         })
+     .then(function(resp) {
+       if (!resp.ok) throw new Error('HTTP ' + resp.status);
+           return resp.text();
+      })
+      .then(function(html) {
+     document.getElementById('dashboardContent').innerHTML = html;
+          history.pushState({
+         url: url
+             }, '', path);
+          })
+       .catch(function(err) {
+     console.error('Navigation error:', err);
+           document.getElementById('dashboardContent').innerHTML =
+          '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>';
+        });
+   });
+          });
 
-                // Handle browser back/forward
-                window.addEventListener('popstate', function(event) {
-                    var state = event.state;
-                    if (state && state.url) {
-                        loadUrl(state.url, false);
-                    } else {
-                        var frag = mapping[location.pathname];
-                        if (frag) {
-                            loadUrl(frag, true);
-                        } else {
-                            window.location = location.pathname;
-                        }
-                    }
-                });
+         // Handle browser back/forward
+ window.addEventListener('popstate', function(event) {
+       var state = event.state;
+  if (state && state.url) {
+              loadUrl(state.url, false);
+            } else {
+          var frag = mapping[location.pathname];
+        if (frag) {
+          loadUrl(frag, true);
+    } else {
+              window.location = location.pathname;
+      }
+        }
+       });
 
                 // Initial load: if not on dashboard root, load mapped fragment
-                var initial = location.pathname;
+          var initial = location.pathname;
                 if (initial && initial !== '/Admin/Dashboard' && mapping[initial]) {
-                    loadUrl(mapping[initial], true);
-                }
-            });
+       loadUrl(mapping[initial], true);
+             }
+      });
         })();
     </script>
 
-    @await RenderSectionAsync("Scripts", required: false)
+  @await RenderSectionAsync("Scripts", required: false)
 </body>
 
 </html>
