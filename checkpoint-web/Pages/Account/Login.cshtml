@@ -1,29 +1,66 @@
 @page
 @model checkpoint_web.Pages.Account.LoginModel
 @{
- Layout = "~/Pages/Shared/_Layout.cshtml";
+    Layout = null;
 }
-<div class="container mt-5">
- <div class="row justify-content-center">
- <div class="col-md-4">
- <h2>Iniciar Sesión</h2>
- <form method="post">
- <div asp-validation-summary="All" class="text-danger"></div>
- <div class="mb-3">
- <label asp-for="Email" class="form-label"></label>
- <input asp-for="Email" class="form-control" />
- <span asp-validation-for="Email" class="text-danger"></span>
- </div>
- <div class="mb-3">
- <label asp-for="Password" class="form-label"></label>
- <input asp-for="Password" type="password" class="form-control" />
- <span asp-validation-for="Password" class="text-danger"></span>
- </div>
- <button type="submit" class="btn btn-primary w-100">Ingresar</button>
- </form>
- </div>
- </div>
-</div>
-@section Scripts {
- @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkpoint - Iniciar Sesión</title>
+    <link rel="stylesheet" href="~/css/login-cyberpunk.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="login-cyberpunk">
+        <div class="login-card-cyber">
+        <!-- Corner Decorations -->
+   <div class="corner-decoration corner-top-left"></div>
+      <div class="corner-decoration corner-top-right"></div>
+     <div class="corner-decoration corner-bottom-left"></div>
+ <div class="corner-decoration corner-bottom-right"></div>
+  
+            <h1 class="login-title-cyber">SIGN IN</h1>
+     
+         @if (!ModelState.IsValid)
+            {
+    <div class="login-error-cyber">
+     @foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+       {
+       <div>@error.ErrorMessage</div>
+     }
+        </div>
+     }
+     
+         <form method="post">
+     <div>
+     <label class="login-label-cyber" for="Email">Usuario</label>
+        <input asp-for="Email" 
+   class="login-input-cyber" 
+          id="Email"
+      placeholder="admin@example.com"
+ autocomplete="username" />
+         </div>
+    
+ <div>
+        <label class="login-label-cyber" for="Password">Contraseña</label>
+       <input asp-for="Password" 
+   type="password" 
+    class="login-input-cyber" 
+         id="Password"
+         placeholder="••••••••"
+           autocomplete="current-password" />
+                </div>
+                
+        <button type="submit" class="login-btn-cyber">
+          <span style="position: relative; z-index: 1;">Login</span>
+          </button>
+                
+        <div class="login-footer-cyber">
+          © 2025 CHECKPOINT SYSTEM
+         </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
