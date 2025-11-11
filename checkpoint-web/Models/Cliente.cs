@@ -19,7 +19,7 @@ namespace checkpoint_web.Models
         public string? NombreComercial { get; set; }
 
         /// <summary>
-  /// RUT, NIT, RFC, o identificador fiscal según país
+  /// RUT, NIT, RFC, o identificador fiscal segï¿½n paï¿½s
         /// </summary>
         [StringLength(50)]
         public string? IdentificadorFiscal { get; set; }
@@ -58,7 +58,7 @@ public DateTime FechaRegistro { get; set; } = DateTime.Now;
 
       public bool Activo { get; set; } = true;
 
-        // Navegación
+        // Navegacion
         public virtual ICollection<Movimiento>? Movimientos { get; set; }
     }
 }
