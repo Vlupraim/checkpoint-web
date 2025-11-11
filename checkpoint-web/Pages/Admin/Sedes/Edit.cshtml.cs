@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using checkpoint_web.Models;
 using checkpoint_web.Services;
+using System.Security.Claims;
 
 namespace checkpoint_web.Pages.Admin.Sedes
 {
@@ -30,7 +31,9 @@ namespace checkpoint_web.Pages.Admin.Sedes
  if (!ModelState.IsValid) return Page();
  var before = await _sedeService.GetByIdAsync(Sede.Id);
  await _sedeService.UpdateAsync(Sede);
- await _auditService.LogAsync(User.Identity?.Name ?? "anonymous", $"UpdateSede:{Sede.Id}", System.Text.Json.JsonSerializer.Serialize(new { Before = before, After = Sede }));
+ // CORREGIDO: Usar UserId (ClaimTypes.NameIdentifier) en lugar de User.Identity?.Name (email)
+ var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous";
+ await _auditService.LogAsync(userId, $"UpdateSede:{Sede.Id}", System.Text.Json.JsonSerializer.Serialize(new { Before = before, After = Sede }));
  return RedirectToPage("Index");
  }
  }

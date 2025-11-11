@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using checkpoint_web.Models;
 using checkpoint_web.Services;
+using System.Security.Claims;
 
 namespace checkpoint_web.Pages.Admin.Ubicaciones
 {
@@ -40,7 +41,9 @@ namespace checkpoint_web.Pages.Admin.Ubicaciones
  }
  var before = await _ubicacionService.GetByIdAsync(Ubicacion.Id);
  await _ubicacionService.UpdateAsync(Ubicacion);
- await _auditService.LogAsync(User.Identity?.Name ?? "anonymous", $"UpdateUbicacion:{Ubicacion.Id}", System.Text.Json.JsonSerializer.Serialize(new { Before = before, After = Ubicacion }));
+ // CORREGIDO: Usar UserId (ClaimTypes.NameIdentifier) en lugar de User.Identity?.Name (email)
+ var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous";
+ await _auditService.LogAsync(userId, $"UpdateUbicacion:{Ubicacion.Id}", System.Text.Json.JsonSerializer.Serialize(new { Before = before, After = Ubicacion }));
  return RedirectToPage("Index");
  }
  }

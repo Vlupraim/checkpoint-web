@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using checkpoint_web.Models;
 using checkpoint_web.Services;
+using System.Security.Claims;
 
 namespace checkpoint_web.Pages.Admin.Ubicaciones
 {
@@ -30,7 +31,9 @@ namespace checkpoint_web.Pages.Admin.Ubicaciones
  if (id == null) return NotFound();
  var before = await _ubicacionService.GetByIdAsync(id.Value);
  await _ubicacionService.DeleteAsync(id.Value);
- await _auditService.LogAsync(User.Identity?.Name ?? "anonymous", $"DeleteUbicacion:{id}", System.Text.Json.JsonSerializer.Serialize(before));
+ // CORREGIDO: Usar UserId (ClaimTypes.NameIdentifier) en lugar de User.Identity?.Name (email)
+ var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous";
+ await _auditService.LogAsync(userId, $"DeleteUbicacion:{id}", System.Text.Json.JsonSerializer.Serialize(before));
  return RedirectToPage("Index");
  }
  }

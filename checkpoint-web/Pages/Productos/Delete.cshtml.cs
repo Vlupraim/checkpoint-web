@@ -4,6 +4,7 @@ using checkpoint_web.Models;
 using checkpoint_web.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.Json;
+using System.Security.Claims;
 
 namespace checkpoint_web.Pages.Productos
 {
@@ -32,7 +33,8 @@ namespace checkpoint_web.Pages.Productos
  var before = await _productoService.GetByIdAsync(id.Value);
  await _productoService.DeleteAsync(id.Value);
  var details = JsonSerializer.Serialize(before);
- await _auditService.LogAsync(User.Identity?.Name ?? "anonymous", $"DeleteProducto:{id}", details);
+ var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous";
+ await _auditService.LogAsync(userId, $"DeleteProducto:{id}", details);
  return RedirectToPage("Index");
  }
  }
