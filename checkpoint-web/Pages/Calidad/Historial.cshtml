@@ -1,0 +1,220 @@
+@page
+@model checkpoint_web.Pages.Calidad.HistorialModel
+@{
+ ViewData["Title"] = "Historial Completo de Revisiones";
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_CalidadLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Historial Completo de Revisiones</h2>
+    <div>
+  <span class="badge bg-success me-2">Aprobados: 0</span>
+        <span class="badge bg-danger me-2">Rechazados: 0</span>
+  <span class="badge bg-dark">Bloqueados: 0</span>
+    </div>
+</div>
+
+<!-- Filtros Rápidos con Tabs -->
+<ul class="nav nav-tabs mb-3" id="historialTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+     <button class="nav-link active" id="tab-todos" data-bs-toggle="tab" data-bs-target="#todos" type="button">
+   Todos
+        </button>
+    </li>
+ <li class="nav-item" role="presentation">
+<button class="nav-link" id="tab-aprobados" data-bs-toggle="tab" data-bs-target="#aprobados" type="button">
+     ? Aprobados
+ </button>
+    </li>
+    <li class="nav-item" role="presentation">
+  <button class="nav-link" id="tab-rechazados" data-bs-toggle="tab" data-bs-target="#rechazados" type="button">
+ ? Rechazados
+ </button>
+    </li>
+    <li class="nav-item" role="presentation">
+     <button class="nav-link" id="tab-bloqueados" data-bs-toggle="tab" data-bs-target="#bloqueados" type="button">
+   ?? Bloqueados
+ </button>
+    </li>
+</ul>
+
+<!-- Filtros Avanzados -->
+<div class="card mb-3">
+    <div class="card-body">
+   <form method="get" class="row g-2">
+ <div class="col-md-3">
+     <label class="form-label">Rango de Fechas</label>
+  <input type="date" class="form-control form-control-sm" name="fechaDesde" />
+      </div>
+   <div class="col-md-3">
+    <label class="form-label">&nbsp;</label>
+    <input type="date" class="form-control form-control-sm" name="fechaHasta" />
+        </div>
+      <div class="col-md-2">
+  <label class="form-label">Producto</label>
+   <input type="text" class="form-control form-control-sm" name="producto" placeholder="Buscar..." />
+    </div>
+   <div class="col-md-2">
+  <label class="form-label">Revisado Por</label>
+  <select class="form-select form-select-sm" name="usuario">
+  <option value="">Todos</option>
+  </select>
+    </div>
+   <div class="col-md-2">
+   <label class="form-label">&nbsp;</label>
+     <button type="submit" class="btn btn-primary btn-sm w-100">Filtrar</button>
+  </div>
+    </form>
+    </div>
+</div>
+
+<!-- Contenido de Tabs -->
+<div class="tab-content" id="historialTabsContent">
+    <!-- Tab Todos -->
+  <div class="tab-pane fade show active" id="todos" role="tabpanel">
+  <div class="card">
+    <div class="card-header">
+     <h5 class="mb-0">Todas las Revisiones</h5>
+   </div>
+      <div class="card-body">
+   <div class="table-responsive">
+  <table class="table table-striped table-hover">
+       <thead>
+        <tr>
+     <th>Fecha Revisión</th>
+   <th>Código Lote</th>
+     <th>Producto</th>
+       <th>Decisión</th>
+     <th>Revisado Por</th>
+  <th>Observaciones</th>
+    <th>Acciones</th>
+       </tr>
+     </thead>
+  <tbody>
+        <tr>
+     <td colspan="7" class="text-center text-muted py-4">
+    <p>No hay revisiones registradas</p>
+ <small>Las decisiones de calidad aparecerán aquí</small>
+  </td>
+      </tr>
+     </tbody>
+ </table>
+    </div>
+    </div>
+  </div>
+    </div>
+
+    <!-- Tab Aprobados -->
+    <div class="tab-pane fade" id="aprobados" role="tabpanel">
+     <div class="card border-success">
+   <div class="card-header bg-success text-white">
+  <h5 class="mb-0">Lotes Aprobados (Liberados)</h5>
+    </div>
+        <div class="card-body">
+     <div class="table-responsive">
+      <table class="table table-sm">
+        <thead>
+     <tr>
+   <th>Fecha Liberación</th>
+       <th>Lote</th>
+   <th>Producto</th>
+    <th>Cantidad</th>
+     <th>Revisado Por</th>
+       </tr>
+    </thead>
+  <tbody>
+        <tr>
+       <td colspan="5" class="text-center text-muted">No hay lotes aprobados</td>
+     </tr>
+    </tbody>
+   </table>
+      </div>
+      </div>
+ </div>
+    </div>
+
+    <!-- Tab Rechazados -->
+    <div class="tab-pane fade" id="rechazados" role="tabpanel">
+  <div class="card border-danger">
+      <div class="card-header bg-danger text-white">
+ <h5 class="mb-0">Lotes Rechazados</h5>
+      </div>
+ <div class="card-body">
+    <div class="table-responsive">
+        <table class="table table-sm">
+      <thead>
+       <tr>
+        <th>Fecha Rechazo</th>
+    <th>Lote</th>
+     <th>Producto</th>
+   <th>Motivo</th>
+      <th>Revisado Por</th>
+     <th>Acción Tomada</th>
+     </tr>
+  </thead>
+   <tbody>
+   <tr>
+    <td colspan="6" class="text-center text-muted">No hay lotes rechazados</td>
+    </tr>
+      </tbody>
+   </table>
+  </div>
+   </div>
+  </div>
+    </div>
+
+    <!-- Tab Bloqueados -->
+    <div class="tab-pane fade" id="bloqueados" role="tabpanel">
+  <div class="card border-dark">
+     <div class="card-header bg-dark text-white">
+    <h5 class="mb-0">Lotes Bloqueados (En Investigación)</h5>
+  </div>
+    <div class="card-body">
+  <div class="alert alert-warning">
+      <strong>Atención:</strong> Los lotes bloqueados requieren investigación antes de tomar una decisión final.
+     </div>
+      <div class="table-responsive">
+   <table class="table table-sm">
+    <thead>
+   <tr>
+       <th>Fecha Bloqueo</th>
+     <th>Lote</th>
+     <th>Producto</th>
+    <th>Motivo</th>
+      <th>Días Bloqueado</th>
+      <th>Acciones</th>
+  </tr>
+    </thead>
+     <tbody>
+ <tr>
+      <td colspan="6" class="text-center text-muted">No hay lotes bloqueados</td>
+      </tr>
+    </tbody>
+      </table>
+   </div>
+   </div>
+  </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+  // Mantener tab activo después de filtrar
+        document.addEventListener('DOMContentLoaded', function() {
+   var activeTab = localStorage.getItem('historialActiveTab');
+   if (activeTab) {
+       var tabButton = document.querySelector('#historialTabs button[data-bs-target="' + activeTab + '"]');
+       if (tabButton) {
+     var tab = new bootstrap.Tab(tabButton);
+tab.show();
+     }
+    }
+
+   document.querySelectorAll('#historialTabs button').forEach(function(button) {
+     button.addEventListener('click', function() {
+  localStorage.setItem('historialActiveTab', this.getAttribute('data-bs-target'));
+       });
+    });
+  });
+    </script>
+}

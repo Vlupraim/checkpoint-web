@@ -1,0 +1,167 @@
+@page
+@model checkpoint_web.Pages.Calidad.ControlCalidadModel
+@{
+ ViewData["Title"] = "Control de Calidad - Revisar Lotes";
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_CalidadLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Control de Calidad</h2>
+    <div>
+  <span class="badge bg-warning me-2">Pendientes: 0</span>
+    <span class="badge bg-info">En Revisión: 0</span>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="row mb-3">
+ <div class="col-md-12">
+  <div class="card">
+  <div class="card-header">
+   <h6 class="mb-0">Filtros de Búsqueda</h6>
+    </div>
+ <div class="card-body">
+   <form method="get" class="row g-2">
+     <div class="col-md-3">
+<label class="form-label">Código de Lote</label>
+       <input type="text" class="form-control form-control-sm" name="codigoLote" placeholder="LOT-2024-001" />
+  </div>
+      <div class="col-md-3">
+ <label class="form-label">Producto</label>
+  <input type="text" class="form-control form-control-sm" name="producto" placeholder="Nombre o SKU" />
+        </div>
+      <div class="col-md-2">
+  <label class="form-label">Estado</label>
+       <select class="form-select form-select-sm" name="estado">
+ <option value="">Todos</option>
+    <option value="Cuarentena" selected>Cuarentena</option>
+   <option value="EnRevision">En Revisión</option>
+   </select>
+     </div>
+    <div class="col-md-2">
+ <label class="form-label">Vencimiento</label>
+    <select class="form-select form-select-sm" name="vencimiento">
+   <option value="">Todos</option>
+    <option value="proximo">Próximos 7 días</option>
+   <option value="urgente">Próximos 3 días</option>
+     </select>
+    </div>
+ <div class="col-md-2">
+  <label class="form-label">&nbsp;</label>
+<button type="submit" class="btn btn-primary btn-sm w-100">Filtrar</button>
+     </div>
+  </form>
+        </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lotes Pendientes de Revisión -->
+<div class="row">
+ <div class="col-md-12">
+    <div class="card">
+<div class="card-header bg-warning">
+       <h5 class="mb-0">Lotes en Cuarentena - Pendientes de Revisión</h5>
+ </div>
+     <div class="card-body">
+  <div class="table-responsive">
+ <table class="table table-hover">
+ <thead>
+    <tr>
+     <th>Prioridad</th>
+ <th>Código Lote</th>
+  <th>Producto</th>
+      <th>Fecha Ingreso</th>
+    <th>Vencimiento</th>
+     <th>Cantidad</th>
+         <th>Temp. Actual</th>
+    <th>Días en Cuarentena</th>
+   <th>Acciones</th>
+  </tr>
+    </thead>
+   <tbody>
+<tr>
+ <td colspan="9" class="text-center text-muted py-4">
+  <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+  <p class="mt-2 mb-0">No hay lotes pendientes de revisión</p>
+    <small>Los lotes recién recepcionados aparecerán aquí para su revisión</small>
+        </td>
+    </tr>
+    <!-- Ejemplo de fila (comentada para referencia futura)
+ <tr class="table-warning">
+     <td><span class="badge bg-danger">URGENTE</span></td>
+     <td><strong>LOT-2024-001</strong></td>
+   <td>Producto Ejemplo XYZ</td>
+   <td>10/11/2025</td>
+    <td><span class="text-danger">15/11/2025</span></td>
+  <td>150 kg</td>
+   <td>4.2°C</td>
+  <td>1 día</td>
+    <td>
+    <div class="btn-group btn-group-sm" role="group">
+          <button class="btn btn-success" title="Aprobar">
+       <i class="bi bi-check-circle"></i>
+      </button>
+ <button class="btn btn-danger" title="Rechazar">
+      <i class="bi bi-x-circle"></i>
+    </button>
+   <button class="btn btn-dark" title="Bloquear">
+  <i class="bi bi-lock"></i>
+       </button>
+  <button class="btn btn-info" title="Ver Detalles">
+       <i class="bi bi-eye"></i>
+      </button>
+       </div>
+   </td>
+ </tr>
+    -->
+  </tbody>
+      </table>
+   </div>
+    </div>
+   </div>
+    </div>
+</div>
+
+<!-- Modal para Aprobar/Rechazar/Bloquear (placeholder) -->
+<div class="modal fade" id="modalRevision" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+  <div class="modal-content">
+      <div class="modal-header">
+      <h5 class="modal-title">Revisión de Lote</h5>
+  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+   <div class="modal-body">
+  <p><strong>Lote:</strong> <span id="loteCodigo">-</span></p>
+ <p><strong>Producto:</strong> <span id="loteProducto">-</span></p>
+     <hr />
+   <form id="formRevision">
+    <div class="mb-3">
+   <label class="form-label">Decisión</label>
+   <select class="form-select" name="decision" required>
+     <option value="">Seleccionar...</option>
+      <option value="Aprobar">? Aprobar para Liberación</option>
+ <option value="Rechazar">? Rechazar Lote</option>
+     <option value="Bloquear">?? Bloquear por Investigación</option>
+     </select>
+    </div>
+   <div class="mb-3">
+    <label class="form-label">Observaciones</label>
+  <textarea class="form-control" name="observaciones" rows="3" required></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">Confirmar Decisión</button>
+      </form>
+   </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+  <script>
+ // Placeholder para lógica de revisión
+        document.addEventListener('DOMContentLoaded', function() {
+   // Lógica para abrir modal, confirmar decisiones, etc.
+     console.log('Control de Calidad: Ready');
+     });
+    </script>
+}

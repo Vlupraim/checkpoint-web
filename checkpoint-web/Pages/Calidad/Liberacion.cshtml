@@ -1,8 +1,41 @@
 @page
 @model object
 @{
- Layout = "/Pages/Shared/_CalidadLayout.cshtml";
- ViewData["Title"] = "Liberación";
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_CalidadLayout.cshtml";
+    ViewData["Title"] = "Historial de Liberaciones";
 }
-<h1>Liberación por Calidad</h1>
-<p>Lista de lotes pendientes de liberación (placeholder).</p>
+
+<h2>Historial de Liberaciones</h2>
+
+<div class="alert alert-info">
+    <strong>Nota:</strong> Esta página mostrará solo los lotes que fueron <strong>aprobados</strong> por el equipo de calidad.
+  Para ver rechazos y bloqueos, usa la opción "Historial Completo" del menú lateral.
+</div>
+
+<div class="card">
+    <div class="card-header bg-success text-white">
+     <h5 class="mb-0">Lotes Liberados</h5>
+    </div>
+    <div class="card-body">
+ <p>Lista de lotes liberados para venta/distribución (placeholder).</p>
+  <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+    <tr>
+       <th>Fecha Liberación</th>
+    <th>Código Lote</th>
+        <th>Producto</th>
+        <th>Cantidad Liberada</th>
+       <th>Revisado Por</th>
+<th>Observaciones</th>
+     </tr>
+    </thead>
+      <tbody>
+       <tr>
+       <td colspan="6" class="text-center text-muted">No hay lotes liberados registrados</td>
+  </tr>
+       </tbody>
+      </table>
+       </div>
+    </div>
+</div>

@@ -2,7 +2,7 @@
 @model checkpoint_web.Pages.Calidad.DashboardModel
 @{
     ViewData["Title"] = "Dashboard Control de Calidad";
-    Layout = "/Pages/Shared/_Layout.cshtml";
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_CalidadLayout.cshtml";
 }
 
 <h2>Panel de Control de Calidad</h2>

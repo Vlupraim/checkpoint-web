@@ -3,7 +3,7 @@
 @{
     // Verificar si la sesión es persistente
     var authProperties = await Context.AuthenticateAsync();
-    var isPersistent = authProperties?.Properties?.IsPersistent ?? false;
+  var isPersistent = authProperties?.Properties?.IsPersistent ?? false;
 }
 <!DOCTYPE html>
 <html lang="es">
@@ -26,47 +26,47 @@
         <a class="navbar-brand me-3 d-flex align-items-center" href="/Calidad/Dashboard">
      <img src="~/images/logo-icon.png" alt="Logo Checkpoint" class="logo-mini me-1" />
     <img src="~/images/logo-text.png" alt="Texto Checkpoint" class="logo-text" />
-          </a>
+       </a>
 
    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavbar"
      aria-controls="#topNavbar" aria-expanded="false" aria-label="Toggle navigation">
        <span class="navbar-toggler-icon"></span>
-           </button>
+      </button>
 
          <div class="collapse navbar-collapse" id="topNavbar">
          <ul class="navbar-nav me-auto mb-2 mb-md-0">
   <li class="nav-item">
       <a class="nav-link" href="/Calidad/Dashboard">Inicio</a>
       </li>
-        </ul>
+  </ul>
 
   <form class="d-none d-md-flex mx-auto" method="get">
-           <input class="form-control me-2 search-bar" type="search" placeholder="Buscar..." aria-label="Buscar" />
+       <input class="form-control me-2 search-bar" type="search" placeholder="Buscar..." aria-label="Buscar" />
           <button class="btn btn-outline-secondary" type="submit">Buscar</button>
-        </form>
+      </form>
 
   <ul class="navbar-nav ms-auto">
     @if (User.Identity?.IsAuthenticated == true)
-              {
+      {
      @await Component.InvokeAsync("Notifications")
    <li class="nav-item dropdown">
            <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button"
     data-bs-toggle="dropdown" aria-expanded="false">
        Hola, @User.Identity.Name
         </a>
-         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
        <li><a class="dropdown-item" href="/Calidad/Dashboard">Mi Panel</a></li>
-               @if (User.IsInRole("Administrador"))
-            {
+       @if (User.IsInRole("Administrador"))
+    {
  <li><a class="dropdown-item" href="/Admin/Dashboard">Panel Administrador</a></li>
-             }
+    }
       @if (User.IsInRole("PersonalBodega"))
     {
    <li><a class="dropdown-item" href="/Bodega/Dashboard">Panel Bodega</a></li>
-       }
+   }
         <li><hr class="dropdown-divider" /></li>
       <li>
-        <form method="post" asp-page="/Account/Logout" class="d-inline">
+ <form method="post" asp-page="/Account/Logout" class="d-inline">
   @Html.AntiForgeryToken()
     <button type="submit" class="btn btn-link dropdown-item text-start">Cerrar Sesión</button>
  </form>
@@ -80,37 +80,137 @@
  </nav>
     </header>
 
-    <!-- Calidad Layout with Sidebar -->
+    <!-- Calidad Dashboard Layout with SPA Navigation -->
     <div class="container-fluid">
-        <div class="row">
-         <nav class="col-md-2 d-none d-md-block sidebar py-3">
+  <div class="row">
+      <nav class="col-md-2 d-none d-md-block sidebar py-3">
       <div class="nav flex-column">
          <div class="sidebar-section-header">PANEL CALIDAD</div>
-        <a class="nav-link active" href="/Calidad/Dashboard">Dashboard</a>
+        <a class="nav-link active" href="#" data-url="/Calidad/Dashboard" data-path="/Calidad/Dashboard">Dashboard</a>
 
           <div class="sidebar-section-header">CONTROL DE CALIDAD</div>
-          <a class="nav-link" href="/Calidad/ControlCalidad">Revisar Lotes Pendientes</a>
-        <a class="nav-link" href="/Calidad/Liberacion">Historial de Liberaciones</a>
-                 <a class="nav-link" href="/Calidad/Rechazos">Lotes Rechazados</a>
-   <a class="nav-link" href="/Calidad/Bloqueados">Lotes Bloqueados</a>
-
-          <div class="sidebar-section-header">CONSULTAS</div>
-           <a class="nav-link" href="/Calidad/Lotes">Consultar Lotes</a>
-     <a class="nav-link" href="/Calidad/Productos">Productos por Calidad</a>
+     <a class="nav-link" href="#" data-url="/Calidad/ControlCalidad" data-path="/Calidad/ControlCalidad">Revisar Lotes</a>
+    <a class="nav-link" href="#" data-url="/Calidad/Historial" data-path="/Calidad/Historial">Historial Completo</a>
 
     <div class="sidebar-section-header">REPORTES</div>
-         <a class="nav-link" href="/Reportes">Dashboard de Reportes</a>
-             </div>
-      </nav>
-         <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-3">
-        @RenderBody()
-         </main>
+            <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes">Reportes</a>
     </div>
+        </nav>
+ <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-3">
+    <div id="calidadContent">
+@RenderBody()
+           </div>
+  </main>
+     </div>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+   (function () {
+     const mapping = {
+      '/Calidad/Dashboard': '/Calidad/Dashboard',
+  '/Calidad/ControlCalidad': '/Calidad/ControlCalidad',
+       '/Calidad/Historial': '/Calidad/Historial',
+     '/Reportes': '/Reportes/Index'
+      };
+
+  function loadUrl(url, replaceState) {
+         fetch(url, {
+ credentials: 'same-origin',
+     headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+            }
+   })
+         .then(function (resp) {
+         if (!resp.ok) {
+ console.error('HTTP error:', resp.status, resp.statusText);
+     throw new Error('HTTP ' + resp.status);
+   }
+     return resp.text();
+     })
+  .then(function (html) {
+      document.getElementById('calidadContent').innerHTML = html;
+           if (replaceState) {
+ history.replaceState({
+         url: url
+   }, '', location.pathname);
+  }
+   })
+.catch(function (err) {
+  console.error('Load error:', err);
+document.getElementById('calidadContent').innerHTML =
+       '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>';
+         });
+            }
+
+          document.addEventListener('DOMContentLoaded', function () {
+     // Click handlers for sidebar links
+        document.querySelectorAll('.sidebar a[data-url]').forEach(function (a) {
+     a.addEventListener('click', function (e) {
+  e.preventDefault();
+
+         // Update active state
+  document.querySelectorAll('.sidebar a').forEach(function (link) {
+   link.classList.remove('active');
+         });
+   a.classList.add('active');
+
+      var url = a.getAttribute('data-url');
+       var path = a.getAttribute('data-path') || url;
+
+   fetch(url, {
+  credentials: 'same-origin',
+       headers: {
+   'X-Requested-With': 'XMLHttpRequest'
+     }
+         })
+    .then(function (resp) {
+          if (!resp.ok) {
+console.error('Navigation error - HTTP:', resp.status, resp.statusText);
+      throw new Error('HTTP ' + resp.status);
+   }
+          return resp.text();
+        })
+          .then(function (html) {
+    document.getElementById('calidadContent').innerHTML = html;
+        history.pushState({
+     url: url
+  }, '', path);
+        })
+     .catch(function (err) {
+           console.error('Navigation error:', err);
+     document.getElementById('calidadContent').innerHTML =
+        '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>';
+      });
+        });
+  });
+
+       // Handle browser back/forward
+        window.addEventListener('popstate', function (event) {
+ var state = event.state;
+       if (state && state.url) {
+  loadUrl(state.url, false);
+ } else {
+  var frag = mapping[location.pathname];
+      if (frag) {
+    loadUrl(frag, true);
+  } else {
+     window.location = location.pathname;
+    }
+        }
+       });
+
+       // Initial load: if not on dashboard root, load mapped fragment
+    var initial = location.pathname;
+     if (initial && initial !== '/Calidad/Dashboard' && mapping[initial]) {
+     loadUrl(mapping[initial], true);
+       }
+  });
+        })();
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
