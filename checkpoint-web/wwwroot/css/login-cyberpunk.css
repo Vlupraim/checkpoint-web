@@ -1,275 +1,123 @@
-/* Cyberpunk/Matrix Login Style */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+/* Minimalist Dark Login Style */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
 
-.login-cyberpunk {
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.login-minimal {
     min-height: 100vh;
-    background: #000;
-    display: flex;
+    background: #1a1a1a;
+  display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Orbitron', sans-serif;
-    position: relative;
-    overflow: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Animated Grid Background */
-.login-cyberpunk::before {
-    content: '';
- position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-   linear-gradient(0deg, transparent 24%, rgba(0, 255, 0, 0.05) 25%, rgba(0, 255, 0, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 0, 0.05) 75%, rgba(0, 255, 0, 0.05) 76%, transparent 77%, transparent),
-        linear-gradient(90deg, transparent 24%, rgba(0, 255, 0, 0.05) 25%, rgba(0, 255, 0, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 0, 0.05) 75%, rgba(0, 255, 0, 0.05) 76%, transparent 77%, transparent);
-    background-size: 50px 50px;
-    animation: gridMove 20s linear infinite;
-    opacity: 0.3;
-}
-
-@keyframes gridMove {
-    0% {
-        transform: perspective(500px) rotateX(60deg) translateY(0);
-    }
-    100% {
-        transform: perspective(500px) rotateX(60deg) translateY(50px);
-  }
-}
-
-/* Login Card */
-.login-card-cyber {
-    background: rgba(0, 0, 0, 0.85);
-    border: 2px solid #00ff00;
-border-radius: 15px;
-    padding: 40px;
+.login-container {
     width: 100%;
-    max-width: 450px;
-    box-shadow: 
-0 0 20px rgba(0, 255, 0, 0.3),
-        inset 0 0 20px rgba(0, 255, 0, 0.1);
-    position: relative;
-    z-index: 10;
-    animation: cardGlow 3s ease-in-out infinite alternate;
+    max-width: 400px;
+  padding: 20px;
 }
 
-@keyframes cardGlow {
-  0% {
-      box-shadow: 
-            0 0 20px rgba(0, 255, 0, 0.3),
-          inset 0 0 20px rgba(0, 255, 0, 0.1);
-    }
-    100% {
-        box-shadow: 
-            0 0 40px rgba(0, 255, 0, 0.5),
-     inset 0 0 30px rgba(0, 255, 0, 0.2);
-    }
-}
-
-/* Title */
-.login-title-cyber {
+.login-title {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 300;
     text-align: center;
-color: #00ff00;
-    font-size: 2.5rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 5px;
-    margin-bottom: 30px;
-    text-shadow: 
-        0 0 10px #00ff00,
-        0 0 20px #00ff00,
-        0 0 30px #00ff00;
-    animation: titlePulse 2s ease-in-out infinite;
-}
-
-@keyframes titlePulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.7;
-    }
-}
-
-/* Form Labels */
-.login-label-cyber {
-    color: #00ff00;
-    font-size: 0.9rem;
-  font-weight: 700;
-    text-transform: uppercase;
+margin-bottom: 40px;
     letter-spacing: 2px;
-    margin-bottom: 8px;
-    display: block;
 }
 
-/* Input Fields */
-.login-input-cyber {
-    width: 100%;
-    background: rgba(0, 20, 0, 0.5);
-    border: 2px solid #00ff00;
-    border-radius: 5px;
-    padding: 12px 15px;
-    color: #00ff00;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1rem;
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+flex-direction: column;
+}
+
+.form-input {
+    background: transparent;
+    border: 1px solid #404040;
+    border-radius: 4px;
+  padding: 14px 16px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
     transition: all 0.3s ease;
-    margin-bottom: 20px;
 }
 
-.login-input-cyber::placeholder {
- color: rgba(0, 255, 0, 0.3);
+.form-input::placeholder {
+    color: #666666;
 }
 
-.login-input-cyber:focus {
-    outline: none;
-    background: rgba(0, 30, 0, 0.7);
-    border-color: #00ff00;
-    box-shadow: 
-        0 0 10px rgba(0, 255, 0, 0.5),
-        inset 0 0 10px rgba(0, 255, 0, 0.2);
+.form-input:focus {
+  outline: none;
+    border-color: #00a8ff;
+    background: rgba(0, 168, 255, 0.05);
 }
 
-/* Login Button */
-.login-btn-cyber {
-    width: 100%;
-    background: #00ff00;
- border: none;
-    border-radius: 5px;
-    padding: 15px;
-    color: #000;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.2rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 3px;
+.form-input:hover {
+    border-color: #505050;
+}
+
+.login-button {
+background: transparent;
+    border: 1px solid #00a8ff;
+    border-radius: 4px;
+    padding: 14px;
+color: #00a8ff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
     cursor: pointer;
     transition: all 0.3s ease;
-position: relative;
-    overflow: hidden;
+    margin-top: 10px;
 }
 
-.login-btn-cyber::before {
-    content: '';
-    position: absolute;
- top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
+.login-button:hover {
+    background: #00a8ff;
+    color: #1a1a1a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 168, 255, 0.3);
 }
 
-.login-btn-cyber:hover::before {
-    width: 300px;
-    height: 300px;
-}
-
-.login-btn-cyber:hover {
-    background: #00dd00;
-    box-shadow: 
-        0 0 20px #00ff00,
-        0 0 40px #00ff00;
-    transform: translateY(-2px);
-}
-
-.login-btn-cyber:active {
+.login-button:active {
     transform: translateY(0);
 }
 
-/* Error Messages */
-.login-error-cyber {
-    background: rgba(255, 0, 0, 0.1);
-    border: 1px solid #ff0000;
-    border-radius: 5px;
-    padding: 10px;
-    color: #ff0000;
-    font-size: 0.9rem;
+.error-message {
+    background: rgba(220, 53, 69, 0.1);
+    border: 1px solid #dc3545;
+    border-radius: 4px;
+    padding: 12px;
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    text-align: center;
     margin-bottom: 20px;
+}
+
+.login-footer {
     text-align: center;
-    animation: errorShake 0.5s ease-in-out;
+    margin-top: 30px;
+    color: #666666;
+    font-size: 0.75rem;
+  letter-spacing: 1px;
 }
 
-@keyframes errorShake {
-    0%, 100% {
-    transform: translateX(0);
+/* Responsive */
+@media (max-width: 480px) {
+    .login-container {
+        padding: 20px 16px;
     }
-    25% {
-        transform: translateX(-10px);
+    
+    .login-title {
+      font-size: 1.3rem;
     }
-    75% {
-        transform: translateX(10px);
-    }
-}
-
-/* Footer Text */
-.login-footer-cyber {
-    text-align: center;
-    margin-top: 20px;
-    color: rgba(0, 255, 0, 0.5);
-    font-size: 0.8rem;
-}
-
-/* Scanline Effect */
-.login-card-cyber::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        to bottom,
-        transparent 0%,
-  rgba(0, 255, 0, 0.03) 50%,
-        transparent 100%
-    );
-    animation: scanline 6s linear infinite;
-    pointer-events: none;
-}
-
-@keyframes scanline {
-    0% {
-        transform: translateY(-100%);
-    }
-    100% {
-        transform: translateY(100%);
-    }
-}
-
-/* Corner Decorations */
-.corner-decoration {
-    position: absolute;
-  width: 20px;
-    height: 20px;
-    border: 2px solid #00ff00;
-}
-
-.corner-top-left {
-    top: -2px;
-    left: -2px;
-    border-right: none;
-  border-bottom: none;
-}
-
-.corner-top-right {
-    top: -2px;
-    right: -2px;
-    border-left: none;
-    border-bottom: none;
-}
-
-.corner-bottom-left {
-    bottom: -2px;
-    left: -2px;
-    border-right: none;
-    border-top: none;
-}
-
-.corner-bottom-right {
-    bottom: -2px;
-    right: -2px;
-    border-left: none;
-    border-top: none;
 }

@@ -90,23 +90,23 @@ try
  {
  Id = Guid.NewGuid(),
  Sku = "PRD-001",
- Nombre = "Producto de ejemplo1",
+ Nombre = "Producto de ejemplo 1",
  Unidad = "u",
- VidaUtilDias =365,
- TempMin =2m,
- TempMax =8m,
- StockMinimo =10m,
+ VidaUtilDias = 365,
+ TempMin = 2m,
+ TempMax = 8m,
+ StockMinimo = 10m,
  Activo = true
  }, new Producto
  {
  Id = Guid.NewGuid(),
  Sku = "PRD-002",
- Nombre = "Producto de ejemplo2",
+ Nombre = "Producto de ejemplo 2",
  Unidad = "kg",
- VidaUtilDias =180,
- TempMin =0m,
- TempMax =20m,
- StockMinimo =5m,
+ VidaUtilDias = 180,
+ TempMin = 0m,
+ TempMax = 20m,
+ StockMinimo = 5m,
  Activo = true
  });
  await context.SaveChangesAsync();

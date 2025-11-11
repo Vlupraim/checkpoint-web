@@ -12,55 +12,45 @@
     <link rel="stylesheet" href="~/css/login-cyberpunk.css" asp-append-version="true" />
 </head>
 <body>
-    <div class="login-cyberpunk">
-        <div class="login-card-cyber">
-        <!-- Corner Decorations -->
-   <div class="corner-decoration corner-top-left"></div>
-      <div class="corner-decoration corner-top-right"></div>
-     <div class="corner-decoration corner-bottom-left"></div>
- <div class="corner-decoration corner-bottom-right"></div>
-  
-            <h1 class="login-title-cyber">SIGN IN</h1>
-     
-         @if (!ModelState.IsValid)
+    <div class="login-minimal">
+     <div class="login-container">
+   <h1 class="login-title">Sign In</h1>
+   
+            @if (!ModelState.IsValid)
+   {
+                <div class="error-message">
+        @foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
             {
-    <div class="login-error-cyber">
-     @foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-       {
        <div>@error.ErrorMessage</div>
-     }
-        </div>
-     }
-     
-         <form method="post">
-     <div>
-     <label class="login-label-cyber" for="Email">Usuario</label>
-        <input asp-for="Email" 
-   class="login-input-cyber" 
-          id="Email"
-      placeholder="admin@example.com"
- autocomplete="username" />
-         </div>
-    
- <div>
-        <label class="login-label-cyber" for="Password">Contraseña</label>
-       <input asp-for="Password" 
-   type="password" 
-    class="login-input-cyber" 
-         id="Password"
-         placeholder="••••••••"
-           autocomplete="current-password" />
+          }
+   </div>
+        }
+   
+            <form method="post" class="login-form">
+      <div class="form-group">
+      <input asp-for="Email" 
+      class="form-input" 
+          placeholder="Username"
+            autocomplete="username" />
+       </div>
+  
+            <div class="form-group">
+        <input asp-for="Password" 
+          type="password" 
+     class="form-input" 
+       placeholder="Password"
+ autocomplete="current-password" />
                 </div>
+    
+     <button type="submit" class="login-button">
+        Log In
+  </button>
                 
-        <button type="submit" class="login-btn-cyber">
-          <span style="position: relative; z-index: 1;">Login</span>
-          </button>
-                
-        <div class="login-footer-cyber">
-          © 2025 CHECKPOINT SYSTEM
-         </div>
+       <div class="login-footer">
+            CHECKPOINT SYSTEM
+          </div>
             </form>
-        </div>
+      </div>
     </div>
 </body>
 </html>
