@@ -5,10 +5,10 @@
     Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_DashboardLayout.cshtml";
 }
 <h1>Ubicaciones</h1>
-<p><a class="btn btn-primary" asp-page="Create">Crear nueva Ubicación</a></p>
+<p><a class="btn btn-primary" asp-page="Create">Crear nueva Ubicaci&oacute;n</a></p>
 <table class="table">
  <thead>
- <tr><th>Sede</th><th>Código</th><th>Tipo</th><th>Capacidad</th><th></th></tr>
+ <tr><th>Sede</th><th>C&oacute;digo</th><th>Tipo</th><th>Capacidad</th><th></th></tr>
  </thead>
  <tbody>
  @foreach (var u in Model.Ubicaciones)

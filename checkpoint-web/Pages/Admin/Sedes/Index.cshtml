@@ -8,7 +8,7 @@
 <p><a class="btn btn-primary" asp-page="Create">Crear nueva Sede</a></p>
 <table class="table">
  <thead>
- <tr><th>Código</th><th>Nombre</th><th>Dirección</th><th>Activa</th><th></th></tr>
+ <tr><th>C&oacute;digo</th><th>Nombre</th><th>Direcci&oacute;n</th><th>Activa</th><th></th></tr>
  </thead>
  <tbody>
  @foreach (var s in Model.Sedes)
@@ -17,7 +17,7 @@
  <td>@s.Codigo</td>
  <td>@s.Nombre</td>
  <td>@s.Direccion</td>
- <td>@(s.Activa ? "Sí" : "No")</td>
+ <td>@(s.Activa ? "S&iacute;" : "No")</td>
  <td>
  <a class="btn btn-sm btn-primary" asp-page="Edit" asp-route-id="@s.Id">Editar</a>
  <a class="btn btn-sm btn-danger" asp-page="Delete" asp-route-id="@s.Id">Eliminar</a>
