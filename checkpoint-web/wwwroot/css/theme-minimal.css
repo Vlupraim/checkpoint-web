@@ -1,0 +1,411 @@
+/* Tema Minimalista Global - Checkpoint */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #242424;
+    --bg-tertiary: #2d2d2d;
+    --border-color: #404040;
+    --border-hover: #505050;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --text-muted: #666666;
+    --accent-blue: #00a8ff;
+--accent-blue-hover: #0096e6;
+    --success: #00c851;
+    --warning: #ffbb33;
+    --danger: #ff4444;
+    --info: #33b5e5;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+/* Navbar Minimalista */
+.navbar {
+    background: var(--bg-secondary) !important;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+}
+
+.navbar-brand {
+    color: var(--text-primary) !important;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.nav-link {
+    color: var(--text-secondary) !important;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--text-primary) !important;
+}
+
+/* Sidebar Minimalista */
+.sidebar {
+    background: var(--bg-secondary) !important;
+    border-right: 1px solid var(--border-color);
+    min-height: calc(100vh - 56px);
+}
+
+.sidebar-section-header {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 1rem 1rem 0.5rem;
+    margin-top: 1rem;
+}
+
+.sidebar .nav-link {
+    color: var(--text-secondary);
+    padding: 0.6rem 1rem;
+  border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.sidebar .nav-link:hover {
+ background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-left-color: var(--accent-blue);
+}
+
+.sidebar .nav-link.active {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-left-color: var(--accent-blue);
+}
+
+/* Cards Minimalistas */
+.card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    transition: border-color 0.3s ease;
+}
+
+.card:hover {
+    border-color: var(--border-hover);
+}
+
+.card-header {
+    background: transparent;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+/* Botones Minimalistas */
+.btn {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    border-radius: 6px;
+    padding: 0.5rem 1.25rem;
+transition: all 0.3s ease;
+    border: none;
+}
+
+.btn-primary {
+    background: var(--accent-blue);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--accent-blue-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 168, 255, 0.3);
+}
+
+.btn-outline-primary {
+    background: transparent;
+    border: 1px solid var(--accent-blue);
+    color: var(--accent-blue);
+}
+
+.btn-outline-primary:hover {
+background: var(--accent-blue);
+    color: white;
+}
+
+.btn-success {
+    background: var(--success);
+    color: white;
+}
+
+.btn-warning {
+    background: var(--warning);
+    color: #1a1a1a;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-info {
+    background: var(--info);
+    color: white;
+}
+
+/* Inputs Minimalistas */
+.form-control,
+.form-select {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background: var(--bg-secondary);
+    border-color: var(--accent-blue);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 0.2rem rgba(0, 168, 255, 0.15);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+.form-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Tablas Minimalistas */
+.table {
+    color: var(--text-primary);
+}
+
+.table thead th {
+    background: var(--bg-tertiary);
+    border-bottom: 2px solid var(--border-color);
+  color: var(--text-secondary);
+font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    padding: 0.75rem;
+}
+
+.table tbody td {
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem;
+}
+
+.table-hover tbody tr:hover {
+  background: var(--bg-tertiary);
+}
+
+/* Alerts Minimalistas */
+.alert {
+    border-radius: 6px;
+    border: 1px solid;
+    padding: 1rem;
+}
+
+.alert-success {
+    background: rgba(0, 200, 81, 0.1);
+ border-color: var(--success);
+    color: var(--success);
+}
+
+.alert-warning {
+    background: rgba(255, 187, 51, 0.1);
+    border-color: var(--warning);
+    color: var(--warning);
+}
+
+.alert-danger {
+    background: rgba(255, 68, 68, 0.1);
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.alert-info {
+    background: rgba(51, 181, 229, 0.1);
+    border-color: var(--info);
+    color: var(--info);
+}
+
+/* Badges Minimalistas */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+    border-radius: 4px;
+}
+
+/* Dropdown Minimalista */
+.dropdown-menu {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.dropdown-item {
+    color: var(--text-secondary);
+    border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.dropdown-divider {
+    border-color: var(--border-color);
+}
+
+/* Text Colors */
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.text-white {
+    color: var(--text-primary) !important;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+ font-weight: 600;
+}
+
+/* Links */
+a {
+    color: var(--accent-blue);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--accent-blue-hover);
+}
+
+/* Footer */
+.footer {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 1rem;
+}
+
+/* Scrollbar Minimalista */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--border-hover);
+}
+
+/* Search Bar */
+.search-bar {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.search-bar:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 0.2rem rgba(0, 168, 255, 0.15);
+}
+
+/* KPI Cards */
+.kpi-card {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    border: 1px solid var(--border-color);
+  border-radius: 8px;
+    padding: 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Loading Spinner */
+.spinner-border {
+    border-color: var(--border-color);
+    border-right-color: var(--accent-blue);
+}
+
+/* Modal */
+.modal-content {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-close {
+    filter: invert(1);
+}
+
+/* Progress Bar */
+.progress {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+.progress-bar {
+    background: var(--accent-blue);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+    
+    body {
+ font-size: 14px;
+    }
+}
