@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Authorization;
 using checkpoint_web.Services;
 using checkpoint_web.Models;
 using System.Collections.Generic;
 
 namespace checkpoint_web.Pages.Fragments
 {
- public class ProductosModel : PageModel
+    [Authorize(Roles = "Administrador,PersonalBodega")]
+    public class ProductosModel : PageModel
  {
  private readonly IProductoService _productoService;
  public ProductosModel(IProductoService productoService) => _productoService = productoService;

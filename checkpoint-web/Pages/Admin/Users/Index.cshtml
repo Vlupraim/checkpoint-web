@@ -2,6 +2,7 @@
 @model checkpoint_web.Pages.Admin.Users.IndexModel
 @{
  ViewData["Title"] = "Usuarios";
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_DashboardLayout.cshtml";
 }
 <h1>Usuarios</h1>
 <table class="table">

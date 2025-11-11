@@ -7,7 +7,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
 <h2>Panel de Administraci&oacute;n</h2>
-    <small class="text-muted">@DateTime.Now.ToString("dddd, dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-ES"))</small>
+ <small class="text-muted">@DateTime.Now.ToString("dddd, dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-ES"))</small>
 </div>
 
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
@@ -21,25 +21,9 @@
   <div class="card-body text-center py-5">
    <h3>Bienvenido al Sistema Checkpoint</h3>
   <p class="lead">Login exitoso! Est&aacute;s autenticado como <strong>@User.Identity?.Name</strong></p>
-        <hr class="my-4">
-            <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
-      <div class="row g-3 mt-4">
-           <div class="col-md-4">
-          <a href="/Admin/Users" class="btn btn-primary btn-lg w-100">
-   Gestionar Usuarios
-             </a>
-       </div>
-    <div class="col-md-4">
-     <a href="/Admin/Sedes" class="btn btn-info btn-lg w-100">
-       Gestionar Sedes
-      </a>
-            </div>
-                <div class="col-md-4">
-              <a href="/Productos" class="btn btn-success btn-lg w-100">
-    Gestionar Productos
-           </a>
-      </div>
-            </div>
+ <hr class="my-4">
+  <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
+            <p class="text-muted">Utiliza el menú lateral para navegar por las diferentes secciones del sistema.</p>
         </div>
     </div>
 }
@@ -52,26 +36,26 @@
     <div class="kpi-card">
         <div class="text-center">
       <h6 class="text-muted mb-2">Movimientos Hoy</h6>
-        <h2 class="text-primary mb-0">@Model.Resumen.MovimientosDelDia</h2>
-           <small class="text-success">Ingresos: @Model.Resumen.Ingresos</small><br/>
+  <h2 class="text-primary mb-0">@Model.Resumen.MovimientosDelDia</h2>
+    <small class="text-success">Ingresos: @Model.Resumen.Ingresos</small><br/>
      <small class="text-danger">Salidas: @Model.Resumen.Salidas</small>
      </div>
             </div>
         </div>
    <div class="col-md-3">
-       <div class="kpi-card">
+     <div class="kpi-card">
 <div class="text-center">
   <h6 class="text-muted mb-2">Tareas Pendientes</h6>
             <h2 class="text-warning mb-0">@Model.Resumen.TareasPendientes</h2>
           <small>Completadas hoy: @Model.Resumen.TareasCompletadas</small>
-                </div>
+     </div>
         </div>
         </div>
-        <div class="col-md-3">
+     <div class="col-md-3">
    <div class="kpi-card">
   <div class="text-center">
-               <h6 class="text-muted mb-2">Lotes en QC</h6>
-           <h2 class="text-info mb-0">@Model.Resumen.LotesPendientesCalidad</h2>
+         <h6 class="text-muted mb-2">Lotes en QC</h6>
+ <h2 class="text-info mb-0">@Model.Resumen.LotesPendientesCalidad</h2>
           <small>Pendientes de revisi&oacute;n</small>
      </div>
         </div>
@@ -83,7 +67,7 @@
         <h2 class="text-danger mb-0">@Model.Resumen.AjustesPendientes</h2>
         <small>Requieren aprobaci&oacute;n</small>
          </div>
-            </div>
+         </div>
    </div>
     </div>
 
@@ -94,21 +78,21 @@
             <div class="card-header">
      <h5 class="mb-0">Acciones R&aacute;pidas</h5>
      </div>
-       <div class="card-body">
+     <div class="card-body">
           <div class="row g-2">
           <div class="col-md-2">
-                   <a href="/Admin/Tareas" class="btn btn-outline-primary w-100">
+         <a href="/Admin/Tareas" class="btn btn-outline-primary w-100">
    Gestionar Tareas
      </a>
                </div>
-                  <div class="col-md-2">
+        <div class="col-md-2">
          <a href="/Bodega/Ajustes" class="btn btn-outline-warning w-100">
-          Aprobar Ajustes
+      Aprobar Ajustes
    </a>
  </div>
         <div class="col-md-2">
       <a href="/Calidad/ControlCalidad" class="btn btn-outline-info w-100">
-                 Control Calidad
+             Control Calidad
    </a>
   </div>
      <div class="col-md-2">
@@ -118,12 +102,12 @@
       </div>
       <div class="col-md-2">
     <a href="/Admin/Users" class="btn btn-outline-secondary w-100">
-           Gestionar Usuarios
+     Gestionar Usuarios
     </a>
              </div>
-                 <div class="col-md-2">
+         <div class="col-md-2">
         <a href="/Admin/AuditLogs" class="btn btn-outline-dark w-100">
-             Auditor&iacute;a
+        Auditor&iacute;a
    </a>
        </div>
 </div>
@@ -143,7 +127,7 @@ else
     <script>
         // Auto-refresh cada 5 minutos
     setTimeout(function() {
-            location.reload();
+      location.reload();
         }, 300000);
     </script>
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using checkpoint_web.Models;
 using System.Collections.Generic;
@@ -6,7 +7,8 @@ using System.Linq;
 
 namespace checkpoint_web.Pages.Fragments
 {
- public class UsuariosModel : PageModel
+    [Authorize(Roles = "Administrador,PersonalBodega")]
+    public class UsuariosModel : PageModel
  {
  private readonly UserManager<ApplicationUser> _userManager;
  public UsuariosModel(UserManager<ApplicationUser> userManager) => _userManager = userManager;

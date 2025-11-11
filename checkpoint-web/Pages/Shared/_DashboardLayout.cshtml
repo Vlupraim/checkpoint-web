@@ -133,97 +133,103 @@
 '/Admin/Users': '/Fragments/Usuarios',
        '/Admin/Dashboard': '/Admin/Dashboard',
         '/Admin/Sedes': '/Admin/Sedes/Index',
-                '/Admin/Ubicaciones': '/Admin/Ubicaciones/Index',
+             '/Admin/Ubicaciones': '/Admin/Ubicaciones/Index',
       '/Admin/Tareas': '/Admin/Tareas/Index',
                 '/Admin/Clientes': '/Admin/Clientes/Index',
     '/Admin/Proveedores': '/Admin/Proveedores/Index',
     '/Reportes': '/Reportes/Index',
-         '/Admin/AuditLogs': '/Admin/AuditLogs/Index'
+     '/Admin/AuditLogs': '/Admin/AuditLogs/Index'
             };
 
-         function loadUrl(url, replaceState) {
-                fetch(url, {
+    function loadUrl(url, replaceState) {
+    fetch(url, {
    credentials: 'same-origin',
    headers: {
-           'X-Requested-With': 'XMLHttpRequest'
-            }
+   'X-Requested-With': 'XMLHttpRequest'
+   }
        })
     .then(function(resp) {
-   if (!resp.ok) throw new Error('HTTP ' + resp.status);
+   if (!resp.ok) {
+             console.error('HTTP error:', resp.status, resp.statusText);
+           throw new Error('HTTP ' + resp.status);
+          }
            return resp.text();
     })
-      .then(function(html) {
+    .then(function(html) {
    document.getElementById('dashboardContent').innerHTML = html;
-             if (replaceState) {
-          history.replaceState({
+           if (replaceState) {
+        history.replaceState({
     url: url
        }, '', location.pathname);
  }
      })
       .catch(function(err) {
        console.error('Load error:', err);
-     document.getElementById('dashboardContent').innerHTML =
+ document.getElementById('dashboardContent').innerHTML =
       '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>';
         });
             }
 
-            document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function() {
       // Click handlers for sidebar links
          document.querySelectorAll('.sidebar a[data-url]').forEach(function(a) {
        a.addEventListener('click', function(e) {
              e.preventDefault();
 
     // Update active state
-      document.querySelectorAll('.sidebar a').forEach(function(link) {
-           link.classList.remove('active');
-                 });
-            a.classList.add('active');
+   document.querySelectorAll('.sidebar a').forEach(function(link) {
+       link.classList.remove('active');
+    });
+        a.classList.add('active');
 
-         var url = a.getAttribute('data-url');
+   var url = a.getAttribute('data-url');
       var path = a.getAttribute('data-path') || url;
 
          fetch(url, {
      credentials: 'same-origin',
           headers: {
-          'X-Requested-With': 'XMLHttpRequest'
+    'X-Requested-With': 'XMLHttpRequest'
  }
          })
      .then(function(resp) {
-       if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    if (!resp.ok) {
+          console.error('Navigation error - HTTP:', resp.status, resp.statusText);
+      throw new Error('HTTP ' + resp.status);
+  }
            return resp.text();
       })
       .then(function(html) {
      document.getElementById('dashboardContent').innerHTML = html;
           history.pushState({
-         url: url
-             }, '', path);
+       url: url
+         }, '', path);
           })
-       .catch(function(err) {
+    .catch(function(err) {
      console.error('Navigation error:', err);
            document.getElementById('dashboardContent').innerHTML =
           '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>';
         });
    });
-          });
+       });
 
          // Handle browser back/forward
  window.addEventListener('popstate', function(event) {
        var state = event.state;
   if (state && state.url) {
-              loadUrl(state.url, false);
-            } else {
-          var frag = mapping[location.pathname];
+  loadUrl(state.url, false);
+        } else {
+  var frag = mapping[location.pathname];
         if (frag) {
-          loadUrl(frag, true);
+      loadUrl(frag, true);
     } else {
-              window.location = location.pathname;
+   window.location = location.pathname;
       }
-        }
+ }
        });
 
                 // Initial load: if not on dashboard root, load mapped fragment
           var initial = location.pathname;
-                if (initial && initial !== '/Admin/Dashboard' && mapping[initial]) {
+        if (initial && initial !== '/Admin/Dashboard' && mapping[initial]) {
        loadUrl(mapping[initial], true);
              }
       });
