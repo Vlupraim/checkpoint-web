@@ -2,6 +2,7 @@
 @model checkpoint_web.Pages.Admin.Users.CreateModel
 @{
     ViewData["Title"] = "Crear Usuario";
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_DashboardLayout.cshtml";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -15,7 +16,7 @@
 {
     <div class="alert alert-danger alert-dismissible fade show">
         <strong>Error:</strong> @Model.ErrorMessage
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
@@ -28,61 +29,61 @@
    <div class="col-md-6 mb-3">
  <label asp-for="Input.Email" class="form-label">Email *</label>
            <input asp-for="Input.Email" class="form-control" type="email" required />
-          <span asp-validation-for="Input.Email" class="text-danger"></span>
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
     </div>
      
      <div class="col-md-6 mb-3">
       <label asp-for="Input.Nombre" class="form-label">Nombre Completo *</label>
         <input asp-for="Input.Nombre" class="form-control" required />
-        <span asp-validation-for="Input.Nombre" class="text-danger"></span>
-       </div>
+     <span asp-validation-for="Input.Nombre" class="text-danger"></span>
+     </div>
             </div>
 
-            <div class="row">
+     <div class="row">
         <div class="col-md-6 mb-3">
            <label asp-for="Input.Password" class="form-label">Contraseña *</label>
-         <input asp-for="Input.Password" class="form-control" type="password" required />
-          <span asp-validation-for="Input.Password" class="text-danger"></span>
+     <input asp-for="Input.Password" class="form-control" type="password" required />
+      <span asp-validation-for="Input.Password" class="text-danger"></span>
        <small class="text-muted">Mínimo 6 caracteres</small>
-          </div>
+        </div>
     
-                <div class="col-md-6 mb-3">
+   <div class="col-md-6 mb-3">
         <label asp-for="Input.ConfirmPassword" class="form-label">Confirmar Contraseña *</label>
            <input asp-for="Input.ConfirmPassword" class="form-control" type="password" required />
    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
     </div>
     </div>
 
-        <div class="mb-3">
+      <div class="mb-3">
         <label class="form-label">Roles</label>
         @foreach (var role in Model.AvailableRoles)
      {
     <div class="form-check">
-   <input class="form-check-input" type="checkbox" name="SelectedRoles" value="@role" id="role_@role" />
+ <input class="form-check-input" type="checkbox" name="SelectedRoles" value="@role" id="role_@role" />
   <label class="form-check-label" for="role_@role">
-           @role
+    @role
          </label>
         </div>
-                }
+      }
       </div>
 
         <div class="form-check mb-3">
       <input asp-for="Input.Activo" class="form-check-input" type="checkbox" checked />
     <label asp-for="Input.Activo" class="form-check-label">
          Usuario Activo
-              </label>
-            </div>
+      </label>
+         </div>
 
-          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+<div class="d-grid gap-2 d-md-flex justify-content-md-end">
      <a href="/Admin/Users" class="btn btn-secondary">Cancelar</a>
     <button type="submit" class="btn btn-primary">
-           <i class="bi bi-save"></i> Crear Usuario
+ <i class="bi bi-save"></i> Crear Usuario
          </button>
-            </div>
+  </div>
         </form>
     </div>
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+  <partial name="_ValidationScriptsPartial" />
 }
