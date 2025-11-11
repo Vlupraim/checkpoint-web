@@ -12,18 +12,20 @@ namespace checkpoint_web.Pages.Account
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<LoginModel> _logger;
-        public LoginModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ILogger<LoginModel> logger) 
+    public LoginModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ILogger<LoginModel> logger) 
  => (_signInManager, _userManager, _logger) = (signInManager, userManager, logger);
 
         [BindProperty]
         public string Email { get; set; } = string.Empty;
+    [BindProperty]
+  public string Password { get; set; } = string.Empty;
       [BindProperty]
-        public string Password { get; set; } = string.Empty;
-        public string ReturnUrl { get; set; } = string.Empty;
+        public bool RememberMe { get; set; } = false; // Nuevo: checkbox "Recuérdame"
+   public string ReturnUrl { get; set; } = string.Empty;
 
         public async Task OnGetAsync(string? returnUrl = null)
  {
-            // Clear any existing session
+// Clear any existing session
      await _signInManager.SignOutAsync();
   ReturnUrl = returnUrl ?? Url.Content("~/");
  }
@@ -31,28 +33,29 @@ namespace checkpoint_web.Pages.Account
  public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
  {
     ReturnUrl = returnUrl ?? Url.Content("~/");
-    
-    _logger.LogInformation("[LOGIN] Starting login attempt for {email}, ReturnUrl: {returnUrl}", Email, ReturnUrl);
+  
+    _logger.LogInformation("[LOGIN] Starting login attempt for {email}, ReturnUrl: {returnUrl}, RememberMe: {rememberMe}", 
+        Email, ReturnUrl, RememberMe);
     
     if (!ModelState.IsValid)
    {
-        _logger.LogWarning("[LOGIN] ModelState invalid for {email}", Email);
+  _logger.LogWarning("[LOGIN] ModelState invalid for {email}", Email);
             return Page();
       }
 
       _logger.LogInformation("[LOGIN] Login attempt for {email}", Email);
    
-            // Ensure clean state
+ // Ensure clean state
   await _signInManager.SignOutAsync();
     _logger.LogInformation("[LOGIN] Signed out any existing session for {email}", Email);
     
-            var user = await _userManager.FindByEmailAsync(Email);
+         var user = await _userManager.FindByEmailAsync(Email);
      if (user == null)
     {
       _logger.LogWarning("[LOGIN] User not found: {email}", Email);
-       ModelState.AddModelError(string.Empty, "Inicio de sesión inválido.");
-  return Page();
-         }
+    ModelState.AddModelError(string.Empty, "Inicio de sesión inválido.");
+return Page();
+}
 
     _logger.LogInformation("[LOGIN] User found: {email}, checking password...", Email);
     
@@ -66,27 +69,29 @@ namespace checkpoint_web.Pages.Account
 
     _logger.LogInformation("[LOGIN] Password correct for {email}, signing in...", Email);
 
-    // Sign in with session-only cookie (expires when browser closes)
-  // DO NOT set IsPersistent = true, this would create a persistent cookie
-       await _signInManager.SignInAsync(user, isPersistent: false);
+    // CRÍTICO: isPersistent controla si la cookie es temporal o persistente
+    // - false (sin RememberMe): Cookie de sesión, expira en 1 minuto de inactividad
+    // - true (con RememberMe): Cookie persistente, dura 30 días
+    await _signInManager.SignInAsync(user, isPersistent: RememberMe);
 
     var roles = await _userManager.GetRolesAsync(user);
-   _logger.LogInformation("[LOGIN] User {email} signed in successfully with session-only cookie. Roles: {roles}", 
-        Email, string.Join(", ", roles));
+    var sessionType = RememberMe ? "persistent cookie (30 days)" : "session cookie (1 min timeout)";
+   _logger.LogInformation("[LOGIN] User {email} signed in successfully with {sessionType}. Roles: {roles}", 
+        Email, sessionType, string.Join(", ", roles));
 
     // Redirect based on role
     string redirectUrl;
   if (roles.Contains("Administrador"))
     {
-     redirectUrl = "/Admin/Dashboard";
-    }
+ redirectUrl = "/Admin/Dashboard";
+ }
     else if (roles.Contains("PersonalBodega"))
     {
         redirectUrl = "/Bodega/Dashboard";
     }
     else if (roles.Contains("ControlCalidad"))
     {
-        redirectUrl = "/Calidad/Dashboard";
+    redirectUrl = "/Calidad/Dashboard";
     }
     else
     {
