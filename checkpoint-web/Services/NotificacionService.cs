@@ -132,9 +132,9 @@ if (notificacion != null)
     // Lotes próximos a vencer (7 días)
    var lotesProximosVencer = await _context.Lotes
    .Where(l => l.FechaVencimiento.HasValue 
-    && l.FechaVencimiento.Value <= sieteDiasDespues
+&& l.FechaVencimiento.Value <= sieteDiasDespues
    && l.FechaVencimiento.Value > ahora
-     && l.Estado == "Liberado")
+     && l.Estado == EstadoLote.Liberado)
         .ToListAsync();
 
     if (lotesProximosVencer.Any())

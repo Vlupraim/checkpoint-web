@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace checkpoint_web.Pages.Bodega.Movimientos
 {
-    [Authorize(Roles = "Administrador,PersonalBodega")]
+    [Authorize(Roles = "PersonalBodega")]
     public class IndexModel : PageModel
     {
 private readonly IMovimientoService _movimientoService;
@@ -115,7 +115,7 @@ return RedirectToPage();
         {
 var lotes = await _context.Lotes
    .Include(l => l.Producto)
-    .Where(l => l.Estado != "Bloqueado")
+    .Where(l => l.Estado != EstadoLote.Bloqueado)
 .Take(100)
 .ToListAsync();
 LotesSelectList = new SelectList(lotes, "Id", "CodigoLote");

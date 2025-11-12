@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using checkpoint_web.Services;
 using checkpoint_web.Data;
+using checkpoint_web.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace checkpoint_web.Pages.Bodega.Ajustes
 {
-    [Authorize(Roles = "Administrador,PersonalBodega")]
+    // CORREGIDO: Solo PersonalBodega puede crear ajustes
+    [Authorize(Roles = "PersonalBodega")]
     public class CreateModel : PageModel
     {
   private readonly IMovimientoService _movimientoService;
@@ -30,23 +32,23 @@ namespace checkpoint_web.Pages.Bodega.Ajustes
  public string Motivo { get; set; } = string.Empty;
 
 public SelectList? LotesSelectList { get; set; }
-        public SelectList? UbicacionesSelectList { get; set; }
+     public SelectList? UbicacionesSelectList { get; set; }
 
         public async Task OnGetAsync()
     {
 await LoadSelectListsAsync();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+    public async Task<IActionResult> OnPostAsync()
       {
    if (!ModelState.IsValid)
  {
-       await LoadSelectListsAsync();
+    await LoadSelectListsAsync();
        return Page();
  }
 
        try
-     {
+  {
        await _movimientoService.CrearAjusteAsync(
    LoteId,
       UbicacionId,
@@ -57,7 +59,7 @@ await LoadSelectListsAsync();
      TempData["SuccessMessage"] = "Ajuste creado. Esperando aprobación de administrador.";
 return RedirectToPage("./Index");
      }
-    catch (Exception ex)
+ catch (Exception ex)
     {
        TempData["ErrorMessage"] = ex.Message;
 await LoadSelectListsAsync();
@@ -65,16 +67,17 @@ await LoadSelectListsAsync();
    }
  }
 
-  private async Task LoadSelectListsAsync()
+private async Task LoadSelectListsAsync()
         {
+ // Solo mostrar lotes que NO estén bloqueados
  var lotes = await _context.Lotes
   .Include(l => l.Producto)
-      .Where(l => l.Estado != "Bloqueado")
+      .Where(l => l.Estado != EstadoLote.Bloqueado)
   .Take(100)
-                .ToListAsync();
+        .ToListAsync();
   LotesSelectList = new SelectList(lotes, "Id", "CodigoLote");
 
-            var ubicaciones = await _context.Ubicaciones.Include(u => u.Sede).ToListAsync();
+  var ubicaciones = await _context.Ubicaciones.Include(u => u.Sede).ToListAsync();
   UbicacionesSelectList = new SelectList(ubicaciones, "Id", "Codigo");
  }
     }

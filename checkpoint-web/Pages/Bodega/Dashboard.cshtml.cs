@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace checkpoint_web.Pages.Bodega
 {
-    [Authorize(Roles = "Administrador,PersonalBodega")]
+    [Authorize(Roles = "PersonalBodega")]
     public class DashboardModel : PageModel
     {
         private readonly IReporteService _reporteService;

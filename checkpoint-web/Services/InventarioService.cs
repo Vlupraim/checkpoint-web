@@ -9,70 +9,160 @@ namespace checkpoint_web.Services
  public class InventarioService : IInventarioService
  {
  private readonly CheckpointDbContext _context;
- public InventarioService(CheckpointDbContext context) => _context = context;
-
- public async Task<Stock?> GetStockAsync(Guid loteId, Guid ubicacionId)
+ private readonly IAuditService _auditService;
+ public InventarioService(CheckpointDbContext context, IAuditService auditService)
  {
- return await _context.Stocks.FirstOrDefaultAsync(s => s.LoteId == loteId && s.UbicacionId == ubicacionId);
+ _context = context;
+ _auditService = auditService;
  }
 
  public async Task RegistrarIngresoAsync(Guid loteId, Guid ubicacionId, decimal cantidad, string usuarioId)
  {
+ // VALIDACIÓN CRÍTICA: Solo lotes LIBERADOS
+ var lote = await _context.Lotes.FindAsync(loteId);
+ if (lote == null)
+  throw new KeyNotFoundException($"Lote {loteId} no encontrado");
+ 
+ if (lote.Estado != EstadoLote.Liberado)
+  throw new InvalidOperationException(
+    $"? No se puede registrar ingreso del lote {lote.CodigoLote}. " +
+    $"Estado actual: {lote.Estado}. " +
+    $"El lote debe estar LIBERADO por Control de Calidad.");
+
  var stock = await GetStockAsync(loteId, ubicacionId);
  if (stock == null)
  {
- stock = new Stock { Id = Guid.NewGuid(), LoteId = loteId, UbicacionId = ubicacionId, Cantidad = cantidad };
+ stock = new Stock
+ {
+ Id = Guid.NewGuid(),
+ LoteId = loteId,
+ UbicacionId = ubicacionId,
+ Cantidad = cantidad,
+ ActualizadoEn = DateTime.UtcNow
+ };
  _context.Stocks.Add(stock);
  }
  else
  {
- stock.Incrementar(cantidad);
+ stock.Cantidad += cantidad;
+ stock.ActualizadoEn = DateTime.UtcNow;
  }
- // also update lote available
- var lote = await _context.Lotes.FindAsync(loteId);
- if (lote != null)
- {
+
  lote.CantidadDisponible += cantidad;
- }
+
+ var movimiento = new Movimiento
+ {
+ Id = Guid.NewGuid(),
+ LoteId = loteId,
+ Tipo = "Ingreso",
+ OrigenUbicacionId = ubicacionId,
+ DestinoUbicacionId = ubicacionId,
+ Cantidad = cantidad,
+ Fecha = DateTime.UtcNow,
+ UsuarioId = usuarioId
+ };
+ _context.Movimientos.Add(movimiento);
  await _context.SaveChangesAsync();
+ await _auditService.LogAsync(usuarioId, $"Ingreso: Lote={loteId}, Cantidad={cantidad}");
  }
 
  public async Task RegistrarMovimientoInternoAsync(Guid loteId, Guid origenUbicacionId, Guid destinoUbicacionId, decimal cantidad, string usuarioId)
  {
- if (origenUbicacionId == destinoUbicacionId) throw new InvalidOperationException("Origen y destino iguales");
- var origen = await GetStockAsync(loteId, origenUbicacionId);
- if (origen == null || origen.Cantidad < cantidad) throw new InvalidOperationException("Stock insuficiente en origen");
- origen.Decrementar(cantidad);
- var destino = await GetStockAsync(loteId, destinoUbicacionId);
- if (destino == null)
+ // VALIDACIÓN CRÍTICA: Solo lotes LIBERADOS
+ var lote = await _context.Lotes.FindAsync(loteId);
+ if (lote == null)
+  throw new KeyNotFoundException($"Lote {loteId} no encontrado");
+ 
+ if (lote.Estado != EstadoLote.Liberado)
+  throw new InvalidOperationException(
+    $"? No se puede mover el lote {lote.CodigoLote}. " +
+    $"Estado actual: {lote.Estado}. " +
+    $"Solo lotes LIBERADOS pueden moverse entre ubicaciones.");
+
+ var stockOrigen = await GetStockAsync(loteId, origenUbicacionId);
+ if (stockOrigen == null || stockOrigen.Cantidad < cantidad)
+  throw new InvalidOperationException("Stock insuficiente en ubicación origen");
+
+ stockOrigen.Cantidad -= cantidad;
+ stockOrigen.ActualizadoEn = DateTime.UtcNow;
+
+ var stockDestino = await GetStockAsync(loteId, destinoUbicacionId);
+ if (stockDestino == null)
  {
- destino = new Stock { Id = Guid.NewGuid(), LoteId = loteId, UbicacionId = destinoUbicacionId, Cantidad = cantidad };
- _context.Stocks.Add(destino);
+ stockDestino = new Stock
+ {
+ Id = Guid.NewGuid(),
+ LoteId = loteId,
+ UbicacionId = destinoUbicacionId,
+ Cantidad = cantidad,
+ ActualizadoEn = DateTime.UtcNow
+ };
+ _context.Stocks.Add(stockDestino);
  }
  else
  {
- destino.Incrementar(cantidad);
+ stockDestino.Cantidad += cantidad;
+ stockDestino.ActualizadoEn = DateTime.UtcNow;
  }
- // register movimiento
- var movimiento = new Movimiento { Id = Guid.NewGuid(), LoteId = loteId, OrigenUbicacionId = origenUbicacionId, DestinoUbicacionId = destinoUbicacionId, Cantidad = cantidad, Tipo = "Interno", Fecha = DateTime.UtcNow, UsuarioId = usuarioId };
+
+ var movimiento = new Movimiento
+ {
+ Id = Guid.NewGuid(),
+ LoteId = loteId,
+ Tipo = "MovimientoInterno",
+ OrigenUbicacionId = origenUbicacionId,
+ DestinoUbicacionId = destinoUbicacionId,
+ Cantidad = cantidad,
+ Fecha = DateTime.UtcNow,
+ UsuarioId = usuarioId
+ };
  _context.Movimientos.Add(movimiento);
  await _context.SaveChangesAsync();
+ await _auditService.LogAsync(usuarioId, $"MovimientoInterno: Lote={loteId}, Cantidad={cantidad}");
  }
 
  public async Task RegistrarSalidaAsync(Guid loteId, Guid ubicacionId, decimal cantidad, string usuarioId)
  {
- var stock = await GetStockAsync(loteId, ubicacionId);
- if (stock == null || stock.Cantidad < cantidad) throw new InvalidOperationException("Stock insuficiente para salida");
- stock.Decrementar(cantidad);
+ // VALIDACIÓN CRÍTICA: Solo lotes LIBERADOS
  var lote = await _context.Lotes.FindAsync(loteId);
- if (lote != null)
- {
+ if (lote == null)
+  throw new KeyNotFoundException($"Lote {loteId} no encontrado");
+ 
+ if (lote.Estado != EstadoLote.Liberado)
+  throw new InvalidOperationException(
+ $"? No se puede registrar salida del lote {lote.CodigoLote}. " +
+    $"Estado actual: {lote.Estado}. " +
+ $"Solo lotes LIBERADOS pueden usarse para producción/venta.");
+
+ var stock = await GetStockAsync(loteId, ubicacionId);
+ if (stock == null || stock.Cantidad < cantidad)
+  throw new InvalidOperationException($"Stock insuficiente. Disponible: {stock?.Cantidad ?? 0}, Solicitado: {cantidad}");
+
+ stock.Cantidad -= cantidad;
+ stock.ActualizadoEn = DateTime.UtcNow;
+
  lote.CantidadDisponible -= cantidad;
- if (lote.CantidadDisponible <0) lote.CantidadDisponible =0;
- }
- var movimiento = new Movimiento { Id = Guid.NewGuid(), LoteId = loteId, OrigenUbicacionId = ubicacionId, DestinoUbicacionId = null, Cantidad = cantidad, Tipo = "Salida", Fecha = DateTime.UtcNow, UsuarioId = usuarioId };
+
+ var movimiento = new Movimiento
+ {
+ Id = Guid.NewGuid(),
+ LoteId = loteId,
+ Tipo = "Salida",
+ OrigenUbicacionId = ubicacionId,
+ DestinoUbicacionId = null,
+ Cantidad = cantidad,
+ Fecha = DateTime.UtcNow,
+ UsuarioId = usuarioId
+ };
  _context.Movimientos.Add(movimiento);
  await _context.SaveChangesAsync();
+ await _auditService.LogAsync(usuarioId, $"Salida: Lote={loteId}, Cantidad={cantidad}");
+ }
+
+ public async Task<Stock?> GetStockAsync(Guid loteId, Guid ubicacionId)
+ {
+ return await _context.Stocks
+ .FirstOrDefaultAsync(s => s.LoteId == loteId && s.UbicacionId == ubicacionId);
  }
  }
 }

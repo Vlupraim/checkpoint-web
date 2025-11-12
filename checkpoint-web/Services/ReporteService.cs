@@ -121,7 +121,7 @@ Ingresos = await _context.Movimientos.CountAsync(m => m.Fecha >= fechaInicio && 
  Traslados = await _context.Movimientos.CountAsync(m => m.Fecha >= fechaInicio && m.Fecha < fechaFin && m.Tipo == "Traslado"),
   TareasPendientes = await _context.Tareas.CountAsync(t => t.Activo && t.Estado == "Pendiente"),
        TareasCompletadas = await _context.Tareas.CountAsync(t => t.FechaFinalizacion >= fechaInicio && t.FechaFinalizacion < fechaFin),
-LotesPendientesCalidad = await _context.Lotes.CountAsync(l => l.Estado == "Creado" || l.Estado == "PendienteCalidad"),
+LotesPendientesCalidad = await _context.Lotes.CountAsync(l => l.Estado == EstadoLote.Cuarentena),
 AjustesPendientes = await _context.Movimientos.CountAsync(m => m.Tipo == "Ajuste" && m.Estado == "Pendiente")
    };
     }

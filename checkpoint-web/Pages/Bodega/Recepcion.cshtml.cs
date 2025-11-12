@@ -9,7 +9,8 @@ using System;
 
 namespace checkpoint_web.Pages.Bodega
 {
- [Authorize(Roles = "Administrador,PersonalBodega")]
+ // CORREGIDO: Solo PersonalBodega puede recepcionar (Admin solo ve)
+ [Authorize(Roles = "PersonalBodega")]
  public class RecepcionModel : PageModel
  {
  private readonly IProductoService _productoService;
@@ -58,7 +59,8 @@ namespace checkpoint_web.Pages.Bodega
  return Page();
  }
 
- // Create Lote
+ // CRÍTICO: Create Lote con estado inicial CUARENTENA
+ // El lote NO puede usarse hasta que Calidad lo libere
  var lote = new Lote
  {
  Id = Guid.NewGuid(),
@@ -69,7 +71,7 @@ namespace checkpoint_web.Pages.Bodega
  TempIngreso = TempIngreso,
  CantidadInicial = Cantidad,
  CantidadDisponible = Cantidad,
- Estado = "Pendiente"
+ Estado = EstadoLote.Cuarentena  // ? ESTADO INICIAL: Cuarentena (esperando revisión de Calidad)
  };
  _context.Lotes.Add(lote);
 
@@ -85,9 +87,11 @@ namespace checkpoint_web.Pages.Bodega
  _context.Stocks.Add(stock);
 
  await _context.SaveChangesAsync();
- await _auditService.LogAsync(User.Identity?.Name ?? "anonymous", $"Recepcion:Lote={CodigoLote},Cantidad={Cantidad}", System.Text.Json.JsonSerializer.Serialize(new { lote, stock }));
+ await _auditService.LogAsync(User.Identity?.Name ?? "anonymous", 
+    $"Recepcion: Lote={CodigoLote}, Cantidad={Cantidad}, Estado={EstadoLote.Cuarentena}", 
+    System.Text.Json.JsonSerializer.Serialize(new { lote, stock }));
 
- TempData["Message"] = "Recepción registrada correctamente";
+ TempData["Message"] = $"Recepción registrada correctamente. Lote en CUARENTENA esperando revisión de Calidad.";
  return RedirectToPage();
  }
  }

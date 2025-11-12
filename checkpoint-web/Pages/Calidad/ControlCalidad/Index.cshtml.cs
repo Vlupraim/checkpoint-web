@@ -6,7 +6,7 @@ using checkpoint_web.Services;
 
 namespace checkpoint_web.Pages.Calidad.ControlCalidad
 {
-    [Authorize(Roles = "Administrador,ControlCalidad")]
+    [Authorize(Roles = "ControlCalidad")]
    public class IndexModel : PageModel
     {
      private readonly ICalidadService _calidadService;

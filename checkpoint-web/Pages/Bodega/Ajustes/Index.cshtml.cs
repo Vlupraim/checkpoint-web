@@ -7,6 +7,7 @@ using System.Security.Claims;
 
 namespace checkpoint_web.Pages.Bodega.Ajustes
 {
+    // PersonalBodega puede ver sus ajustes, Admin puede aprobarlos
     [Authorize(Roles = "Administrador,PersonalBodega")]
     public class IndexModel : PageModel
     {

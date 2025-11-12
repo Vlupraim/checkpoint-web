@@ -14,25 +14,26 @@ Task<CalidadLiberacion> AprobarLoteAsync(Guid loteId, string usuarioId, string? 
    Task<CalidadLiberacion> RechazarLoteAsync(Guid loteId, string usuarioId, string motivo);
   Task<CalidadLiberacion> BloquearLoteAsync(Guid loteId, string usuarioId, string motivo);
 Task<Dictionary<string, int>> GetEstadisticasAsync();
-    }
+  }
 
     public class CalidadService : ICalidadService
  {
-        private readonly CheckpointDbContext _context;
+   private readonly CheckpointDbContext _context;
  private readonly IAuditService _auditService;
 
         public CalidadService(CheckpointDbContext context, IAuditService auditService)
-        {
+     {
  _context = context;
      _auditService = auditService;
 }
 
      public async Task<IEnumerable<Lote>> GetLotesPendientesRevisionAsync()
     {
-     return await _context.Lotes
+     // Solo lotes en Cuarentena están pendientes de revisión
+   return await _context.Lotes
    .Include(l => l.Producto)
 .Include(l => l.Proveedor)
-    .Where(l => l.Estado == "Creado" || l.Estado == "PendienteCalidad")
+    .Where(l => l.Estado == EstadoLote.Cuarentena)
  .OrderBy(l => l.FechaIngreso)
      .ToListAsync();
    }
@@ -47,11 +48,11 @@ public async Task<IEnumerable<CalidadLiberacion>> GetHistorialCalidadAsync(int l
         }
 
 public async Task<CalidadLiberacion?> GetByIdAsync(Guid id)
-        {
+     {
    return await _context.CalidadLiberaciones
      .Include(c => c.Lote).ThenInclude(l => l!.Producto)
     .FirstOrDefaultAsync(c => c.Id == id);
-        }
+     }
 
         public async Task<CalidadLiberacion> CrearRevisionAsync(Guid loteId, string usuarioId)
  {
@@ -61,24 +62,24 @@ public async Task<CalidadLiberacion?> GetByIdAsync(Guid id)
 
  var revision = new CalidadLiberacion
  {
-          Id = Guid.NewGuid(),
+    Id = Guid.NewGuid(),
        LoteId = loteId,
  UsuarioId = usuarioId,
-          Fecha = DateTime.Now,
+          Fecha = DateTime.UtcNow,
  Estado = "EnRevision",
       Observacion = "Revisión iniciada"
         };
 
-       lote.Estado = "EnRevision";
+       lote.Estado = EstadoLote.EnRevision;
     _context.CalidadLiberaciones.Add(revision);
       await _context.SaveChangesAsync();
 
-         await _auditService.LogAsync(usuarioId, $"Inició revisión de calidad para lote {loteId}");
+    await _auditService.LogAsync(usuarioId, $"Inició revisión de calidad para lote {lote.CodigoLote}");
 return revision;
   }
 
    public async Task<CalidadLiberacion> AprobarLoteAsync(Guid loteId, string usuarioId, string? observacion = null)
-        {
+     {
  var lote = await _context.Lotes.FindAsync(loteId);
     if (lote == null)
    throw new KeyNotFoundException("Lote no encontrado");
@@ -88,12 +89,12 @@ return revision;
       Id = Guid.NewGuid(),
 LoteId = loteId,
 UsuarioId = usuarioId,
-    Fecha = DateTime.Now,
+    Fecha = DateTime.UtcNow,
      Estado = "Aprobado",
    Observacion = observacion ?? "Lote aprobado - Cumple especificaciones"
  };
 
-            lote.Estado = "Liberado";
+ lote.Estado = EstadoLote.Liberado;
   _context.CalidadLiberaciones.Add(liberacion);
 await _context.SaveChangesAsync();
 
@@ -112,36 +113,36 @@ throw new KeyNotFoundException("Lote no encontrado");
         Id = Guid.NewGuid(),
     LoteId = loteId,
  UsuarioId = usuarioId,
-     Fecha = DateTime.Now,
-    Estado = "Rechazado",
+     Fecha = DateTime.UtcNow,
+  Estado = "Rechazado",
        Observacion = motivo
  };
 
-            lote.Estado = "Rechazado";
+          lote.Estado = EstadoLote.Rechazado;
    _context.CalidadLiberaciones.Add(rechazo);
        await _context.SaveChangesAsync();
 
-            await _auditService.LogAsync(usuarioId, $"Rechazó lote {lote.CodigoLote}: {motivo}");
+        await _auditService.LogAsync(usuarioId, $"Rechazó lote {lote.CodigoLote}: {motivo}");
        return rechazo;
      }
 
         public async Task<CalidadLiberacion> BloquearLoteAsync(Guid loteId, string usuarioId, string motivo)
 {
-            var lote = await _context.Lotes.FindAsync(loteId);
+        var lote = await _context.Lotes.FindAsync(loteId);
 if (lote == null)
     throw new KeyNotFoundException("Lote no encontrado");
 
-            var bloqueo = new CalidadLiberacion
+       var bloqueo = new CalidadLiberacion
 {
    Id = Guid.NewGuid(),
 LoteId = loteId,
     UsuarioId = usuarioId,
- Fecha = DateTime.Now,
+ Fecha = DateTime.UtcNow,
  Estado = "Bloqueado",
          Observacion = motivo
    };
 
-       lote.Estado = "Bloqueado";
+    lote.Estado = EstadoLote.Bloqueado;
    _context.CalidadLiberaciones.Add(bloqueo);
        await _context.SaveChangesAsync();
 
@@ -153,11 +154,11 @@ await _auditService.LogAsync(usuarioId, $"Bloqueó lote {lote.CodigoLote}: {motiv
         {
    return new Dictionary<string, int>
       {
-       ["LotesPendientes"] = await _context.Lotes.CountAsync(l => l.Estado == "Creado" || l.Estado == "PendienteCalidad"),
+       ["LotesPendientes"] = await _context.Lotes.CountAsync(l => l.Estado == EstadoLote.Cuarentena),
      ["LotesAprobados"] = await _context.CalidadLiberaciones.CountAsync(c => c.Estado == "Aprobado"),
  ["LotesRechazados"] = await _context.CalidadLiberaciones.CountAsync(c => c.Estado == "Rechazado"),
-   ["LotesBloqueados"] = await _context.Lotes.CountAsync(l => l.Estado == "Bloqueado")
-    };
+   ["LotesBloqueados"] = await _context.Lotes.CountAsync(l => l.Estado == EstadoLote.Bloqueado)
+ };
         }
   }
 }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace checkpoint_web.Pages.Bodega
 {
-    [Authorize(Roles = "Administrador,PersonalBodega")]
+    [Authorize(Roles = "PersonalBodega")]
     public class TrasladosModel : PageModel
     {
         public void OnGet()

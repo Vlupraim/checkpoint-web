@@ -22,7 +22,7 @@ namespace checkpoint_web.Models
     public virtual Proveedor? Proveedor { get; set; }
 
  [MaxLength(100)]
-        public string CodigoLote { get; set; } = string.Empty;
+    public string CodigoLote { get; set; } = string.Empty;
 
   public DateTime FechaIngreso { get; set; }
     public DateTime? FechaVencimiento { get; set; }
@@ -36,10 +36,14 @@ namespace checkpoint_web.Models
         [Column(TypeName = "decimal(10,2)")]
    public decimal TempIngreso { get; set; }
 
-        [MaxLength(50)]
- public string Estado { get; set; } = "Creado";
+        /// <summary>
+        /// Estado del lote en el flujo de control de calidad.
+        /// Inicial: Cuarentena (esperando revisión)
+        /// Solo lotes LIBERADOS pueden usarse en operaciones.
+        /// </summary>
+        public EstadoLote Estado { get; set; } = EstadoLote.Cuarentena;
 
-        [Column(TypeName = "decimal(18,3)")]
+   [Column(TypeName = "decimal(18,3)")]
         public decimal CantidadInicial { get; set; }
 
         [Column(TypeName = "decimal(18,3)")]
