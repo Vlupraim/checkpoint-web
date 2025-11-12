@@ -5,7 +5,7 @@
     Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_Layout.cshtml";
 }
 
-<h2>Reportes e Indicadores</h2>
+<h2>?? Reportes e Indicadores</h2>
 
 <!-- Resumen Operativo del Dia -->
 @if (Model.ResumenHoy != null)
@@ -17,58 +17,58 @@
   <div class="card-body">
       <div class="row g-3">
   <div class="col-md-3">
-    <div class="text-center p-3 border rounded">
-       <h2 class="text-primary">@Model.ResumenHoy.MovimientosDelDia</h2>
- <small class="text-muted">Movimientos del D&iacute;a</small>
+    <div class="text-center p-3 bg-dark text-white rounded">
+  <h2 class="text-primary">@Model.ResumenHoy.MovimientosDelDia</h2>
+ <small>Movimientos del Día</small>
   </div>
    </div>
    <div class="col-md-3">
-      <div class="text-center p-3 border rounded">
+      <div class="text-center p-3 bg-dark text-white rounded">
       <h2 class="text-success">@Model.ResumenHoy.Ingresos</h2>
-    <small class="text-muted">Ingresos</small>
+    <small>Ingresos</small>
       </div>
  </div>
   <div class="col-md-3">
-  <div class="text-center p-3 border rounded">
+<div class="text-center p-3 bg-dark text-white rounded">
 <h2 class="text-danger">@Model.ResumenHoy.Salidas</h2>
- <small class="text-muted">Salidas</small>
+ <small>Salidas</small>
   </div>
-   </div>
+</div>
    <div class="col-md-3">
-       <div class="text-center p-3 border rounded">
+     <div class="text-center p-3 bg-dark text-white rounded">
  <h2 class="text-info">@Model.ResumenHoy.Traslados</h2>
-   <small class="text-muted">Traslados</small>
+   <small>Traslados</small>
   </div>
     </div>
    </div>
  <hr />
    <div class="row g-3">
 <div class="col-md-3">
-  <div class="text-center p-3 border rounded">
+  <div class="text-center p-3 bg-dark text-white rounded">
     <h3 class="text-warning">@Model.ResumenHoy.TareasPendientes</h3>
- <small class="text-muted">Tareas Pendientes</small>
+ <small>Tareas Pendientes</small>
     </div>
   </div>
  <div class="col-md-3">
-       <div class="text-center p-3 border rounded">
+       <div class="text-center p-3 bg-dark text-white rounded">
  <h3 class="text-success">@Model.ResumenHoy.TareasCompletadas</h3>
-    <small class="text-muted">Tareas Completadas Hoy</small>
+    <small>Tareas Completadas Hoy</small>
   </div>
  </div>
 <div class="col-md-3">
-   <div class="text-center p-3 border rounded">
+   <div class="text-center p-3 bg-dark text-white rounded">
       <h3 class="text-info">@Model.ResumenHoy.LotesPendientesCalidad</h3>
-    <small class="text-muted">Lotes Pendientes QC</small>
+    <small>Lotes Pendientes QC</small>
   </div>
  </div>
  <div class="col-md-3">
- <div class="text-center p-3 border rounded">
+ <div class="text-center p-3 bg-dark text-white rounded">
       <h3 class="text-danger">@Model.ResumenHoy.AjustesPendientes</h3>
- <small class="text-muted">Ajustes Pendientes</small>
+ <small>Ajustes Pendientes</small>
  </div>
  </div>
    </div>
-        </div>
+     </div>
     </div>
 }
 
@@ -82,19 +82,19 @@
 <div class="card-body">
 <div class="row mb-3">
   <div class="col-md-4">
-  <div class="text-center p-3 bg-light rounded">
+  <div class="text-center p-3 bg-dark text-white rounded border border-secondary">
 <h3>@Model.InventarioActual.TotalProductos</h3>
  <small>Productos Diferentes</small>
     </div>
    </div>
     <div class="col-md-4">
-   <div class="text-center p-3 bg-light rounded">
+   <div class="text-center p-3 bg-dark text-white rounded border border-secondary">
      <h3>@Model.InventarioActual.TotalUbicaciones</h3>
 <small>Ubicaciones con Stock</small>
  </div>
    </div>
   <div class="col-md-4">
-  <div class="text-center p-3 bg-light rounded">
+  <div class="text-center p-3 bg-dark text-white rounded border border-secondary">
 <h3>@Model.InventarioActual.CantidadTotalItems</h3>
   <small>Items Totales</small>
   </div>
@@ -106,7 +106,7 @@
  <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#porProducto" type="button">Por Producto</button>
   </li>
  <li class="nav-item" role="presentation">
-<button class="nav-link" data-bs-toggle="tab" data-bs-target="#porUbicacion" type="button">Por Ubicaci&oacute;n</button>
+<button class="nav-link" data-bs-toggle="tab" data-bs-target="#porUbicacion" type="button">Por Ubicación</button>
   </li>
    </ul>
 
@@ -120,7 +120,7 @@
    <thead>
      <tr>
   <th>Producto</th>
-       <th class="text-end">Cantidad Total</th>
+<th class="text-end">Cantidad Total</th>
    <th class="text-center">Ubicaciones</th>
 <th class="text-center">Lotes</th>
   </tr>
@@ -139,8 +139,8 @@
     </table>
   </div>
   }
-   else
-  {
+ else
+{
    <div class="alert alert-info">No hay stock registrado</div>
    }
  </div>
@@ -151,10 +151,10 @@
      {
     <div class="table-responsive">
  <table class="table table-sm table-hover">
-    <thead>
+ <thead>
  <tr>
  <th>Sede</th>
-   <th>Ubicaci&oacute;n</th>
+   <th>Ubicación</th>
     <th class="text-end">Cantidad Total</th>
    <th class="text-center">Items Diferentes</th>
     </tr>
@@ -174,31 +174,11 @@
  </div>
    }
   else
-       {
+   {
  <div class="alert alert-info">No hay stock registrado</div>
     }
    </div>
    </div>
   </div>
-    </div>
+ </div>
 }
-
-<!-- Enlaces Rapidos a Otros Reportes -->
-<div class="card">
-    <div class="card-header">
-     <h5 class="mb-0">?? Otros Reportes Disponibles</h5>
- </div>
- <div class="card-body">
-   <div class="list-group">
-  <a href="/Reportes/Movimientos" class="list-group-item list-group-item-action">
-    Historial de Movimientos
- </a>
-   <a href="/Reportes/Tareas" class="list-group-item list-group-item-action">
- Reporte de Tareas
-    </a>
-   <a href="/Admin/AuditLogs/Index" class="list-group-item list-group-item-action">
-Auditor&iacute;a del Sistema
-</a>
-   </div>
- </div>
-</div>
