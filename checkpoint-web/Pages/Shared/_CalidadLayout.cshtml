@@ -23,7 +23,7 @@
     <header>
         <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom box-shadow mb-0">
    <div class="container-fluid">
-        <a class="navbar-brand me-3 d-flex align-items-center" href="/Calidad/Dashboard">
+        <a class="navbar-brand me-3 d-flex align-items-center" href="/Calidad/ControlCalidad">
      <img src="~/images/logo-icon.png" alt="Logo Checkpoint" class="logo-mini me-1" />
     <img src="~/images/logo-text.png" alt="Texto Checkpoint" class="logo-text" />
        </a>
@@ -36,7 +36,7 @@
          <div class="collapse navbar-collapse" id="topNavbar">
          <ul class="navbar-nav me-auto mb-2 mb-md-0">
   <li class="nav-item">
-      <a class="nav-link" href="/Calidad/Dashboard">Inicio</a>
+      <a class="nav-link" href="/Calidad/ControlCalidad">Inicio</a>
       </li>
   </ul>
 
@@ -55,8 +55,8 @@
        Hola, @User.Identity.Name
         </a>
   <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-       <li><a class="dropdown-item" href="/Calidad/Dashboard">Mi Panel</a></li>
-       @if (User.IsInRole("Administrador"))
+  <li><a class="dropdown-item" href="/Calidad/ControlCalidad">Revisar Lotes</a></li>
+   @if (User.IsInRole("Administrador"))
     {
  <li><a class="dropdown-item" href="/Admin/Dashboard">Panel Administrador</a></li>
     }
@@ -64,13 +64,13 @@
     {
    <li><a class="dropdown-item" href="/Bodega/Dashboard">Panel Bodega</a></li>
    }
-        <li><hr class="dropdown-divider" /></li>
+ <li><hr class="dropdown-divider" /></li>
       <li>
  <form method="post" asp-page="/Account/Logout" class="d-inline">
   @Html.AntiForgeryToken()
     <button type="submit" class="btn btn-link dropdown-item text-start">Cerrar Sesión</button>
  </form>
-          </li>
+    </li>
 </ul>
           </li>
         }
@@ -85,15 +85,13 @@
   <div class="row">
       <nav class="col-md-2 d-none d-md-block sidebar py-3">
       <div class="nav flex-column">
-         <div class="sidebar-section-header">PANEL CALIDAD</div>
-        <a class="nav-link active" href="#" data-url="/Calidad/Dashboard" data-path="/Calidad/Dashboard">Dashboard</a>
 
-          <div class="sidebar-section-header">CONTROL DE CALIDAD</div>
-     <a class="nav-link" href="#" data-url="/Calidad/ControlCalidad/Index" data-path="/Calidad/ControlCalidad">Revisar Lotes</a>
+        <div class="sidebar-section-header">CONTROL DE CALIDAD</div>
+     <a class="nav-link active" href="#" data-url="/Calidad/ControlCalidad/Index" data-path="/Calidad/ControlCalidad">Revisar Lotes</a>
     <a class="nav-link" href="#" data-url="/Calidad/Historial" data-path="/Calidad/Historial">Historial Completo</a>
 
-    <div class="sidebar-section-header">REPORTES</div>
-         <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes">Dashboard Reportes</a>
+   <div class="sidebar-section-header">REPORTES</div>
+   <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes">Dashboard Reportes</a>
 <a class="nav-link" href="/Reportes/Movimientos" target="_blank">Historial Movimientos</a>
   <a class="nav-link" href="/Reportes/Tareas" target="_blank">Reporte Tareas</a>
         <a class="nav-link" href="/Admin/AuditLogs/Index" target="_blank">Auditoría Sistema</a>
@@ -114,10 +112,9 @@
     <script>
    (function () {
      const mapping = {
-      '/Calidad/Dashboard': '/Calidad/Dashboard',
-  '/Calidad/ControlCalidad': '/Calidad/ControlCalidad/Index',
+'/Calidad/ControlCalidad': '/Calidad/ControlCalidad/Index',
        '/Calidad/Historial': '/Calidad/Historial',
-     '/Reportes': '/Reportes/Index'
+  '/Reportes': '/Reportes/Index'
       };
 
   function loadUrl(url, replaceState) {
@@ -206,9 +203,9 @@ console.error('Navigation error - HTTP:', resp.status, resp.statusText);
         }
        });
 
-       // Initial load: if not on dashboard root, load mapped fragment
+       // Initial load: if not on ControlCalidad root, load mapped fragment
     var initial = location.pathname;
-     if (initial && initial !== '/Calidad/Dashboard' && mapping[initial]) {
+     if (initial && initial !== '/Calidad/ControlCalidad' && mapping[initial]) {
      loadUrl(mapping[initial], true);
        }
   });
