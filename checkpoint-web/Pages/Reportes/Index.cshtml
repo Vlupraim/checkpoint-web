@@ -5,14 +5,14 @@
     Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_Layout.cshtml";
 }
 
-<h2>?? Reportes e Indicadores</h2>
+<h2>Reportes e Indicadores</h2>
 
 <!-- Resumen Operativo del Dia -->
 @if (Model.ResumenHoy != null)
 {
     <div class="card mb-4">
    <div class="card-header bg-primary text-white">
-       <h5 class="mb-0">?? Resumen Operativo - @Model.ResumenHoy.Fecha.ToString("dddd, dd MMMM yyyy")</h5>
+ <h5 class="mb-0">Resumen Operativo - @Model.ResumenHoy.Fecha.ToString("dddd, dd MMMM yyyy")</h5>
   </div>
   <div class="card-body">
       <div class="row g-3">
@@ -77,7 +77,7 @@
 {
 <div class="card mb-4">
    <div class="card-header">
-      <h5 class="mb-0">?? Inventario Actual - Generado: @Model.InventarioActual.FechaGeneracion.ToString("dd/MM/yyyy HH:mm")</h5>
+<h5 class="mb-0">Inventario Actual - Generado: @Model.InventarioActual.FechaGeneracion.ToString("dd/MM/yyyy HH:mm")</h5>
  </div>
 <div class="card-body">
 <div class="row mb-3">
