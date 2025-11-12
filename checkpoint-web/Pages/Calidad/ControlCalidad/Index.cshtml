@@ -1,11 +1,12 @@
 @page
 @model checkpoint_web.Pages.Calidad.ControlCalidad.IndexModel
 @{
-    ViewData["Title"] = "Control de Calidad";
-  Layout = "/Pages/Shared/_Layout.cshtml";
+ ViewData["Title"] = "Control de Calidad";
+    // Detectar si es una llamada AJAX del SPA
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_CalidadLayout.cshtml";
 }
 
-<h2> Control de Calidad</h2>
+<h2>Control de Calidad</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -26,34 +27,34 @@
 <!-- Estadisticas -->
 <div class="row g-3 mb-4">
     <div class="col-md-3">
-        <div class="card bg-warning text-dark">
-   <div class="card-body">
-    <h6>Pendientes</h6>
-       <h3>@Model.Estadisticas.GetValueOrDefault("LotesPendientes", 0)</h3>
+<div class="card bg-warning text-dark">
+   <div class="card-body text-center">
+    <h6 class="mb-2">Pendientes</h6>
+       <h2 class="mb-0">@Model.Estadisticas.GetValueOrDefault("LotesPendientes", 0)</h2>
    </div>
   </div>
  </div>
  <div class="col-md-3">
   <div class="card bg-success text-white">
-     <div class="card-body">
-    <h6>Aprobados</h6>
-       <h3>@Model.Estadisticas.GetValueOrDefault("LotesAprobados", 0)</h3>
+  <div class="card-body text-center">
+    <h6 class="mb-2">Aprobados</h6>
+       <h2 class="mb-0">@Model.Estadisticas.GetValueOrDefault("LotesAprobados", 0)</h2>
    </div>
   </div>
  </div>
     <div class="col-md-3">
  <div class="card bg-danger text-white">
-       <div class="card-body">
-     <h6>Rechazados</h6>
-  <h3>@Model.Estadisticas.GetValueOrDefault("LotesRechazados", 0)</h3>
+       <div class="card-body text-center">
+     <h6 class="mb-2">Rechazados</h6>
+  <h2 class="mb-0">@Model.Estadisticas.GetValueOrDefault("LotesRechazados", 0)</h2>
    </div>
  </div>
     </div>
 <div class="col-md-3">
   <div class="card bg-dark text-white">
-  <div class="card-body">
-       <h6>Bloqueados</h6>
- <h3>@Model.Estadisticas.GetValueOrDefault("LotesBloqueados", 0)</h3>
+  <div class="card-body text-center">
+       <h6 class="mb-2">Bloqueados</h6>
+ <h2 class="mb-0">@Model.Estadisticas.GetValueOrDefault("LotesBloqueados", 0)</h2>
 </div>
    </div>
     </div>
@@ -61,8 +62,8 @@
 
 <!-- Lotes Pendientes de Revision -->
 <div class="card mb-4">
-    <div class="card-header bg-warning">
-        <h5 class="mb-0"> Lotes Pendientes de Revisi&oacute;n</h5>
+    <div class="card-header bg-warning text-dark">
+  <h5 class="mb-0">Lotes Pendientes de Revisión</h5>
     </div>
     <div class="card-body">
  @if (Model.LotesPendientes.Any())
@@ -71,7 +72,7 @@
  <table class="table table-hover">
  <thead>
    <tr>
-        <th>C&oacute;digo Lote</th>
+        <th>Código Lote</th>
 <th>Producto</th>
   <th>Proveedor</th>
   <th>Fecha Ingreso</th>
@@ -85,33 +86,33 @@
        <tr>
      <td><strong>@lote.CodigoLote</strong></td>
  <td>@lote.Producto?.Nombre</td>
-        <td>@(lote.Proveedor?.Nombre ?? "-")</td>
+    <td>@(lote.Proveedor?.Nombre ?? "-")</td>
   <td>@lote.FechaIngreso.ToString("dd/MM/yyyy")</td>
 <td>@lote.CantidadInicial</td>
     <td>
- <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" 
+ <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" 
  data-bs-target="#revisionModal" data-lote-id="@lote.Id" data-lote-codigo="@lote.CodigoLote" 
-     data-producto="@lote.Producto?.Nombre">
-    ? Revisar
+   data-producto="@lote.Producto?.Nombre">
+    Revisar
   </button>
    </td>
        </tr>
   }
  </tbody>
-       </table>
+   </table>
   </div>
         }
 else
         {
- <div class="alert alert-info">No hay lotes pendientes de revisi&oacute;n</div>
-        }
+ <div class="alert alert-info">No hay lotes pendientes de revisión</div>
+  }
  </div>
 </div>
 
 <!-- Historial Reciente -->
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">?? Historial de Revisiones (&Uacute;ltimos 30)</h5>
+     <h5 class="mb-0">Historial de Revisiones (Últimos 30)</h5>
  </div>
     <div class="card-body">
     @if (Model.Historial.Any())
@@ -124,10 +125,10 @@ else
      <th>Lote</th>
        <th>Producto</th>
   <th>Resultado</th>
-     <th>Observaciones</th>
+ <th>Observaciones</th>
  <th>Revisado por</th>
       </tr>
-  </thead>
+</thead>
  <tbody>
         @foreach (var rev in Model.Historial)
 {
@@ -138,7 +139,7 @@ else
 "Bloqueado" => "badge bg-dark",
  _ => "badge bg-secondary"
       };
-    <tr>
+  <tr>
 <td>@rev.Fecha.ToString("dd/MM/yyyy")</td>
     <td>@rev.Lote?.CodigoLote</td>
  <td>@rev.Lote?.Producto?.Nombre</td>
@@ -160,40 +161,40 @@ else
 
 <!-- Modal de Revision -->
 <div class="modal fade" id="revisionModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
  <div class="modal-content">
  <form method="post">
-  <div class="modal-header">
-      <h5 class="modal-title">?? Revisi&oacute;n de Calidad</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+  <div class="modal-header bg-primary text-white">
+      <h5 class="modal-title">Revisión de Calidad</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
   </div>
   <div class="modal-body">
   <input type="hidden" asp-for="LoteId" id="loteIdInput" />
      <input type="hidden" asp-for="Accion" id="accionInput" />
     
        <div class="mb-3">
-     <strong>Lote:</strong> <span id="loteCodigoSpan"></span>
+     <strong>Lote:</strong> <span id="loteCodigoSpan" class="badge bg-secondary fs-6"></span>
   </div>
      <div class="mb-3">
-     <strong>Producto:</strong> <span id="productoSpan"></span>
+     <strong>Producto:</strong> <span id="productoSpan" class="text-primary"></span>
  </div>
-    
+ 
         <div class="mb-3">
-        <label asp-for="Observacion" class="form-label">Observaciones</label>
+    <label asp-for="Observacion" class="form-label">Observaciones</label>
  <textarea asp-for="Observacion" class="form-control" rows="4" 
  placeholder="Registre sus observaciones sobre la calidad del lote..."></textarea>
  <small class="text-muted">Requerido para rechazo o bloqueo</small>
-   </div>
+ </div>
    </div>
   <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
- <button type="submit" class="btn btn-success" onclick="document.getElementById('accionInput').value='Aprobar';">
-   ? Aprobar Lote
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+ <button type="submit" class="btn btn-success" onclick="document.getElementById('accionInput').value='Aprobar'; return true;">
+   ? Liberar Lote
  </button>
- <button type="submit" class="btn btn-danger" onclick="document.getElementById('accionInput').value='Rechazar';">
+ <button type="submit" class="btn btn-danger" onclick="document.getElementById('accionInput').value='Rechazar'; return true;">
   ? Rechazar
 </button>
- <button type="submit" class="btn btn-dark" onclick="document.getElementById('accionInput').value='Bloquear';">
+ <button type="submit" class="btn btn-dark" onclick="document.getElementById('accionInput').value='Bloquear'; return true;">
  ?? Bloquear
    </button>
  </div>
@@ -203,8 +204,10 @@ else
 </div>
 
 @section Scripts {
-    <script>
- document.getElementById('revisionModal').addEventListener('show.bs.modal', function (event) {
+ <script>
+ var revisionModal = document.getElementById('revisionModal');
+        if (revisionModal) {
+  revisionModal.addEventListener('show.bs.modal', function (event) {
    var button = event.relatedTarget;
 var loteId = button.getAttribute('data-lote-id');
    var loteCodigo = button.getAttribute('data-lote-codigo');
@@ -214,5 +217,6 @@ var loteId = button.getAttribute('data-lote-id');
    document.getElementById('loteCodigoSpan').textContent = loteCodigo;
 document.getElementById('productoSpan').textContent = producto;
         });
-    </script>
+        }
+  </script>
 }

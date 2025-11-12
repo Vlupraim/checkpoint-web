@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Authorization;
 using checkpoint_web.Models;
 using checkpoint_web.Services;
+using System.Security.Claims;
 
 namespace checkpoint_web.Pages.Calidad.ControlCalidad
 {
@@ -38,40 +39,41 @@ public async Task OnGetAsync()
  {
             try
   {
-      var usuario = User.Identity?.Name ?? "calidad";
-       
+      // CORREGIDO: Usar UserId en lugar de email
+    var usuario = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier) ?? "calidad";
+ 
     switch (Accion)
  {
       case "Aprobar":
        await _calidadService.AprobarLoteAsync(LoteId, usuario, Observacion);
-     TempData["SuccessMessage"] = "Lote aprobado exitosamente";
+  TempData["SuccessMessage"] = "? Lote aprobado y liberado para uso exitosamente";
  break;
 case "Rechazar":
-        if (string.IsNullOrWhiteSpace(Observacion))
-     {
-    TempData["ErrorMessage"] = "Debe especificar el motivo del rechazo";
+  if (string.IsNullOrWhiteSpace(Observacion))
+  {
+    TempData["ErrorMessage"] = "?? Debe especificar el motivo del rechazo";
   return RedirectToPage();
       }
  await _calidadService.RechazarLoteAsync(LoteId, usuario, Observacion);
-        TempData["SuccessMessage"] = "Lote rechazado";
+        TempData["SuccessMessage"] = "? Lote rechazado correctamente";
    break;
    case "Bloquear":
     if (string.IsNullOrWhiteSpace(Observacion))
   {
-    TempData["ErrorMessage"] = "Debe especificar el motivo del bloqueo";
+  TempData["ErrorMessage"] = "?? Debe especificar el motivo del bloqueo";
 return RedirectToPage();
   }
    await _calidadService.BloquearLoteAsync(LoteId, usuario, Observacion);
-TempData["SuccessMessage"] = "Lote bloqueado";
+TempData["SuccessMessage"] = "?? Lote bloqueado para investigación";
       break;
        default:
-   TempData["ErrorMessage"] = "Acción no válida";
+   TempData["ErrorMessage"] = "? Acción no válida";
      break;
 }
  }
   catch (Exception ex)
      {
-   TempData["ErrorMessage"] = ex.Message;
+   TempData["ErrorMessage"] = $"? Error: {ex.Message}";
   }
 
     return RedirectToPage();
