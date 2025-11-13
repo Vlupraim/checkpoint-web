@@ -111,8 +111,8 @@
 
   <div class="sidebar-section-header">REPORTES</div>
        <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes">Dashboard Reportes</a>
- <a class="nav-link" href="/Reportes/Movimientos" target="_blank">Historial Movimientos</a>
-      <a class="nav-link" href="/Reportes/Tareas" target="_blank">Reporte Tareas</a>
+ <a class="nav-link" href="#" data-url="/Reportes/Movimientos" data-path="/Reportes/Movimientos">Historial Movimientos</a>
+    <a class="nav-link" href="#" data-url="/Reportes/Tareas" data-path="/Reportes/Tareas">Reporte Tareas</a>
   <a class="nav-link" href="#" data-url="/Admin/AuditLogs/Index" data-path="/Admin/AuditLogs">Auditoría Sistema</a>
         </div>
         </nav>
@@ -136,13 +136,15 @@
   const mapping = {
      '/Productos': '/Fragments/Productos',
 '/Admin/Users': '/Fragments/Usuarios',
-       '/Admin/Dashboard': '/Admin/Dashboard',
-        '/Admin/Sedes': '/Admin/Sedes/Index',
+    '/Admin/Dashboard': '/Admin/Dashboard',
+'/Admin/Sedes': '/Admin/Sedes/Index',
       '/Admin/Ubicaciones': '/Admin/Ubicaciones/Index',
       '/Admin/Tareas': '/Admin/Tareas/Index',
-          '/Admin/Clientes': '/Admin/Clientes/Index',
+  '/Admin/Clientes': '/Admin/Clientes/Index',
     '/Admin/Proveedores': '/Admin/Proveedores/Index',
-    '/Reportes': '/Reportes/Index',
+ '/Reportes': '/Reportes/Index',
+      '/Reportes/Movimientos': '/Reportes/Movimientos',
+      '/Reportes/Tareas': '/Reportes/Tareas',
   '/Admin/AuditLogs': '/Admin/AuditLogs/Index'
  };
 
