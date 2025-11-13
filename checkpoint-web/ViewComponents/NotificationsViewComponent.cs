@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using checkpoint_web.Services;
+using System.Security.Claims;
 
 namespace checkpoint_web.ViewComponents
 {
@@ -14,7 +15,8 @@ namespace checkpoint_web.ViewComponents
 
 public async Task<IViewComponentResult> InvokeAsync()
     {
-  var userId = UserClaimsPrincipal?.Identity?.Name ?? string.Empty;
+      // CORREGIDO: Usar NameIdentifier (UserId) en lugar de Name (email)
+  var userId = UserClaimsPrincipal?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
   
 if (string.IsNullOrEmpty(userId))
       return View(new NotificationsViewModel { Notificaciones = new List<checkpoint_web.Models.Notificacion>() });
@@ -34,7 +36,7 @@ if (string.IsNullOrEmpty(userId))
 
     public class NotificationsViewModel
     {
-        public List<checkpoint_web.Models.Notificacion> Notificaciones { get; set; } = new();
+      public List<checkpoint_web.Models.Notificacion> Notificaciones { get; set; } = new();
  public int Count { get; set; }
     }
 }
