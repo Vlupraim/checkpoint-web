@@ -55,21 +55,21 @@
     </a>
        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
    <li><a class="dropdown-item" href="/Account/DashboardRedirect">
-       ?? Mi Panel
+       <i class="bi bi-house"></i> Mi Panel
    </a></li>
  @if (User.IsInRole("Administrador")) {
      <li><a class="dropdown-item" href="/Admin/Dashboard">
-        ?? Panel Administrador
-            </a></li>
+        <i class="bi bi-gear"></i> Panel Administrador
+    </a></li>
     }
        @if (User.IsInRole("PersonalBodega")) {
          <li><a class="dropdown-item" href="/Bodega/Dashboard">
-    ?? Panel Bodega
+    <i class="bi bi-box"></i> Panel Bodega
          </a></li>
     }
   @if (User.IsInRole("ControlCalidad")) {
  <li><a class="dropdown-item" href="/Calidad/Dashboard">
-    ? Panel Calidad
+    <i class="bi bi-check-circle"></i> Panel Calidad
         </a></li>
 }
  <li><hr class="dropdown-divider" /></li>
@@ -77,11 +77,11 @@
     <form method="post" asp-page="/Account/Logout" class="d-inline">
      @Html.AntiForgeryToken()
  <button type="submit" class="btn btn-link dropdown-item text-start">
-     ?? Cerrar Sesión
+     <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
       </button>
   </form>
  </li>
-       </ul>
+     </ul>
      </li>
     }
      </ul>
@@ -95,53 +95,53 @@
    <div class="row">
   <nav class="col-md-2 d-none d-md-block sidebar py-3">
       <div class="nav flex-column">
-     <div class="sidebar-section-header">?? PANEL PRINCIPAL</div>
+<div class="sidebar-section-header">PANEL PRINCIPAL</div>
    <a class="nav-link active" href="#" data-url="/Admin/Dashboard" data-path="/Admin/Dashboard">
-            ?? Dashboard
+     <i class="bi bi-speedometer2"></i> Dashboard
     </a>
 
-        <div class="sidebar-section-header">?? GESTIÓN DE ACCESOS</div>
+        <div class="sidebar-section-header">GESTIÓN DE ACCESOS</div>
   <a class="nav-link" href="#" data-url="/Fragments/Usuarios" data-path="/Admin/Users">
-      ?? Usuarios y Roles
-            </a>
+      <i class="bi bi-people"></i> Usuarios y Roles
+         </a>
 
-   <div class="sidebar-section-header">?? INFRAESTRUCTURA</div>
+   <div class="sidebar-section-header">INFRAESTRUCTURA</div>
          <a class="nav-link" href="#" data-url="/Admin/Sedes/Index" data-path="/Admin/Sedes">
-   ??? Sedes
+   <i class="bi bi-building"></i> Sedes
           </a>
     <a class="nav-link" href="#" data-url="/Admin/Ubicaciones/Index" data-path="/Admin/Ubicaciones">
-     ?? Ubicaciones
+     <i class="bi bi-geo-alt"></i> Ubicaciones
      </a>
 
-   <div class="sidebar-section-header">?? GESTIÓN DE PROCESOS</div>
+   <div class="sidebar-section-header">GESTIÓN DE PROCESOS</div>
            <a class="nav-link" href="#" data-url="/Admin/Tareas/Index" data-path="/Admin/Tareas">
-    ? Tareas y Procesos
+    <i class="bi bi-check2-square"></i> Tareas y Procesos
          </a>
 
-     <div class="sidebar-section-header">?? CATÁLOGOS</div>
+     <div class="sidebar-section-header">CATÁLOGOS</div>
    <a class="nav-link" href="#" data-url="/Fragments/Productos" data-path="/Productos">
-        ??? Productos
+  <i class="bi bi-box-seam"></i> Productos
       </a>
   <a class="nav-link" href="#" data-url="/Admin/Clientes/Index" data-path="/Admin/Clientes">
-                ?? Clientes
+           <i class="bi bi-person-badge"></i> Clientes
           </a>
    <a class="nav-link" href="#" data-url="/Admin/Proveedores/Index" data-path="/Admin/Proveedores">
-    ?? Proveedores
+    <i class="bi bi-truck"></i> Proveedores
   </a>
 
-  <div class="sidebar-section-header">?? REPORTES</div>
-       <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes">
-  ?? Dashboard Reportes
+  <div class="sidebar-section-header">REPORTES</div>
+    <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes">
+  <i class="bi bi-graph-up"></i> Dashboard Reportes
        </a>
  <a class="nav-link" href="#" data-url="/Reportes/Movimientos" data-path="/Reportes/Movimientos">
-     ?? Historial Movimientos
-         </a>
+     <i class="bi bi-list-check"></i> Historial Movimientos
+    </a>
     <a class="nav-link" href="#" data-url="/Reportes/Tareas" data-path="/Reportes/Tareas">
-          ?? Reporte Tareas
-            </a>
+       <i class="bi bi-clipboard-data"></i> Reporte Tareas
+       </a>
   <a class="nav-link" href="#" data-url="/Admin/AuditLogs/Index" data-path="/Admin/AuditLogs">
-     ?? Auditoría Sistema
-            </a>
+     <i class="bi bi-shield-check"></i> Auditoría Sistema
+      </a>
   </div>
         </nav>
  <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-3">

@@ -4,18 +4,18 @@
     ViewData["Title"] = "Ubicaciones";
     Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_AdminLayout.cshtml";
 }
-<h1>?? Ubicaciones</h1>
+<h1><i class="bi bi-geo-alt"></i> Ubicaciones</h1>
 <p><a class="btn btn-primary" asp-page="Create">
     <i class="bi bi-plus-circle"></i> Crear nueva Ubicación
 </a></p>
 <table class="table">
  <thead>
  <tr>
-     <th>??? Sede</th>
-         <th>?? Código</th>
-         <th>?? Tipo</th>
-         <th>?? Capacidad</th>
-         <th>?? Acciones</th>
+     <th><i class="bi bi-building"></i> Sede</th>
+         <th><i class="bi bi-upc"></i> Código</th>
+  <th><i class="bi bi-archive"></i> Tipo</th>
+   <th><i class="bi bi-rulers"></i> Capacidad</th>
+         <th>Acciones</th>
     </tr>
  </thead>
  <tbody>

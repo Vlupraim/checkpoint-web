@@ -56,30 +56,30 @@
            </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
     <li><a class="dropdown-item" href="/Bodega/Dashboard">
-     ?? Mi Panel
+     <i class="bi bi-house"></i> Mi Panel
 </a></li>
    @if (User.IsInRole("Administrador"))
      {
      <li><a class="dropdown-item" href="/Admin/Dashboard">
-     ?? Panel Administrador
-           </a></li>
+     <i class="bi bi-gear"></i> Panel Administrador
+    </a></li>
   }
        @if (User.IsInRole("ControlCalidad"))
   {
  <li><a class="dropdown-item" href="/Calidad/Dashboard">
-     ? Panel Calidad
+ <i class="bi bi-check-circle"></i> Panel Calidad
      </a></li>
-      }
+  }
        <li><hr class="dropdown-divider" /></li>
     <li>
   <form method="post" asp-page="/Account/Logout" class="d-inline">
       @Html.AntiForgeryToken()
     <button type="submit" class="btn btn-link dropdown-item text-start">
-     ?? Cerrar Sesión
-       </button>
+     <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+    </button>
      </form>
 </li>
-           </ul>
+        </ul>
             </li>
              }
     </ul>
@@ -93,44 +93,44 @@
   <div class="row">
  <nav class="col-md-2 d-none d-md-block sidebar py-3">
      <div class="nav flex-column">
-  <div class="sidebar-section-header">?? PANEL BODEGA</div>
+  <div class="sidebar-section-header">PANEL BODEGA</div>
    <a class="nav-link active" href="#" data-url="/Bodega/Dashboard" data-path="/Bodega/Dashboard">
-          ?? Dashboard
+       <i class="bi bi-speedometer2"></i> Dashboard
          </a>
 
-      <div class="sidebar-section-header">? OPERACIONES</div>
+      <div class="sidebar-section-header">OPERACIONES</div>
    <a class="nav-link" href="#" data-url="/Bodega/Recepcion" data-path="/Bodega/Recepcion">
-    ?? Nueva Recepción
+    <i class="bi bi-box-arrow-in-down"></i> Nueva Recepción
          </a>
 <a class="nav-link" href="#" data-url="/Bodega/Movimientos" data-path="/Bodega/Movimientos">
-    ?? Movimientos
+    <i class="bi bi-arrow-left-right"></i> Movimientos
    </a>
-            <a class="nav-link" href="#" data-url="/Bodega/Traslados" data-path="/Bodega/Traslados">
-     ?? Traslados
+       <a class="nav-link" href="#" data-url="/Bodega/Traslados" data-path="/Bodega/Traslados">
+     <i class="bi bi-truck"></i> Traslados
       </a>
       <a class="nav-link" href="#" data-url="/Bodega/Ajustes" data-path="/Bodega/Ajustes">
-     ?? Ajustes
+     <i class="bi bi-sliders"></i> Ajustes
     </a>
 
-               <div class="sidebar-section-header">?? CONSULTAS</div>
+               <div class="sidebar-section-header">CONSULTAS</div>
        <a class="nav-link" href="#" data-url="/Bodega/Stock" data-path="/Bodega/Stock">
-     ?? Stock Actual
-       </a>
+     <i class="bi bi-stack"></i> Stock Actual
+  </a>
  <a class="nav-link" href="#" data-url="/Bodega/Lotes" data-path="/Bodega/Lotes">
-       ??? Lotes
+       <i class="bi bi-tags"></i> Lotes
  </a>
 
-   <div class="sidebar-section-header">?? REPORTES</div>
+   <div class="sidebar-section-header">REPORTES</div>
     <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes">
-       ?? Dashboard Reportes
+       <i class="bi bi-graph-up"></i> Dashboard Reportes
        </a>
          <a class="nav-link" href="/Reportes/Movimientos" target="_blank">
-  ?? Historial Movimientos
+  <i class="bi bi-list-check"></i> Historial Movimientos
        </a>
    <a class="nav-link" href="/Reportes/Tareas" target="_blank">
-    ?? Reporte Tareas
+  <i class="bi bi-clipboard-data"></i> Reporte Tareas
 </a>
-    </div>
+ </div>
   </nav>
    <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-3">
     <div id="bodegaContent">
