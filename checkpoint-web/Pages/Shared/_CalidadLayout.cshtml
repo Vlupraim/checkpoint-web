@@ -55,20 +55,28 @@
        Hola, @User.Identity.Name
         </a>
   <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-  <li><a class="dropdown-item" href="/Calidad/ControlCalidad">Revisar Lotes</a></li>
+  <li><a class="dropdown-item" href="/Calidad/ControlCalidad">
+    ?? Revisar Lotes
+       </a></li>
    @if (User.IsInRole("Administrador"))
     {
- <li><a class="dropdown-item" href="/Admin/Dashboard">Panel Administrador</a></li>
+ <li><a class="dropdown-item" href="/Admin/Dashboard">
+   ?? Panel Administrador
+      </a></li>
     }
       @if (User.IsInRole("PersonalBodega"))
     {
-   <li><a class="dropdown-item" href="/Bodega/Dashboard">Panel Bodega</a></li>
+   <li><a class="dropdown-item" href="/Bodega/Dashboard">
+   ?? Panel Bodega
+  </a></li>
    }
  <li><hr class="dropdown-divider" /></li>
       <li>
  <form method="post" asp-page="/Account/Logout" class="d-inline">
   @Html.AntiForgeryToken()
-    <button type="submit" class="btn btn-link dropdown-item text-start">Cerrar Sesión</button>
+    <button type="submit" class="btn btn-link dropdown-item text-start">
+       ?? Cerrar Sesión
+     </button>
  </form>
     </li>
 </ul>
@@ -86,17 +94,29 @@
       <nav class="col-md-2 d-none d-md-block sidebar py-3">
       <div class="nav flex-column">
 
-        <div class="sidebar-section-header">CONTROL DE CALIDAD</div>
-     <a class="nav-link active" href="#" data-url="/Calidad/ControlCalidad/Index" data-path="/Calidad/ControlCalidad">Revisar Lotes</a>
-    <a class="nav-link" href="#" data-url="/Calidad/Historial" data-path="/Calidad/Historial">Historial Completo</a>
+     <div class="sidebar-section-header">? CONTROL DE CALIDAD</div>
+     <a class="nav-link active" href="#" data-url="/Calidad/ControlCalidad/Index" data-path="/Calidad/ControlCalidad">
+   ?? Revisar Lotes
+  </a>
+    <a class="nav-link" href="#" data-url="/Calidad/Historial" data-path="/Calidad/Historial">
+    ?? Historial Completo
+</a>
 
-   <div class="sidebar-section-header">REPORTES</div>
-   <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes">Dashboard Reportes</a>
-<a class="nav-link" href="/Reportes/Movimientos" target="_blank">Historial Movimientos</a>
-  <a class="nav-link" href="/Reportes/Tareas" target="_blank">Reporte Tareas</a>
-        <a class="nav-link" href="/Admin/AuditLogs/Index" target="_blank">Auditoría Sistema</a>
+   <div class="sidebar-section-header">?? REPORTES</div>
+   <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes">
+    ?? Dashboard Reportes
+   </a>
+<a class="nav-link" href="/Reportes/Movimientos" target="_blank">
+       ?? Historial Movimientos
+</a>
+  <a class="nav-link" href="/Reportes/Tareas" target="_blank">
+      ?? Reporte Tareas
+</a>
+        <a class="nav-link" href="/Admin/AuditLogs/Index" target="_blank">
+   ?? Auditoría Sistema
+    </a>
     </div>
-        </nav>
+   </nav>
  <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-3">
     <div id="calidadContent">
 @RenderBody()

@@ -55,22 +55,30 @@
              Hola, @User.Identity.Name
            </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-    <li><a class="dropdown-item" href="/Bodega/Dashboard">Mi Panel</a></li>
-             @if (User.IsInRole("Administrador"))
+    <li><a class="dropdown-item" href="/Bodega/Dashboard">
+     ?? Mi Panel
+</a></li>
+   @if (User.IsInRole("Administrador"))
      {
-     <li><a class="dropdown-item" href="/Admin/Dashboard">Panel Administrador</a></li>
-        }
+     <li><a class="dropdown-item" href="/Admin/Dashboard">
+     ?? Panel Administrador
+           </a></li>
+  }
        @if (User.IsInRole("ControlCalidad"))
   {
- <li><a class="dropdown-item" href="/Calidad/Dashboard">Panel Calidad</a></li>
+ <li><a class="dropdown-item" href="/Calidad/Dashboard">
+     ? Panel Calidad
+     </a></li>
       }
        <li><hr class="dropdown-divider" /></li>
-      <li>
+    <li>
   <form method="post" asp-page="/Account/Logout" class="d-inline">
-             @Html.AntiForgeryToken()
-             <button type="submit" class="btn btn-link dropdown-item text-start">Cerrar Sesión</button>
+      @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-link dropdown-item text-start">
+     ?? Cerrar Sesión
+       </button>
      </form>
-                  </li>
+</li>
            </ul>
             </li>
              }
@@ -84,26 +92,46 @@
     <div class="container-fluid">
   <div class="row">
  <nav class="col-md-2 d-none d-md-block sidebar py-3">
-       <div class="nav flex-column">
-       <div class="sidebar-section-header">PANEL BODEGA</div>
-          <a class="nav-link active" href="#" data-url="/Bodega/Dashboard" data-path="/Bodega/Dashboard">Dashboard</a>
+     <div class="nav flex-column">
+  <div class="sidebar-section-header">?? PANEL BODEGA</div>
+   <a class="nav-link active" href="#" data-url="/Bodega/Dashboard" data-path="/Bodega/Dashboard">
+          ?? Dashboard
+         </a>
 
-      <div class="sidebar-section-header">OPERACIONES</div>
-   <a class="nav-link" href="#" data-url="/Bodega/Recepcion" data-path="/Bodega/Recepcion">Nueva Recepción</a>
-<a class="nav-link" href="#" data-url="/Bodega/Movimientos" data-path="/Bodega/Movimientos">Movimientos</a>
-            <a class="nav-link" href="#" data-url="/Bodega/Traslados" data-path="/Bodega/Traslados">Traslados</a>
-      <a class="nav-link" href="#" data-url="/Bodega/Ajustes" data-path="/Bodega/Ajustes">Ajustes</a>
+      <div class="sidebar-section-header">? OPERACIONES</div>
+   <a class="nav-link" href="#" data-url="/Bodega/Recepcion" data-path="/Bodega/Recepcion">
+    ?? Nueva Recepción
+         </a>
+<a class="nav-link" href="#" data-url="/Bodega/Movimientos" data-path="/Bodega/Movimientos">
+    ?? Movimientos
+   </a>
+            <a class="nav-link" href="#" data-url="/Bodega/Traslados" data-path="/Bodega/Traslados">
+     ?? Traslados
+      </a>
+      <a class="nav-link" href="#" data-url="/Bodega/Ajustes" data-path="/Bodega/Ajustes">
+     ?? Ajustes
+    </a>
 
-               <div class="sidebar-section-header">CONSULTAS</div>
-       <a class="nav-link" href="#" data-url="/Bodega/Stock" data-path="/Bodega/Stock">Stock Actual</a>
-            <a class="nav-link" href="#" data-url="/Bodega/Lotes" data-path="/Bodega/Lotes">Lotes</a>
+               <div class="sidebar-section-header">?? CONSULTAS</div>
+       <a class="nav-link" href="#" data-url="/Bodega/Stock" data-path="/Bodega/Stock">
+     ?? Stock Actual
+       </a>
+ <a class="nav-link" href="#" data-url="/Bodega/Lotes" data-path="/Bodega/Lotes">
+       ??? Lotes
+ </a>
 
-            <div class="sidebar-section-header">REPORTES</div>
-            <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes">Dashboard Reportes</a>
-         <a class="nav-link" href="/Reportes/Movimientos" target="_blank">Historial Movimientos</a>
-   <a class="nav-link" href="/Reportes/Tareas" target="_blank">Reporte Tareas</a>
+   <div class="sidebar-section-header">?? REPORTES</div>
+    <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes">
+       ?? Dashboard Reportes
+       </a>
+         <a class="nav-link" href="/Reportes/Movimientos" target="_blank">
+  ?? Historial Movimientos
+       </a>
+   <a class="nav-link" href="/Reportes/Tareas" target="_blank">
+    ?? Reporte Tareas
+</a>
     </div>
-        </nav>
+  </nav>
    <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-3">
     <div id="bodegaContent">
 @RenderBody()
