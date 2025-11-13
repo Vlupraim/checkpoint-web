@@ -62,12 +62,17 @@ body {
 
 .sidebar-section-header {
     color: var(--text-muted);
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 600;
+    /* Use text-transform for visual uppercase but keep accents intact */
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    padding: 1rem 1rem 0.5rem;
-    margin-top: 1rem;
+    letter-spacing: 1.2px;
+    padding: 0.9rem 1rem 0.4rem;
+    margin-top: 0.8rem;
+    /* Ensure a font that supports accented characters */
+    font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    /* Avoid font-variant: small-caps which can break accents in many fonts */
+    font-variant: normal;
 }
 
 .sidebar .nav-link {
