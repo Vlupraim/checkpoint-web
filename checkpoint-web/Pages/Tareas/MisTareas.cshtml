@@ -1,0 +1,240 @@
+@page
+@model checkpoint_web.Pages.Tareas.MisTareasModel
+@{
+    ViewData["Title"] = "Mis Tareas";
+    Layout = "/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>?? Mis Tareas</h2>
+ <div>
+<span class="badge bg-info">@User.Identity?.Name</span>
+    </div>
+</div>
+
+<!-- Estadísticas Rápidas -->
+<div class="row g-3 mb-4">
+    <div class="col-md-2">
+     <div class="card bg-primary text-white">
+      <div class="card-body text-center">
+      <h3>@Model.Estadisticas.GetValueOrDefault("Total", 0)</h3>
+ <small>Total</small>
+ </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+  <div class="card bg-warning text-dark">
+ <div class="card-body text-center">
+      <h3>@Model.Estadisticas.GetValueOrDefault("Pendientes", 0)</h3>
+ <small>Pendientes</small>
+     </div>
+   </div>
+    </div>
+    <div class="col-md-2">
+   <div class="card bg-info text-white">
+       <div class="card-body text-center">
+      <h3>@Model.Estadisticas.GetValueOrDefault("EnProgreso", 0)</h3>
+         <small>En Progreso</small>
+    </div>
+</div>
+    </div>
+    <div class="col-md-2">
+      <div class="card bg-success text-white">
+       <div class="card-body text-center">
+ <h3>@Model.Estadisticas.GetValueOrDefault("Finalizadas", 0)</h3>
+      <small>Finalizadas</small>
+      </div>
+  </div>
+    </div>
+ <div class="col-md-2">
+     <div class="card bg-danger text-white">
+         <div class="card-body text-center">
+           <h3>@Model.Estadisticas.GetValueOrDefault("Vencidas", 0)</h3>
+   <small>Vencidas</small>
+</div>
+        </div>
+    </div>
+    <div class="col-md-2">
+     <div class="card bg-dark text-white">
+         <div class="card-body text-center">
+       <h3>@Model.Estadisticas.GetValueOrDefault("HoyVencen", 0)</h3>
+       <small>Vencen Hoy</small>
+            </div>
+  </div>
+    </div>
+</div>
+
+<!-- Tareas Pendientes -->
+<div class="card mb-4">
+    <div class="card-header bg-warning">
+     <h5 class="mb-0">? Tareas Pendientes (@Model.TareasPendientes.Count())</h5>
+    </div>
+    <div class="card-body">
+  @if (Model.TareasPendientes.Any())
+        {
+            <div class="table-responsive">
+            <table class="table table-hover">
+       <thead>
+  <tr>
+   <th>Título</th>
+         <th>Prioridad</th>
+ <th>Tipo</th>
+    <th>Fecha Límite</th>
+     <th>Acciones</th>
+           </tr>
+  </thead>
+         <tbody>
+          @foreach (var tarea in Model.TareasPendientes)
+    {
+   var prioridadBadge = tarea.Prioridad switch
+          {
+    "Urgente" => "bg-danger",
+       "Alta" => "bg-warning text-dark",
+       "Media" => "bg-primary",
+      _ => "bg-secondary"
+        };
+
+           var vencida = tarea.FechaLimite.HasValue && tarea.FechaLimite.Value < DateTime.UtcNow;
+ var venceHoy = tarea.FechaLimite.HasValue && tarea.FechaLimite.Value.Date == DateTime.UtcNow.Date;
+
+   <tr class="@(vencida ? "table-danger" : venceHoy ? "table-warning" : "")">
+             <td>
+         <strong>@tarea.Titulo</strong>
+       @if (!string.IsNullOrEmpty(tarea.Descripcion))
+      {
+ <br/><small class="text-muted">@tarea.Descripcion.Substring(0, Math.Min(80, tarea.Descripcion.Length))...</small>
+           }
+     </td>
+        <td><span class="badge @prioridadBadge">@tarea.Prioridad</span></td>
+      <td>@(tarea.Tipo ?? "-")</td>
+             <td>
+                  @if (tarea.FechaLimite.HasValue)
+     {
+          if (vencida)
+          {
+       <span class="text-danger fw-bold">?? @tarea.FechaLimite.Value.ToString("dd/MM/yyyy")</span>
+         }
+     else if (venceHoy)
+       {
+    <span class="text-warning fw-bold">?? Hoy</span>
+     }
+    else
+    {
+          <span>@tarea.FechaLimite.Value.ToString("dd/MM/yyyy")</span>
+    }
+         }
+          else
+  {
+       <span class="text-muted">-</span>
+         }
+    </td>
+   <td>
+      <a href="/Admin/Tareas/Edit?id=@tarea.Id" class="btn btn-sm btn-primary">Ver Detalles</a>
+              </td>
+     </tr>
+         }
+       </tbody>
+    </table>
+     </div>
+   }
+        else
+   {
+       <div class="alert alert-info">? No tienes tareas pendientes</div>
+  }
+    </div>
+</div>
+
+<!-- Tareas En Progreso -->
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+   <h5 class="mb-0">?? Tareas En Progreso (@Model.TareasEnProgreso.Count())</h5>
+    </div>
+    <div class="card-body">
+        @if (Model.TareasEnProgreso.Any())
+   {
+          <div class="table-responsive">
+ <table class="table table-hover">
+           <thead>
+        <tr>
+<th>Título</th>
+     <th>Prioridad</th>
+     <th>Progreso</th>
+       <th>Fecha Límite</th>
+             <th>Acciones</th>
+       </tr>
+           </thead>
+    <tbody>
+       @foreach (var tarea in Model.TareasEnProgreso)
+        {
+    var prioridadBadge = tarea.Prioridad switch
+      {
+     "Urgente" => "bg-danger",
+      "Alta" => "bg-warning text-dark",
+      "Media" => "bg-primary",
+    _ => "bg-secondary"
+    };
+
+        <tr>
+ <td>
+       <strong>@tarea.Titulo</strong>
+   </td>
+    <td><span class="badge @prioridadBadge">@tarea.Prioridad</span></td>
+        <td>
+       <div class="progress" style="height: 25px; width: 150px;">
+  <div class="progress-bar @(tarea.Progreso >= 75 ? "bg-success" : tarea.Progreso >= 50 ? "bg-info" : "bg-warning")" 
+         role="progressbar" 
+       style="width: @tarea.Progreso%" 
+    aria-valuenow="@tarea.Progreso" 
+          aria-valuemin="0" 
+      aria-valuemax="100">
+     @tarea.Progreso%
+    </div>
+              </div>
+     </td>
+       <td>@(tarea.FechaLimite?.ToString("dd/MM/yyyy") ?? "-")</td>
+  <td>
+     <a href="/Admin/Tareas/Edit?id=@tarea.Id" class="btn btn-sm btn-info">Actualizar</a>
+      </td>
+   </tr>
+    }
+           </tbody>
+   </table>
+            </div>
+   }
+        else
+        {
+ <div class="alert alert-info">No tienes tareas en progreso</div>
+        }
+    </div>
+</div>
+
+<!-- Tareas Finalizadas Recientemente -->
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0">? Tareas Finalizadas Recientemente (Últimas 10)</h5>
+    </div>
+    <div class="card-body">
+        @if (Model.TareasFinalizadas.Any())
+        {
+ <div class="list-group">
+     @foreach (var tarea in Model.TareasFinalizadas)
+          {
+         <div class="list-group-item">
+      <div class="d-flex w-100 justify-content-between">
+  <h6 class="mb-1">@tarea.Titulo</h6>
+       <small>@tarea.FechaFinalizacion?.ToString("dd/MM/yyyy")</small>
+ </div>
+  @if (!string.IsNullOrEmpty(tarea.Descripcion))
+           {
+<p class="mb-1 text-muted small">@tarea.Descripcion.Substring(0, Math.Min(100, tarea.Descripcion.Length))...</p>
+    }
+        </div>
+    }
+  </div>
+   }
+        else
+        {
+          <div class="alert alert-info">No has finalizado tareas recientemente</div>
+ }
+ </div>
+</div>

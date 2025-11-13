@@ -25,7 +25,8 @@ namespace checkpoint_web.Data
         public DbSet<Procedimiento> Procedimientos { get; set; } = null!;
 public DbSet<Parametro> Parametros { get; set; } = null!;
     public DbSet<Notificacion> Notificaciones { get; set; } = null!;
-    
+    public DbSet<TareaComentario> TareaComentarios { get; set; } = null!;
+
     // DataProtection keys
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 
@@ -120,12 +121,19 @@ builder.Entity<Parametro>().HasIndex(p => p.Clave).IsUnique();
    .HasForeignKey(t => t.LoteId)
          .OnDelete(DeleteBehavior.SetNull);
 
-     // Relacion Notificacion -> Usuario
-      builder.Entity<Notificacion>()
-.HasOne(n => n.Usuario)
+      // Relacion TareaComentario -> Tarea
+ builder.Entity<TareaComentario>()
+       .HasOne(tc => tc.Tarea)
      .WithMany()
-    .HasForeignKey(n => n.UsuarioId)
-        .OnDelete(DeleteBehavior.Cascade);
+    .HasForeignKey(tc => tc.TareaId)
+       .OnDelete(DeleteBehavior.Cascade);
+
+   // Relacion TareaComentario -> Usuario
+  builder.Entity<TareaComentario>()
+   .HasOne(tc => tc.Usuario)
+  .WithMany()
+   .HasForeignKey(tc => tc.UsuarioId)
+        .OnDelete(DeleteBehavior.Restrict);
 
          // Precision de decimales por defecto
     builder.Entity<Producto>().Property(p => p.StockMinimo).HasPrecision(18,3);

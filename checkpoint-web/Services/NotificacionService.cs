@@ -95,7 +95,79 @@ if (notificacion != null)
     var sieteDiasDespues = ahora.AddDays(7);
     var doceHorasAtras = ahora.AddHours(-12);
     var seisHorasAtras = ahora.AddHours(-6);
-    
+    var unDiaDespues = ahora.AddDays(1);
+ 
+  // Tareas que vencen HOY (urgentes)
+       var tareasVencenHoy = await _context.Tareas
+   .Where(t => t.Activo 
+ && t.Estado != "Finalizada" 
+  && t.Estado != "Cancelada"
+      && t.FechaLimite.HasValue 
+   && t.FechaLimite.Value.Date == ahora.Date)
+    .ToListAsync();
+
+    foreach (var tarea in tareasVencenHoy)
+      {
+  if (!string.IsNullOrEmpty(tarea.ResponsableId))
+  {
+       // Solo una notificación por día
+    var existeNotificacion = await _context.Notificaciones
+     .AnyAsync(n => n.UsuarioId == tarea.ResponsableId
+       && n.ReferenciaId == tarea.Id.ToString()
+&& n.Tipo == "AlertaVenceHoy"
+  && n.FechaCreacion >= ahora.Date);
+
+    if (!existeNotificacion)
+       {
+     await CrearNotificacionAsync(
+     tarea.ResponsableId,
+      "AlertaVenceHoy",
+ $"?? URGENTE: Tarea vence HOY: {tarea.Titulo}",
+    $"Esta tarea debe completarse hoy. Prioridad: {tarea.Prioridad}",
+     "/Tareas/MisTareas"
+     );
+    _context.Notificaciones.Last().ReferenciaId = tarea.Id.ToString();
+     _context.Notificaciones.Last().Categoria = "Tareas";
+  await _context.SaveChangesAsync();
+     }
+    }
+ }
+
+  // Tareas próximas a vencer (mañana)
+       var tareasVencenManana = await _context.Tareas
+ .Where(t => t.Activo 
+     && t.Estado != "Finalizada" 
+  && t.Estado != "Cancelada"
+     && t.FechaLimite.HasValue 
+ && t.FechaLimite.Value.Date == ahora.AddDays(1).Date)
+  .ToListAsync();
+
+    foreach (var tarea in tareasVencenManana)
+      {
+  if (!string.IsNullOrEmpty(tarea.ResponsableId))
+        {
+ var existeNotificacion = await _context.Notificaciones
+   .AnyAsync(n => n.UsuarioId == tarea.ResponsableId
+ && n.ReferenciaId == tarea.Id.ToString()
+     && n.Tipo == "AlertaVenceManana"
+      && n.FechaCreacion >= ahora.Date);
+
+   if (!existeNotificacion)
+       {
+   await CrearNotificacionAsync(
+     tarea.ResponsableId,
+     "AlertaVenceManana",
+     $"?? Tarea vence MAÑANA: {tarea.Titulo}",
+        $"Recuerda completar esta tarea. Progreso actual: {tarea.Progreso}%",
+       "/Tareas/MisTareas"
+   );
+      _context.Notificaciones.Last().ReferenciaId = tarea.Id.ToString();
+_context.Notificaciones.Last().Categoria = "Tareas";
+   await _context.SaveChangesAsync();
+       }
+    }
+        }
+
   // Tareas próximas a vencer (2 días)
     var tareasProximasVencer = await _context.Tareas
       .Where(t => t.Activo 
@@ -103,8 +175,8 @@ if (notificacion != null)
       && t.Estado != "Cancelada"
        && t.FechaLimite.HasValue 
  && t.FechaLimite.Value <= dosDiasDespues
-    && t.FechaLimite.Value > ahora)
-      .ToListAsync();
+    && t.FechaLimite.Value > unDiaDespues)
+    .ToListAsync();
 
   foreach (var tarea in tareasProximasVencer)
  {
@@ -113,7 +185,7 @@ if (notificacion != null)
  // Verificar si ya existe notificación reciente
   var existeNotificacion = await _context.Notificaciones
    .AnyAsync(n => n.UsuarioId == tarea.ResponsableId
-        && n.ReferenciaId == tarea.Id.ToString()
+     && n.ReferenciaId == tarea.Id.ToString()
  && n.FechaCreacion >= doceHorasAtras);
 
       if (!existeNotificacion)
@@ -121,13 +193,52 @@ if (notificacion != null)
       await CrearNotificacionAsync(
   tarea.ResponsableId,
    "Alerta",
-  $"? Tarea próxima a vencer: {tarea.Titulo}",
-    $"Vence el {tarea.FechaLimite:dd/MM/yyyy}",
-  "/Admin/Tareas"
+  $"?? Tarea próxima a vencer: {tarea.Titulo}",
+    $"Vence el {tarea.FechaLimite:dd/MM/yyyy}. Progreso: {tarea.Progreso}%",
+  "/Tareas/MisTareas"
   );
+     _context.Notificaciones.Last().ReferenciaId = tarea.Id.ToString();
+    _context.Notificaciones.Last().Categoria = "Tareas";
+         await _context.SaveChangesAsync();
   }
       }
-     }
+}
+
+    // Tareas VENCIDAS (recordatorio diario)
+        var tareasVencidas = await _context.Tareas
+       .Where(t => t.Activo 
+   && t.Estado != "Finalizada" 
+  && t.Estado != "Cancelada"
+   && t.FechaLimite.HasValue 
+   && t.FechaLimite.Value < ahora)
+        .ToListAsync();
+
+    foreach (var tarea in tareasVencidas)
+       {
+      if (!string.IsNullOrEmpty(tarea.ResponsableId))
+      {
+         // Solo una notificación por día para tareas vencidas
+   var existeNotificacion = await _context.Notificaciones
+  .AnyAsync(n => n.UsuarioId == tarea.ResponsableId
+      && n.ReferenciaId == tarea.Id.ToString()
+    && n.Tipo == "TareaVencida"
+     && n.FechaCreacion >= ahora.Date);
+
+      if (!existeNotificacion)
+ {
+     await CrearNotificacionAsync(
+ tarea.ResponsableId,
+      "TareaVencida",
+   $"? Tarea VENCIDA: {tarea.Titulo}",
+         $"Esta tarea venció el {tarea.FechaLimite:dd/MM/yyyy}. Requiere atención inmediata.",
+       "/Tareas/MisTareas"
+);
+ _context.Notificaciones.Last().ReferenciaId = tarea.Id.ToString();
+    _context.Notificaciones.Last().Categoria = "Tareas";
+  await _context.SaveChangesAsync();
+ }
+   }
+  }
 
     // Lotes próximos a vencer (7 días)
    var lotesProximosVencer = await _context.Lotes
@@ -135,7 +246,7 @@ if (notificacion != null)
 && l.FechaVencimiento.Value <= sieteDiasDespues
    && l.FechaVencimiento.Value > ahora
      && l.Estado == EstadoLote.Liberado)
-        .ToListAsync();
+    .ToListAsync();
 
     if (lotesProximosVencer.Any())
   {
@@ -152,7 +263,7 @@ if (notificacion != null)
 await CrearNotificacionAsync(
     adminId,
     "Advertencia",
-   $"?? {lotesProximosVencer.Count} lote(s) próximo(s) a vencer",
+$"?? {lotesProximosVencer.Count} lote(s) próximo(s) a vencer",
     "Revise el inventario para tomar acciones",
  "/Bodega/Recepcion"
   );
@@ -164,7 +275,7 @@ await CrearNotificacionAsync(
    .CountAsync(m => m.Tipo == "Ajuste" && m.Estado == "Pendiente");
 
   if (ajustesPendientes > 0)
-     {
+  {
     var admins = await _context.UserRoles
     .Where(ur => ur.RoleId == (
   _context.Roles.First(r => r.Name == "Administrador").Id
@@ -181,7 +292,7 @@ foreach (var adminId in admins)
 
      if (!existeNotificacion)
   {
-      await CrearNotificacionAsync(
+   await CrearNotificacionAsync(
         adminId,
   "Información",
    $"?? {ajustesPendientes} ajuste(s) pendiente(s) de aprobación",
@@ -189,7 +300,7 @@ foreach (var adminId in admins)
  "/Bodega/Ajustes"
    );
   }
-   }
+}
  }
      }
     }

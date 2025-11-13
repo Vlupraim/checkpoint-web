@@ -1,38 +1,59 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using checkpoint_web.Models;
 using checkpoint_web.Services;
+using checkpoint_web.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace checkpoint_web.Pages.Admin.Tareas
 {
     [Authorize(Roles = "Administrador")]
-    public class IndexModel : PageModel
+  public class IndexModel : PageModel
     {
-        private readonly ITareaService _tareaService;
+     private readonly ITareaService _tareaService;
+   private readonly CheckpointDbContext _context;
 
-public IndexModel(ITareaService tareaService)
- {
-    _tareaService = tareaService;
-}
+        public IndexModel(ITareaService tareaService, CheckpointDbContext context)
+        {
+            _tareaService = tareaService;
+   _context = context;
+        }
 
   public IEnumerable<Tarea> Tareas { get; set; } = new List<Tarea>();
-     public Dictionary<string, int> Estadisticas { get; set; } = new();
+        public Dictionary<string, int> Estadisticas { get; set; } = new();
         public string? FiltroEstado { get; set; }
+   public string? FiltroResponsable { get; set; }
+        public SelectList? UsuariosSelectList { get; set; }
 
-      public async Task OnGetAsync(string? estado = null)
-        {
-     FiltroEstado = estado;
+   public async Task OnGetAsync(string? estado = null, string? responsable = null)
+    {
+   FiltroEstado = estado;
+            FiltroResponsable = responsable;
 
-       if (!string.IsNullOrEmpty(estado))
- {
-     Tareas = await _tareaService.GetPorEstadoAsync(estado);
-            }
-      else
+   var todasTareas = await _tareaService.GetAllAsync();
+
+  // Aplicar filtros
+  if (!string.IsNullOrEmpty(estado))
       {
-            Tareas = await _tareaService.GetAllAsync();
-}
+ todasTareas = todasTareas.Where(t => t.Estado == estado);
+            }
 
-            Estadisticas = await _tareaService.GetEstadisticasAsync();
-}
+   if (!string.IsNullOrEmpty(responsable))
+       {
+        todasTareas = todasTareas.Where(t => t.ResponsableId == responsable);
+ }
+
+   Tareas = todasTareas;
+   Estadisticas = await _tareaService.GetEstadisticasAsync();
+
+      // Cargar usuarios para el filtro
+     var usuarios = await _context.Users
+  .Where(u => u.Activo)
+ .OrderBy(u => u.Nombre)
+    .Select(u => new { u.Id, Display = u.Nombre + " (" + u.Email + ")" })
+  .ToListAsync();
+     UsuariosSelectList = new SelectList(usuarios, "Id", "Display");
+        }
     }
 }

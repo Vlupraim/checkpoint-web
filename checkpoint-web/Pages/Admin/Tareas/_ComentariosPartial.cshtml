@@ -1,0 +1,56 @@
+@model checkpoint_web.Pages.Admin.Tareas.EditModel
+
+<!-- Sección de Comentarios -->
+<div class="card mt-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">?? Comentarios y Colaboración</h5>
+ </div>
+    <div class="card-body">
+     <!-- Formulario para nuevo comentario -->
+   <form method="post" asp-page-handler="AgregarComentario" class="mb-4">
+      <input type="hidden" name="tareaId" value="@Model.Tarea.Id" />
+     <div class="mb-3">
+            <label class="form-label">Agregar Comentario</label>
+       <textarea name="contenido" class="form-control" rows="3" placeholder="Escribe un comentario..." required></textarea>
+    </div>
+   <button type="submit" class="btn btn-primary">
+    <i class="bi bi-send"></i> Enviar Comentario
+     </button>
+   </form>
+
+     <!-- Lista de comentarios -->
+     @if (Model.Comentarios != null && Model.Comentarios.Any())
+        {
+     <div class="mt-4">
+ <h6 class="mb-3">Historial de Comentarios (@Model.Comentarios.Count())</h6>
+   @foreach (var comentario in Model.Comentarios.OrderByDescending(c => c.FechaCreacion))
+    {
+       <div class="card mb-2">
+  <div class="card-body">
+  <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+    <strong>@(comentario.Usuario?.Nombre ?? "Usuario")</strong>
+        <small class="text-muted">(@(comentario.Usuario?.Email ?? ""))</small>
+   </div>
+        <small class="text-muted">
+ @comentario.FechaCreacion.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+ @if (comentario.FechaEdicion.HasValue)
+      {
+    <span>(editado)</span>
+  }
+       </small>
+  </div>
+    <p class="mb-0">@comentario.Contenido</p>
+</div>
+    </div>
+  }
+      </div>
+ }
+  else
+   {
+     <div class="alert alert-info">
+   <i class="bi bi-info-circle"></i> No hay comentarios aún. Sé el primero en comentar.
+       </div>
+        }
+    </div>
+</div>
