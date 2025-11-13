@@ -1,12 +1,12 @@
 @page
 @model checkpoint_web.Pages.Admin.Proveedores.IndexModel
 @{
-    ViewData["Title"] = "Gestion de Proveedores";
+    ViewData["Title"] = "Gestión de Proveedores";
     Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_AdminLayout.cshtml";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
- <h2>Gesti&oacute;n de Proveedores</h2>
+ <h2>Gestión de Proveedores</h2>
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoProveedorModal">
    <i class="bi bi-plus-circle"></i> Nuevo Proveedor
     </button>
@@ -48,9 +48,9 @@
       <thead>
         <tr>
           <th>Nombre</th>
-             <th>Categor&iacute;a</th>
+             <th>Categoría</th>
     <th>Contacto</th>
-          <th>Calificaci&oacute;n</th>
+          <th>Calificación</th>
        <th>Estado</th>
       <th>Acciones</th>
        </tr>
@@ -119,7 +119,7 @@
           <option value="MaterialPrima">Materia Prima</option>
           <option value="Embalaje">Embalaje</option>
            <option value="Servicios">Servicios</option>
-    <option value="Logistica">Log&iacute;stica</option>
+    <option value="Logistica">Logística</option>
           </select>
              </div>
        </div>
