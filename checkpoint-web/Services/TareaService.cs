@@ -7,18 +7,20 @@ namespace checkpoint_web.Services
 {
     public class TareaService : ITareaService
     {
-  private readonly CheckpointDbContext _context;
-     private readonly IAuditService _auditService;
+        private readonly CheckpointDbContext _context;
+        private readonly IAuditService _auditService;
+        private readonly INotificacionService _notificacionService;
 
-        public TareaService(CheckpointDbContext context, IAuditService auditService)
+        public TareaService(CheckpointDbContext context, IAuditService auditService, INotificacionService notificacionService)
         {
-    _context = context;
- _auditService = auditService;
+            _context = context;
+            _auditService = auditService;
+            _notificacionService = notificacionService;
         }
 
         public async Task<IEnumerable<Tarea>> GetAllAsync()
         {
-    return await _context.Tareas
+            return await _context.Tareas
           .Include(t => t.Producto)
         .Include(t => t.Lote)
                 .Where(t => t.Activo)
@@ -81,64 +83,90 @@ namespace checkpoint_web.Services
 
         public async Task<Tarea> CreateAsync(Tarea tarea)
         {
-    tarea.FechaCreacion = DateTime.UtcNow;
-            tarea.Progreso = 0;
-            
+     tarea.FechaCreacion = DateTime.UtcNow;
+   tarea.Progreso = 0;
+    
         _context.Tareas.Add(tarea);
-            await _context.SaveChangesAsync();
+      await _context.SaveChangesAsync();
 
-         await _auditService.LogAsync(
-        tarea.CreadoPor ?? "system",
-      $"Creó tarea: {tarea.Titulo} (ID: {tarea.Id})"
-            );
+    await _auditService.LogAsync(
+      tarea.CreadoPor ?? "system",
+        $"Creó tarea: {tarea.Titulo} (ID: {tarea.Id})"
+   );
 
-       return tarea;
-        }
+            // Enviar notificación al responsable si está asignado
+      if (!string.IsNullOrEmpty(tarea.ResponsableId))
+     {
+     await _notificacionService.CrearNotificacionAsync(
+    tarea.ResponsableId,
+      "TareaNueva",
+   $"?? Nueva tarea asignada: {tarea.Titulo}",
+       tarea.Descripcion ?? "Sin descripción",
+  $"/Admin/Tareas"
+   );
+      }
+
+  return tarea;
+      }
 
         public async Task<Tarea> UpdateAsync(Tarea tarea)
-  {
-  var existing = await _context.Tareas.FindAsync(tarea.Id);
-    if (existing == null)
-        throw new KeyNotFoundException($"Tarea {tarea.Id} no encontrada");
+     {
+     var existing = await _context.Tareas.FindAsync(tarea.Id);
+ if (existing == null)
+   throw new KeyNotFoundException($"Tarea {tarea.Id} no encontrada");
 
-      // Registrar cambios en historial
-   var cambios = new List<string>();
-            
-     if (existing.Estado != tarea.Estado)
+         // Registrar cambios en historial
+  var cambios = new List<string>();
+ 
+          if (existing.Estado != tarea.Estado)
   cambios.Add($"Estado: {existing.Estado} ? {tarea.Estado}");
-        
-            if (existing.ResponsableId != tarea.ResponsableId)
-  cambios.Add($"Responsable cambiado");
+ 
+         if (existing.ResponsableId != tarea.ResponsableId)
+    {
+       cambios.Add($"Responsable cambiado");
+    
+      // Notificar al nuevo responsable si es diferente
+    if (!string.IsNullOrEmpty(tarea.ResponsableId) && tarea.ResponsableId != existing.ResponsableId)
+       {
+         await _notificacionService.CrearNotificacionAsync(
+ tarea.ResponsableId,
+     "TareaReasignada",
+     $"?? Tarea reasignada: {tarea.Titulo}",
+     $"Se te ha asignado esta tarea. Estado: {tarea.Estado}",
+         $"/Admin/Tareas"
+      );
+       }
+        }
 
-     if (existing.Progreso != tarea.Progreso)
+        if (existing.Progreso != tarea.Progreso)
    cambios.Add($"Progreso: {existing.Progreso}% ? {tarea.Progreso}%");
 
-        if (cambios.Any())
-      {
-     var historialEntry = new
-            {
-     Fecha = DateTime.UtcNow,
-     Cambios = cambios
- };
-
-            var historialList = string.IsNullOrEmpty(existing.Historial)
-        ? new List<object>()
-    : JsonSerializer.Deserialize<List<object>>(existing.Historial) ?? new List<object>();
+       if (cambios.Any())
+    {
+            var historialEntry = new
+    {
+ Fecha = DateTime.UtcNow,
+  Cambios = cambios
+     };
+      
+    var historialList = string.IsNullOrEmpty(existing.Historial)
+    ? new List<object>()
+         : JsonSerializer.Deserialize<List<object>>(existing.Historial) ?? new List<object>();
        
-        historialList.Add(historialEntry);
-           tarea.Historial = JsonSerializer.Serialize(historialList);
-       }
+       historialList.Add(historialEntry);
+             tarea.Historial = JsonSerializer.Serialize(historialList);
+      }
 
-            _context.Entry(existing).CurrentValues.SetValues(tarea);
- await _context.SaveChangesAsync();
+     _context.Entry(existing).CurrentValues.SetValues(tarea);
+            await _context.SaveChangesAsync();
 
-await _auditService.LogAsync(
-         "system",
-      $"Actualizó tarea: {tarea.Titulo} (ID: {tarea.Id})"
-            );
+            await _auditService.LogAsync(
+    "system",
+$"Actualizó tarea: {tarea.Titulo} (ID: {tarea.Id})"
+   );
 
-      return tarea;
-        }
+   return tarea;
+    }
 
         public async Task<bool> DeleteAsync(int id)
         {

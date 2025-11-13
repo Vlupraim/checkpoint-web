@@ -13,56 +13,65 @@ namespace checkpoint_web.Pages.Admin.Tareas
     [Authorize(Roles = "Administrador")]
     public class CreateModel : PageModel
     {
-   private readonly ITareaService _tareaService;
-    private readonly CheckpointDbContext _context;
+        private readonly ITareaService _tareaService;
+     private readonly CheckpointDbContext _context;
 
-public CreateModel(ITareaService tareaService, CheckpointDbContext context)
+ public CreateModel(ITareaService tareaService, CheckpointDbContext context)
         {
    _tareaService = tareaService;
-      _context = context;
+   _context = context;
         }
 
  [BindProperty]
- public Tarea Tarea { get; set; } = new();
+    public Tarea Tarea { get; set; } = new();
 
-        public SelectList? EstadosSelectList { get; set; }
-   public SelectList? PrioridadesSelectList { get; set; }
-public SelectList? TiposSelectList { get; set; }
- public SelectList? ProductosSelectList { get; set; }
- public SelectList? LotesSelectList { get; set; }
+public SelectList? EstadosSelectList { get; set; }
+        public SelectList? PrioridadesSelectList { get; set; }
+ public SelectList? TiposSelectList { get; set; }
+        public SelectList? ProductosSelectList { get; set; }
+   public SelectList? LotesSelectList { get; set; }
+   public SelectList? UsuariosSelectList { get; set; }
 
-  public async Task OnGetAsync()
+     public async Task OnGetAsync()
         {
-  await LoadSelectListsAsync();
-     }
-
-   public async Task<IActionResult> OnPostAsync()
-        {
- if (!ModelState.IsValid)
-  {
-      await LoadSelectListsAsync();
-      return Page();
- }
-
-      // CORREGIDO: Usar UserId (ClaimTypes.NameIdentifier) en lugar de User.Identity?.Name (email)
-      Tarea.CreadoPor = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "admin";
-     await _tareaService.CreateAsync(Tarea);
-
-     TempData["SuccessMessage"] = "Tarea creada exitosamente";
-  return RedirectToPage("./Index");
+            await LoadSelectListsAsync();
         }
 
-        private async Task LoadSelectListsAsync()
-   {
-       EstadosSelectList = new SelectList(new[] { "Pendiente", "EnProgreso", "Finalizada", "Cancelada", "Bloqueada" });
-   PrioridadesSelectList = new SelectList(new[] { "Baja", "Media", "Alta", "Urgente" });
- TiposSelectList = new SelectList(new[] { "Operativa", "Administrativa", "Calidad", "Mantenimiento" });
+     public async Task<IActionResult> OnPostAsync()
+ {
+      if (!ModelState.IsValid)
+ {
+  await LoadSelectListsAsync();
+   return Page();
+  }
 
-         var productos = await _context.Productos.Where(p => p.Activo).ToListAsync();
- ProductosSelectList = new SelectList(productos, "Id", "Nombre");
+     // CORREGIDO: Usar UserId (ClaimTypes.NameIdentifier) en lugar de User.Identity?.Name (email)
+       Tarea.CreadoPor = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "admin";
+        await _tareaService.CreateAsync(Tarea);
+
+            TempData["SuccessMessage"] = "Tarea creada exitosamente";
+    return RedirectToPage("./Index");
+        }
+
+private async Task LoadSelectListsAsync()
+        {
+   EstadosSelectList = new SelectList(new[] { "Pendiente", "EnProgreso", "Finalizada", "Cancelada", "Bloqueada" });
+   PrioridadesSelectList = new SelectList(new[] { "Baja", "Media", "Alta", "Urgente" });
+    TiposSelectList = new SelectList(new[] { "Operativa", "Administrativa", "Calidad", "Mantenimiento" });
+
+    var productos = await _context.Productos.Where(p => p.Activo).ToListAsync();
+         ProductosSelectList = new SelectList(productos, "Id", "Nombre");
 
 var lotes = await _context.Lotes.Include(l => l.Producto).Take(100).ToListAsync();
-      LotesSelectList = new SelectList(lotes, "Id", "CodigoLote");
- }
+     LotesSelectList = new SelectList(lotes, "Id", "CodigoLote");
+
+            // Cargar usuarios activos
+    var usuarios = await _context.Users
+  .Where(u => u.Activo)
+    .OrderBy(u => u.Nombre)
+    .Select(u => new { u.Id, Display = u.Nombre + " (" + u.Email + ")" })
+   .ToListAsync();
+   UsuariosSelectList = new SelectList(usuarios, "Id", "Display");
+  }
     }
 }

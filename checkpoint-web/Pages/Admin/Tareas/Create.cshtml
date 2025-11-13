@@ -2,7 +2,7 @@
 @model checkpoint_web.Pages.Admin.Tareas.CreateModel
 @{
     ViewData["Title"] = "Nueva Tarea";
-    Layout = "/Pages/Shared/_DashboardLayout.cshtml";
+    Layout = "/Pages/Shared/_AdminLayout.cshtml";
 }
 
 <div class="mb-4">
@@ -78,10 +78,13 @@
  </div>
 
     <div class="mb-3">
-     <label asp-for="Tarea.ResponsableId" class="form-label"></label>
-        <input asp-for="Tarea.ResponsableId" class="form-control" placeholder="Usuario responsable" />
-     <span asp-validation-for="Tarea.ResponsableId" class="text-danger"></span>
-   </div>
+ <label asp-for="Tarea.ResponsableId" class="form-label">Asignar a Usuario</label>
+   <select asp-for="Tarea.ResponsableId" asp-items="Model.UsuariosSelectList" class="form-select">
+  <option value="">-- Sin asignar --</option>
+   </select>
+   <span asp-validation-for="Tarea.ResponsableId" class="text-danger"></span>
+        <small class="form-text text-muted">El usuario asignado recibirá una notificación automáticamente</small>
+    </div>
 
        <div class="mb-3">
         <label asp-for="Tarea.Observaciones" class="form-label"></label>

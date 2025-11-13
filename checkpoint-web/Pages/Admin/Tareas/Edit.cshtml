@@ -2,7 +2,7 @@
 @model checkpoint_web.Pages.Admin.Tareas.EditModel
 @{
     ViewData["Title"] = "Editar Tarea";
-    Layout = "/Pages/Shared/_DashboardLayout.cshtml";
+    Layout = "/Pages/Shared/_AdminLayout.cshtml";
 }
 
 <h2>?? Editar Tarea</h2>
@@ -13,7 +13,7 @@
 <input type="hidden" asp-for="Tarea.Id" />
 
     <div class="row">
-   <div class="col-md-8 mb-3">
+<div class="col-md-8 mb-3">
     <label asp-for="Tarea.Titulo" class="form-label"></label>
    <input asp-for="Tarea.Titulo" class="form-control" required />
         </div>
@@ -28,7 +28,7 @@
    <textarea asp-for="Tarea.Descripcion" class="form-control" rows="4"></textarea>
      </div>
 
-            <div class="row">
+       <div class="row">
    <div class="col-md-4 mb-3">
       <label asp-for="Tarea.Estado" class="form-label"></label>
   <select asp-for="Tarea.Estado" asp-items="Model.EstadosSelectList" class="form-select"></select>
@@ -43,7 +43,16 @@
     </div>
    </div>
 
-       <div class="mb-3">
+    <div class="mb-3">
+     <label asp-for="Tarea.ResponsableId" class="form-label">Asignar a Usuario</label>
+  <select asp-for="Tarea.ResponsableId" asp-items="Model.UsuariosSelectList" class="form-select">
+    <option value="">-- Sin asignar --</option>
+ </select>
+ <span asp-validation-for="Tarea.ResponsableId" class="text-danger"></span>
+<small class="form-text text-muted">Si cambias el responsable, se le enviará una notificación</small>
+      </div>
+
+<div class="mb-3">
    <label asp-for="Tarea.Observaciones" class="form-label"></label>
      <textarea asp-for="Tarea.Observaciones" class="form-control" rows="3"></textarea>
    </div>
