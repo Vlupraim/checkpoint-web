@@ -47,9 +47,16 @@ public SelectList? EstadosSelectList { get; set; }
 
      // CORREGIDO: Usar UserId (ClaimTypes.NameIdentifier) en lugar de User.Identity?.Name (email)
        Tarea.CreadoPor = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "admin";
-        await _tareaService.CreateAsync(Tarea);
+       
+            // CORREGIR: Convertir FechaLimite a UTC si tiene valor
+         if (Tarea.FechaLimite.HasValue && Tarea.FechaLimite.Value.Kind == DateTimeKind.Unspecified)
+            {
+Tarea.FechaLimite = DateTime.SpecifyKind(Tarea.FechaLimite.Value, DateTimeKind.Utc);
+            }
+       
+    await _tareaService.CreateAsync(Tarea);
 
-            TempData["SuccessMessage"] = "Tarea creada exitosamente";
+    TempData["SuccessMessage"] = "Tarea creada exitosamente";
     return RedirectToPage("./Index");
         }
 

@@ -50,6 +50,12 @@ public Tarea Tarea { get; set; } = new();
      return Page();
   }
 
+   // CORREGIR: Convertir FechaLimite a UTC si tiene valor
+      if (Tarea.FechaLimite.HasValue && Tarea.FechaLimite.Value.Kind == DateTimeKind.Unspecified)
+  {
+         Tarea.FechaLimite = DateTime.SpecifyKind(Tarea.FechaLimite.Value, DateTimeKind.Utc);
+    }
+
     await _tareaService.UpdateAsync(Tarea);
      TempData["SuccessMessage"] = "Tarea actualizada exitosamente";
   return RedirectToPage("./Index");

@@ -1,0 +1,5 @@
+[33mb302094[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Corregir error HTTP 500 al crear tareas
+[33m9dfc932[m Convertir reportes de Movimientos y Tareas a modo SPA
+[33m52ed765[m Implementar sistema completo de gestion de tareas con todas las mejoras
+[33me40f95d[m Implementar sistema de asignacion de tareas con notificaciones automaticas
+[33m038db00[m Corregir error de timestamp en PostgreSQL
