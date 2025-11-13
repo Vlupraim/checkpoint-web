@@ -2,6 +2,7 @@
 @model checkpoint_web.Pages.Reportes.IndexModel
 @{
     ViewData["Title"] = "Reportes";
+    // Support both Admin and other layouts via AJAX
     Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_Layout.cshtml";
 }
 

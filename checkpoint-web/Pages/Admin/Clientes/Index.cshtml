@@ -2,7 +2,7 @@
 @model checkpoint_web.Pages.Admin.Clientes.IndexModel
 @{
     ViewData["Title"] = "Gestión de Clientes";
-    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_DashboardLayout.cshtml";
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_AdminLayout.cshtml";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -20,7 +20,7 @@
     </div>
 }
 
-<!-- Estadásticas -->
+<!-- Estadísticas -->
 <div class="row g-3 mb-4">
     <div class="col-md-4">
    <div class="card bg-primary text-white">

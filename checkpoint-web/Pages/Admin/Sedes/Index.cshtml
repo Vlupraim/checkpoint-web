@@ -2,7 +2,7 @@
 @model checkpoint_web.Pages.Admin.Sedes.IndexModel
 @{
     ViewData["Title"] = "Sedes";
-    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_DashboardLayout.cshtml";
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_AdminLayout.cshtml";
 }
 <h1>Sedes</h1>
 <p><a class="btn btn-primary" asp-page="Create">Crear nueva Sede</a></p>
