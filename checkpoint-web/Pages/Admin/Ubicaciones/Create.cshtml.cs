@@ -28,12 +28,19 @@ namespace checkpoint_web.Pages.Admin.Ubicaciones
 
  public async Task<IActionResult> OnPostAsync()
  {
+ // Validate that a sede was selected (prevent Guid.Empty being saved)
+ if (Ubicacion.SedeId == Guid.Empty)
+ {
+ ModelState.AddModelError("Ubicacion.SedeId", "Seleccione una sede.");
+ }
+
  if (!ModelState.IsValid)
  {
  var sedes = await _sedeService.GetAllAsync();
  Sedes = new SelectList(sedes, "Id", "Nombre");
  return Page();
  }
+
  await _ubicacionService.CreateAsync(Ubicacion);
  // CORREGIDO: Usar UserId (ClaimTypes.NameIdentifier) en lugar de User.Identity?.Name (email)
  var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous";

@@ -2,9 +2,11 @@
 @model checkpoint_web.Pages.Admin.Users.EditRolesModel
 @{
  ViewData["Title"] = "Editar roles";
+ Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_AdminLayout.cshtml";
 }
 <h1>Editar roles para @Model.Email</h1>
 <form method="post">
+ @Html.AntiForgeryToken()
  <input type="hidden" asp-for="UserId" />
  <div class="mb-3">
  @foreach (var role in Model.AllRoles)

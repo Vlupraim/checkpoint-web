@@ -50,6 +50,20 @@ namespace checkpoint_web.Services
  {
  var existing = await _context.Ubicaciones.FindAsync(id);
  if (existing == null) throw new InvalidOperationException("Ubicación no encontrada");
+
+ // Check for dependent movimientos or stocks that would block deletion (FK restrict)
+ var movimientosCount = await _context.Movimientos
+ .CountAsync(m => (m.OrigenUbicacionId != null && m.OrigenUbicacionId == id)
+ || (m.DestinoUbicacionId != null && m.DestinoUbicacionId == id));
+
+ var stocksCount = await _context.Stocks
+ .CountAsync(s => s.UbicacionId == id);
+
+ if (movimientosCount >0 || stocksCount >0)
+ {
+ throw new InvalidOperationException("No se puede eliminar la ubicaci?n: existen movimientos o stock asociados. Elimine o reasigne esos registros primero.");
+ }
+
  _context.Ubicaciones.Remove(existing);
  await _context.SaveChangesAsync();
  }

@@ -1,99 +1,105 @@
 @page
 @model checkpoint_web.Pages.Fragments.UsuariosModel
 @{
-    Layout = null;
+ Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_AdminLayout.cshtml";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="bi bi-people"></i> Gestión de Usuarios y Roles</h2>
-    <a href="/Admin/Users/Create" class="btn btn-primary">
+ <h2><i class="bi bi-people"></i> Gestión de Usuarios y Roles</h2>
+ <a href="/Admin/Users/Create" class="btn btn-primary">
  <i class="bi bi-plus-circle"></i> Nuevo Usuario
-    </a>
+ </a>
 </div>
+
+@Html.AntiForgeryToken()
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show">
-        @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+ <div class="alert alert-success alert-dismissible fade show">
+ @TempData["SuccessMessage"]
+ <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+ </div>
 }
 
 <div class="card">
-    <div class="card-body">
-        @if (Model.Usuarios.Any())
-   {
-       <div class="table-responsive">
-    <table class="table table-hover">
-             <thead>
-    <tr>
-       <th>Email</th>
-        <th>Nombre de Usuario</th>
-   <th>Roles</th>
-          <th>Acciones</th>
-     </tr>
-       </thead>
-                    <tbody>
-  @foreach (var usuario in Model.Usuarios)
-   {
-   <tr>
-       <td>@usuario.Email</td>
-            <td>@usuario.Nombre</td>
-     <td>
-           @if (usuario.Roles.Any())
-     {
-      @foreach (var role in usuario.Roles)
+ <div class="card-body">
+ @if (Model.Usuarios.Any())
  {
-        <span class="badge bg-primary me-1">@role</span>
-       }
-      }
-   else
-         {
-       <span class="text-muted">Sin roles</span>
-             }
-         </td>
-    <td>
-         <div class="btn-group btn-group-sm">
-     @* CORREGIDO: Usar Id en lugar de Email *@
-               <a href="/Admin/Users/EditRoles?id=@usuario.Id" class="btn btn-outline-primary">
-    <i class="bi bi-pencil"></i> Editar Roles
-         </a>
-              <button type="button" class="btn btn-outline-danger" onclick="if(confirm('¿Eliminar usuario @usuario.Email?')) { deleteUser('@usuario.Id'); }">
-     <i class="bi bi-trash"></i> Eliminar
-         </button>
-   </div>
-   </td>
-    </tr>
-           }
-           </tbody>
-  </table>
-            </div>
-        }
+ <div class="table-responsive">
+ <table class="table table-hover">
+ <thead>
+ <tr>
+ <th>Email</th>
+ <th>Nombre de Usuario</th>
+ <th>Roles</th>
+ <th>Acciones</th>
+ </tr>
+ </thead>
+ <tbody>
+ @foreach (var usuario in Model.Usuarios)
+ {
+ <tr>
+ <td>@usuario.Email</td>
+ <td>@usuario.Nombre</td>
+ <td>
+ @if (usuario.Roles.Any())
+ {
+ @foreach (var role in usuario.Roles)
+ {
+ <span class="badge bg-primary me-1">@role</span>
+ }
+ }
  else
-        {
-         <div class="alert alert-info">
-       No hay usuarios registrados en el sistema.
-  </div>
-  }
+ {
+ <span class="text-muted">Sin roles</span>
+ }
+ </td>
+ <td>
+ <div class="btn-group btn-group-sm">
+ @* Use Id in routes *@
+ <a href="/Admin/Users/EditRoles?id=@usuario.Id" class="btn btn-outline-primary">
+ <i class="bi bi-pencil"></i> Editar Roles
+ </a>
+ <button type="button" class="btn btn-outline-danger user-delete" data-id="@usuario.Id" data-email="@usuario.Email">
+ <i class="bi bi-trash"></i> Eliminar
+ </button>
+ </div>
+ </td>
+ </tr>
+ }
+ </tbody>
+ </table>
+ </div>
+ }
+ else
+ {
+ <div class="alert alert-info">
+ No hay usuarios registrados en el sistema.
+ </div>
+ }
  </div>
 </div>
 
-<script>
-    // CORREGIDO: Usar userId en lugar de email
-    function deleteUser(userId) {
- fetch('/Admin/Users/Delete?id=' + encodeURIComponent(userId), {
-            method: 'POST',
-            headers: {
-      'Content-Type': 'application/json',
-     'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
-            }
-        })
-        .then(resp => {
- if(resp.ok) {
-         location.reload();
-  } else {
-    alert('Error al eliminar usuario');
+@section Scripts {
+ <script>
+ document.addEventListener('click', function(e) {
+ var btn = e.target.closest('.user-delete');
+ if (!btn) return;
+ var id = btn.getAttribute('data-id');
+ var email = btn.getAttribute('data-email');
+ if (!confirm('Eliminar usuario ' + email + '?')) return;
+
+ var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+ fetch('/Admin/Users/Delete?id=' + encodeURIComponent(id), {
+ method: 'POST',
+ credentials: 'same-origin',
+ headers: {
+ 'RequestVerificationToken': token || ''
  }
-        });
-    }
-</script>
+ }).then(function(resp) {
+ if (resp.ok) location.reload();
+ else alert('Error al eliminar usuario');
+ }).catch(function() { alert('Error al eliminar usuario'); });
+ });
+ </script>
+}

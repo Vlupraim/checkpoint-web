@@ -7,176 +7,185 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
  <h2>Gestión de Clientes</h2>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoClienteModal">
-  <i class="bi bi-plus-circle"></i> Nuevo Cliente
+ <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoClienteModal">
+ <i class="bi bi-plus-circle"></i> Nuevo Cliente
  </button>
 </div>
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show">
-        @TempData["SuccessMessage"]
+ <div class="alert alert-success alert-dismissible fade show">
+ @TempData["SuccessMessage"]
 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+ </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+ <div class="alert alert-danger alert-dismissible fade show">
+ @TempData["ErrorMessage"]
+ <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+ </div>
 }
 
 <!-- Estadísticas -->
 <div class="row g-3 mb-4">
-    <div class="col-md-4">
-   <div class="card bg-primary text-white">
-  <div class="card-body">
-    <h6>Total Clientes</h6>
-       <h3>@Model.Estadisticas.GetValueOrDefault("Total", 0)</h3>
-</div>
-    </div>
- </div>
-    <div class="col-md-4">
-  <div class="card bg-success text-white">
-       <div class="card-body">
-     <h6>Activos</h6>
-<h3>@Model.Estadisticas.GetValueOrDefault("Activos", 0)</h3>
-   </div>
-  </div>
-    </div>
  <div class="col-md-4">
-  <div class="card bg-secondary text-white">
-      <div class="card-body">
-        <h6>Inactivos</h6>
- <h3>@Model.Estadisticas.GetValueOrDefault("Inactivos", 0)</h3>
-  </div>
-     </div>
-    </div>
+ <div class="card bg-primary text-white">
+ <div class="card-body">
+ <h6>Total Clientes</h6>
+ <h3>@Model.Estadisticas.GetValueOrDefault("Total",0)</h3>
+</div>
+ </div>
+ </div>
+ <div class="col-md-4">
+ <div class="card bg-success text-white">
+ <div class="card-body">
+ <h6>Activos</h6>
+<h3>@Model.Estadisticas.GetValueOrDefault("Activos",0)</h3>
+ </div>
+ </div>
+ </div>
+ <div class="col-md-4">
+ <div class="card bg-secondary text-white">
+ <div class="card-body">
+ <h6>Inactivos</h6>
+ <h3>@Model.Estadisticas.GetValueOrDefault("Inactivos",0)</h3>
+ </div>
+ </div>
+ </div>
 </div>
 
 <!-- Tabla -->
 <div class="card">
 <div class="card-body">
-   @if (Model.Clientes.Any())
-  {
-    <div class="table-responsive">
-     <table class="table table-hover">
-      <thead>
-       <tr>
-     <th>Nombre</th>
-   <th>Identificador Fiscal</th>
+ @if (Model.Clientes.Any())
+ {
+ <div class="table-responsive">
+ <table class="table table-hover">
+ <thead>
+ <tr>
+ <th>Nombre</th>
+ <th>Identificador Fiscal</th>
  <th>Ciudad</th>
-   <th>Contacto</th>
+ <th>Contacto</th>
  <th>Estado</th>
-   <th>Acciones</th>
-    </tr>
-      </thead>
-   <tbody>
-   @foreach (var cliente in Model.Clientes)
-     {
-        <tr>
+ <th>Acciones</th>
+ </tr>
+ </thead>
+ <tbody>
+ @foreach (var cliente in Model.Clientes)
+ {
+ <tr>
 <td>
-  <strong>@cliente.Nombre</strong>
+ <strong>@cliente.Nombre</strong>
 @if (!string.IsNullOrEmpty(cliente.NombreComercial))
-  {
-   <br/><small class="text-muted">@cliente.NombreComercial</small>
+ {
+ <br/><small class="text-muted">@cliente.NombreComercial</small>
  }
 </td>
 <td>@(cliente.IdentificadorFiscal ?? "-")</td>
-   <td>@(cliente.Ciudad ?? "-"), @cliente.Pais</td>
-     <td>
-   @if (!string.IsNullOrEmpty(cliente.PersonaContacto))
+ <td>@(cliente.Ciudad ?? "-"), @cliente.Pais</td>
+ <td>
+ @if (!string.IsNullOrEmpty(cliente.PersonaContacto))
  {
-      <div>@cliente.PersonaContacto</div>
-   }
-       @if (!string.IsNullOrEmpty(cliente.Email))
-     {
+ <div>@cliente.PersonaContacto</div>
+ }
+ @if (!string.IsNullOrEmpty(cliente.Email))
+ {
  <small class="text-muted">@cliente.Email</small>
-     }
-       </td>
+ }
+ </td>
 <td>
-  <span class="badge @(cliente.Estado == "Activo" ? "bg-success" : "bg-secondary")">
-        @cliente.Estado
-  </span>
-       </td>
-     <td>
-    <div class="btn-group btn-group-sm">
-    <a asp-page="Edit" asp-route-id="@cliente.Id" class="btn btn-outline-primary" title="Editar">
-<i class="bi bi-pencil"></i>
-    </a>
-       <form method="post" asp-page-handler="Delete" asp-route-id="@cliente.Id" class="d-inline" 
-      onsubmit="return confirm('¿Eliminar cliente @cliente.Nombre?');">
-      <button type="submit" class="btn btn-outline-danger btn-sm" title="Eliminar">
-        <i class="bi bi-trash"></i>
-</button>
-        </form>
-    </div>
-    </td>
-  </tr>
-   }
+ <span class="badge @(cliente.Estado == "Activo" ? "bg-success" : "bg-secondary")">
+ @cliente.Estado
+ </span>
+ </td>
+ <td>
+ <div class="btn-group btn-group-sm">
+ <a asp-page="Edit" asp-route-id="@cliente.Id" class="btn btn-outline-primary" title="Editar">
+<i class="bi bi-pencil"></i> Editar
+ </a>
+ <form method="post" asp-page-handler="Delete" asp-route-id="@cliente.Id" class="d-inline" 
+ onsubmit="return confirm('¿Eliminar cliente @cliente.Nombre?');">
+ <button type="submit" class="btn btn-outline-danger btn-sm" title="Eliminar">
+ <i class="bi bi-trash"></i> Eliminar
+ </button>
+ </form>
+ </div>
+ </td>
+ </tr>
+ }
 </tbody>
-  </table>
-     </div>
+ </table>
+ </div>
  }
 else
-  {
+ {
 <div class="alert alert-info">No hay clientes registrados.</div>
-  }
-  </div>
+ }
+ </div>
 </div>
 
 <!-- Modal Nuevo Cliente -->
 <div class="modal fade" id="nuevoClienteModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-   <div class="modal-content">
+ <div class="modal-dialog modal-lg">
+ <div class="modal-content">
  <form method="post">
-     <div class="modal-header">
+ @Html.AntiForgeryToken()
+ <div class="modal-header">
 <h5 class="modal-title">Nuevo Cliente</h5>
-  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-  </div>
-  <div class="modal-body">
+ <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+ </div>
+ <div class="modal-body">
 <div class="row">
 <div class="col-md-6 mb-3">
  <label asp-for="NuevoCliente.Nombre" class="form-label"></label>
 <input asp-for="NuevoCliente.Nombre" class="form-control" required />
-   </div>
-     <div class="col-md-6 mb-3">
-     <label asp-for="NuevoCliente.NombreComercial" class="form-label"></label>
+ </div>
+ <div class="col-md-6 mb-3">
+ <label asp-for="NuevoCliente.NombreComercial" class="form-label"></label>
 <input asp-for="NuevoCliente.NombreComercial" class="form-control" />
-   </div>
-   </div>
+ </div>
+ </div>
  <div class="row">
  <div class="col-md-6 mb-3">
-   <label asp-for="NuevoCliente.IdentificadorFiscal" class="form-label"></label>
-     <input asp-for="NuevoCliente.IdentificadorFiscal" class="form-control" />
-  </div>
-   <div class="col-md-6 mb-3">
-    <label asp-for="NuevoCliente.Telefono" class="form-label"></label>
+ <label asp-for="NuevoCliente.IdentificadorFiscal" class="form-label"></label>
+ <input asp-for="NuevoCliente.IdentificadorFiscal" class="form-control" />
+ </div>
+ <div class="col-md-6 mb-3">
+ <label asp-for="NuevoCliente.Telefono" class="form-label"></label>
  <input asp-for="NuevoCliente.Telefono" class="form-control" />
-    </div>
-     </div>
-     <div class="mb-3">
-    <label asp-for="NuevoCliente.Email" class="form-label"></label>
-   <input asp-for="NuevoCliente.Email" type="email" class="form-control" />
-  </div>
-   <div class="mb-3">
-    <label asp-for="NuevoCliente.Direccion" class="form-label"></label>
-  <textarea asp-for="NuevoCliente.Direccion" class="form-control" rows="2"></textarea>
-  </div>
-   <div class="row">
+ </div>
+ </div>
+ <div class="mb-3">
+ <label asp-for="NuevoCliente.Email" class="form-label"></label>
+ <input asp-for="NuevoCliente.Email" type="email" class="form-control" />
+ </div>
+ <div class="mb-3">
+ <label asp-for="NuevoCliente.Direccion" class="form-label"></label>
+ <textarea asp-for="NuevoCliente.Direccion" class="form-control" rows="2"></textarea>
+ </div>
+ <div class="row">
  <div class="col-md-6 mb-3">
 <label asp-for="NuevoCliente.Ciudad" class="form-label"></label>
-    <input asp-for="NuevoCliente.Ciudad" class="form-control" />
-    </div>
-     <div class="col-md-6 mb-3">
+ <input asp-for="NuevoCliente.Ciudad" class="form-control" />
+ </div>
+ <div class="col-md-6 mb-3">
  <label asp-for="NuevoCliente.Pais" class="form-label"></label>
 <input asp-for="NuevoCliente.Pais" class="form-control" value="Chile" />
-  </div>
-   </div>
-     <div class="mb-3">
-  <label asp-for="NuevoCliente.PersonaContacto" class="form-label"></label>
-     <input asp-for="NuevoCliente.PersonaContacto" class="form-control" />
-    </div>
-   </div>
-  <div class="modal-footer">
+ </div>
+ </div>
+ <div class="mb-3">
+ <label asp-for="NuevoCliente.PersonaContacto" class="form-label"></label>
+ <input asp-for="NuevoCliente.PersonaContacto" class="form-control" />
+ </div>
+ </div>
+ <div class="modal-footer">
 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
 <button type="submit" class="btn btn-primary">Guardar Cliente</button>
-  </div>
-  </form>
-  </div>
-    </div>
+ </div>
+ </form>
+ </div>
+ </div>
 </div>

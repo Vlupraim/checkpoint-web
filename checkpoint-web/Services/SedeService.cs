@@ -44,6 +44,29 @@ namespace checkpoint_web.Services
  {
  var existing = await _context.Sedes.FindAsync(id);
  if (existing == null) throw new InvalidOperationException("Sede no encontrada");
+
+ // Check dependent ubicaciones and related movimientos/stocks to avoid FK violations
+ var ubicacionIds = await _context.Ubicaciones
+ .Where(u => u.SedeId == id)
+ .Select(u => u.Id)
+ .ToListAsync();
+
+ if (ubicacionIds.Any())
+ {
+ var movimientosCount = await _context.Movimientos
+ .CountAsync(m => (m.OrigenUbicacionId != null && ubicacionIds.Contains(m.OrigenUbicacionId.Value))
+ || (m.DestinoUbicacionId != null && ubicacionIds.Contains(m.DestinoUbicacionId.Value)));
+
+ var stocksCount = await _context.Stocks
+ .CountAsync(s => s.UbicacionId != null && ubicacionIds.Contains(s.UbicacionId));
+
+ if (movimientosCount >0 || stocksCount >0)
+ {
+ throw new InvalidOperationException("No se puede eliminar la sede: existen movimientos o stock asociados a sus ubicaciones. Elimine o reasigne esos registros antes de eliminar la sede.");
+ }
+ }
+
+ // Safe to remove (no blocking dependents)
  _context.Sedes.Remove(existing);
  await _context.SaveChangesAsync();
  }
