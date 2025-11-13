@@ -6,196 +6,196 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>?? Historial de Movimientos</h2>
-    <div>
-  <span class="badge bg-info">@Model.Movimientos.Count() registros</span>
-    </div>
+ <h2><i class="bi bi-list-check"></i> Historial de Movimientos</h2>
+ <div>
+ <span class="badge bg-info">@Model.Movimientos.Count() registros</span>
+ </div>
 </div>
 
 <!-- Filtros -->
 <div class="card mb-4">
-    <div class="card-header">
-  <h5 class="mb-0">?? Filtros</h5>
-    </div>
-    <div class="card-body">
-        <form method="get" class="row g-3">
-            <div class="col-md-3">
-            <label class="form-label">Desde</label>
-         <input asp-for="FechaDesde" type="date" class="form-control" />
-            </div>
-   <div class="col-md-3">
-       <label class="form-label">Hasta</label>
-                <input asp-for="FechaHasta" type="date" class="form-control" />
-       </div>
-         <div class="col-md-3">
-          <label class="form-label">Tipo de Movimiento</label>
-   <select asp-for="TipoFiltro" class="form-select">
-          <option value="">Todos</option>
-      <option value="Ingreso">Ingreso</option>
-        <option value="Salida">Salida</option>
-            <option value="Traslado">Traslado</option>
-             <option value="Ajuste">Ajuste</option>
-                </select>
-         </div>
-      <div class="col-md-3 d-flex align-items-end">
-              <button type="submit" class="btn btn-primary w-100">
-   <i class="bi bi-search"></i> Buscar
-    </button>
-         </div>
-   </form>
-   @if (Model.FechaDesde.HasValue || Model.FechaHasta.HasValue || !string.IsNullOrEmpty(Model.TipoFiltro))
+ <div class="card-header">
+ <h5 class="mb-0"><i class="bi bi-funnel"></i> Filtros</h5>
+ </div>
+ <div class="card-body">
+ <form method="get" class="row g-3">
+ <div class="col-md-3">
+ <label class="form-label">Desde</label>
+ <input asp-for="FechaDesde" type="date" class="form-control" />
+ </div>
+ <div class="col-md-3">
+ <label class="form-label">Hasta</label>
+ <input asp-for="FechaHasta" type="date" class="form-control" />
+ </div>
+ <div class="col-md-3">
+ <label class="form-label">Tipo de Movimiento</label>
+ <select asp-for="TipoFiltro" class="form-select">
+ <option value="">Todos</option>
+ <option value="Ingreso">Ingreso</option>
+ <option value="Salida">Salida</option>
+ <option value="Traslado">Traslado</option>
+ <option value="Ajuste">Ajuste</option>
+ </select>
+ </div>
+ <div class="col-md-3 d-flex align-items-end">
+ <button type="submit" class="btn btn-primary w-100">
+ <i class="bi bi-search"></i> Buscar
+ </button>
+ </div>
+ </form>
+ @if (Model.FechaDesde.HasValue || Model.FechaHasta.HasValue || !string.IsNullOrEmpty(Model.TipoFiltro))
 {
-       <div class="mt-3">
-       <a href="@Url.Page("/Reportes/Movimientos")" class="btn btn-sm btn-outline-secondary">
-      <i class="bi bi-x-circle"></i> Limpiar filtros
-                </a>
-            </div>
-        }
-    </div>
+ <div class="mt-3">
+ <a href="@Url.Page("/Reportes/Movimientos")" class="btn btn-sm btn-outline-secondary">
+ <i class="bi bi-x-circle"></i> Limpiar filtros
+ </a>
+ </div>
+ }
+ </div>
 </div>
 
 <!-- Estadísticas Rápidas -->
 @if (Model.Movimientos.Any())
 {
-    var ingresos = Model.Movimientos.Count(m => m.Tipo == "Ingreso");
-    var salidas = Model.Movimientos.Count(m => m.Tipo == "Salida");
-    var traslados = Model.Movimientos.Count(m => m.Tipo == "Traslado");
-    var ajustes = Model.Movimientos.Count(m => m.Tipo == "Ajuste");
+ var ingresos = Model.Movimientos.Count(m => m.Tipo == "Ingreso");
+ var salidas = Model.Movimientos.Count(m => m.Tipo == "Salida");
+ var traslados = Model.Movimientos.Count(m => m.Tipo == "Traslado");
+ var ajustes = Model.Movimientos.Count(m => m.Tipo == "Ajuste");
 
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-       <div class="card bg-success text-white">
-       <div class="card-body text-center">
+ <div class="row g-3 mb-4">
+ <div class="col-md-3">
+ <div class="card bg-success text-white">
+ <div class="card-body text-center">
 <h3>@ingresos</h3>
  <small>Ingresos</small>
-         </div>
-          </div>
-        </div>
-    <div class="col-md-3">
-     <div class="card bg-danger text-white">
-          <div class="card-body text-center">
-    <h3>@salidas</h3>
-       <small>Salidas</small>
-         </div>
-            </div>
-        </div>
-     <div class="col-md-3">
-            <div class="card bg-primary text-white">
-        <div class="card-body text-center">
-           <h3>@traslados</h3>
+ </div>
+ </div>
+ </div>
+ <div class="col-md-3">
+ <div class="card bg-danger text-white">
+ <div class="card-body text-center">
+ <h3>@salidas</h3>
+ <small>Salidas</small>
+ </div>
+ </div>
+ </div>
+ <div class="col-md-3">
+ <div class="card bg-primary text-white">
+ <div class="card-body text-center">
+ <h3>@traslados</h3>
  <small>Traslados</small>
-     </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-    <div class="card bg-warning text-dark">
-          <div class="card-body text-center">
-         <h3>@ajustes</h3>
-         <small>Ajustes</small>
-   </div>
-            </div>
-        </div>
+ </div>
+ </div>
+ </div>
+ <div class="col-md-3">
+ <div class="card bg-warning text-dark">
+ <div class="card-body text-center">
+ <h3>@ajustes</h3>
+ <small>Ajustes</small>
+ </div>
+ </div>
+ </div>
  </div>
 }
 
 <!-- Tabla de Movimientos -->
 <div class="card">
-    <div class="card-body">
-    @if (Model.Movimientos.Any())
+ <div class="card-body">
+ @if (Model.Movimientos.Any())
  {
-            <div class="table-responsive">
-           <table class="table table-hover table-sm">
-        <thead class="table-light">
-    <tr>
+ <div class="table-responsive">
+ <table class="table table-hover table-sm">
+ <thead class="table-light">
+ <tr>
  <th>Fecha</th>
-   <th>Tipo</th>
-            <th>Producto</th>
-    <th>Lote</th>
-        <th>Cantidad</th>
-     <th>Origen</th>
-         <th>Destino</th>
-               <th>Usuario</th>
-    <th>Estado</th>
-             </tr>
-        </thead>
-     <tbody>
+ <th>Tipo</th>
+ <th>Producto</th>
+ <th>Lote</th>
+ <th>Cantidad</th>
+ <th>Origen</th>
+ <th>Destino</th>
+ <th>Usuario</th>
+ <th>Estado</th>
+ </tr>
+ </thead>
+ <tbody>
 @foreach (var mov in Model.Movimientos.OrderByDescending(m => m.Fecha))
-            {
-    var tipoBadge = mov.Tipo switch
-  {
-     "Ingreso" => "bg-success",
-           "Salida" => "bg-danger",
-           "Traslado" => "bg-primary",
+ {
+ var tipoBadge = mov.Tipo switch
+ {
+ "Ingreso" => "bg-success",
+ "Salida" => "bg-danger",
+ "Traslado" => "bg-primary",
  "Ajuste" => "bg-warning text-dark",
-              _ => "bg-secondary"
-        };
+ _ => "bg-secondary"
+ };
 
-       var estadoBadge = mov.Estado switch
-             {
-              "Aprobado" => "bg-success",
-     "Pendiente" => "bg-warning text-dark",
+ var estadoBadge = mov.Estado switch
+ {
+ "Aprobado" => "bg-success",
+ "Pendiente" => "bg-warning text-dark",
  "Rechazado" => "bg-danger",
-        _ => "bg-secondary"
-         };
+ _ => "bg-secondary"
+ };
 
-        <tr>
-        <td>
-            <small>@mov.Fecha.ToString("dd/MM/yyyy")</small><br />
-          <strong>@mov.Fecha.ToString("HH:mm")</strong>
-  </td>
-        <td>
-  <span class="badge @tipoBadge">@mov.Tipo</span>
-    </td>
-  <td>
-        <strong>@mov.Lote?.Producto?.Nombre</strong>
-           </td>
+ <tr>
  <td>
-   <code>@mov.Lote?.CodigoLote</code>
-         </td>
-       <td class="text-end">
-          <strong>@mov.Cantidad.ToString("N2")</strong>
-          </td>
-      <td>
-         @if (mov.OrigenUbicacion != null)
-                  {
-  <small>@mov.OrigenUbicacion.Codigo</small>
-   }
+ <small>@mov.Fecha.ToString("dd/MM/yyyy")</small><br />
+ <strong>@mov.Fecha.ToString("HH:mm")</strong>
+ </td>
+ <td>
+ <span class="badge @tipoBadge">@mov.Tipo</span>
+ </td>
+ <td>
+ <strong>@mov.Lote?.Producto?.Nombre</strong>
+ </td>
+ <td>
+ <code>@mov.Lote?.CodigoLote</code>
+ </td>
+ <td class="text-end">
+ <strong>@mov.Cantidad.ToString("N2")</strong>
+ </td>
+ <td>
+ @if (mov.OrigenUbicacion != null)
+ {
+ <small>@mov.OrigenUbicacion.Codigo</small>
+ }
  else
-      {
-        <span class="text-muted">-</span>
-       }
-           </td>
-               <td>
-          @if (mov.DestinoUbicacion != null)
-   {
+ {
+ <span class="text-muted">-</span>
+ }
+ </td>
+ <td>
+ @if (mov.DestinoUbicacion != null)
+ {
  <small>@mov.DestinoUbicacion.Codigo</small>
-    }
-            else if (mov.Cliente != null)
-                     {
-       <small class="text-info">@mov.Cliente.Nombre</small>
-   }
-  else
-           {
-     <span class="text-muted">-</span>
-         }
-     </td>
-      <td>
-  <small>@(mov.UsuarioId ?? "-")</small>
-       </td>
-         <td>
-    <span class="badge @estadoBadge">@mov.Estado</span>
-   </td>
-   </tr>
-                }
-     </tbody>
-             </table>
-            </div>
-     }
-     else
-        {
-    <div class="alert alert-info">
-      <i class="bi bi-info-circle"></i> No se encontraron movimientos con los filtros aplicados.
-            </div>
-        }
-    </div>
+ }
+ else if (mov.Cliente != null)
+ {
+ <small class="text-info">@mov.Cliente.Nombre</small>
+ }
+ else
+ {
+ <span class="text-muted">-</span>
+ }
+ </td>
+ <td>
+ <small>@(mov.UsuarioId ?? "-")</small>
+ </td>
+ <td>
+ <span class="badge @estadoBadge">@mov.Estado</span>
+ </td>
+ </tr>
+ }
+ </tbody>
+ </table>
+ </div>
+ }
+ else
+ {
+ <div class="alert alert-info">
+ <i class="bi bi-info-circle"></i> No se encontraron movimientos con los filtros aplicados.
+ </div>
+ }
+ </div>
 </div>

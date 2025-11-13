@@ -1,206 +1,203 @@
 @page
 @model checkpoint_web.Pages.Reportes.TareasModel
 @{
-    ViewData["Title"] = "Reporte de Tareas";
-    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_Layout.cshtml";
+ ViewData["Title"] = "Reporte de Tareas";
+ Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_Layout.cshtml";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>?? Reporte de Tareas</h2>
-    <div>
-        <span class="badge bg-info">@Model.Tareas.Count() tareas</span>
-    </div>
+ <h2><i class="bi bi-card-checklist"></i> Reporte de Tareas</h2>
+ <div>
+ <span class="badge bg-info">@Model.Tareas.Count() tareas</span>
+ </div>
 </div>
 
 <!-- Filtros -->
 <div class="card mb-4">
-  <div class="card-header">
-        <h5 class="mb-0">?? Filtros</h5>
-    </div>
-    <div class="card-body">
-        <form method="get" class="row g-3">
-            <div class="col-md-3">
-      <label class="form-label">Desde</label>
-   <input asp-for="FechaDesde" type="date" class="form-control" />
-            </div>
-            <div class="col-md-3">
-      <label class="form-label">Hasta</label>
-     <input asp-for="FechaHasta" type="date" class="form-control" />
-        </div>
-    <div class="col-md-3">
-        <label class="form-label">Estado</label>
-                <select asp-for="EstadoFiltro" class="form-select">
-      <option value="">Todos</option>
-     <option value="Pendiente">Pendiente</option>
-        <option value="EnProgreso">En Progreso</option>
-   <option value="Finalizada">Finalizada</option>
-             <option value="Cancelada">Cancelada</option>
-   </select>
-  </div>
-    <div class="col-md-3 d-flex align-items-end">
-           <button type="submit" class="btn btn-primary w-100">
-     <i class="bi bi-search"></i> Buscar
-     </button>
-    </div>
-     </form>
-        @if (Model.FechaDesde.HasValue || Model.FechaHasta.HasValue || !string.IsNullOrEmpty(Model.EstadoFiltro))
-        {
-            <div class="mt-3">
-            <a href="@Url.Page("/Reportes/Tareas")" class="btn btn-sm btn-outline-secondary">
-    <i class="bi bi-x-circle"></i> Limpiar filtros
-                </a>
+ <div class="card-header">
+ <h5 class="mb-0"><i class="bi bi-funnel"></i> Filtros</h5>
  </div>
-    }
-    </div>
+ <div class="card-body">
+ <form method="get" class="row g-3">
+ <div class="col-md-3">
+ <label class="form-label">Desde</label>
+ <input asp-for="FechaDesde" type="date" class="form-control" />
+ </div>
+ <div class="col-md-3">
+ <label class="form-label">Hasta</label>
+ <input asp-for="FechaHasta" type="date" class="form-control" />
+ </div>
+ <div class="col-md-3">
+ <label class="form-label">Estado</label>
+ <select asp-for="EstadoFiltro" class="form-select">
+ <option value="">Todos</option>
+ <option value="Pendiente">Pendiente</option>
+ <option value="EnProgreso">En Progreso</option>
+ <option value="Finalizada">Finalizada</option>
+ <option value="Cancelada">Cancelada</option>
+ </select>
+ </div>
+ <div class="col-md-3 d-flex align-items-end">
+ <button type="submit" class="btn btn-primary w-100">
+ <i class="bi bi-search"></i> Buscar
+ </button>
+ </div>
+ </form>
+ @if (Model.FechaDesde.HasValue || Model.FechaHasta.HasValue || !string.IsNullOrEmpty(Model.EstadoFiltro))
+ {
+ <div class="mt-3">
+ <a href="@Url.Page("/Reportes/Tareas")" class="btn btn-sm btn-outline-secondary">
+ <i class="bi bi-x-circle"></i> Limpiar filtros
+ </a>
+ </div>
+ }
+ </div>
 </div>
 
 <!-- Estadísticas Rápidas -->
 @if (Model.Tareas.Any())
 {
-    var pendientes = Model.Tareas.Count(t => t.Estado == "Pendiente");
-    var enProgreso = Model.Tareas.Count(t => t.Estado == "EnProgreso");
-    var finalizadas = Model.Tareas.Count(t => t.Estado == "Finalizada");
-    var vencidas = Model.Tareas.Count(t => t.FechaLimite.HasValue && t.FechaLimite.Value < DateTime.UtcNow && t.Estado != "Finalizada");
+ var pendientes = Model.Tareas.Count(t => t.Estado == "Pendiente");
+ var enProgreso = Model.Tareas.Count(t => t.Estado == "EnProgreso");
+ var finalizadas = Model.Tareas.Count(t => t.Estado == "Finalizada");
+ var vencidas = Model.Tareas.Count(t => t.FechaLimite.HasValue && t.FechaLimite.Value < DateTime.UtcNow && t.Estado != "Finalizada");
 
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card bg-warning text-dark">
-                <div class="card-body text-center">
-           <h3>@pendientes</h3>
-        <small>Pendientes</small>
-   </div>
-       </div>
-        </div>
-     <div class="col-md-3">
-            <div class="card bg-info text-white">
-      <div class="card-body text-center">
-          <h3>@enProgreso</h3>
-                 <small>En Progreso</small>
-       </div>
-   </div>
-        </div>
-    <div class="col-md-3">
-      <div class="card bg-success text-white">
-       <div class="card-body text-center">
-           <h3>@finalizadas</h3>
-                    <small>Finalizadas</small>
-      </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-danger text-white">
-    <div class="card-body text-center">
-     <h3>@vencidas</h3>
-        <small>Vencidas</small>
-   </div>
-            </div>
-        </div>
-  </div>
+ <div class="row g-3 mb-4">
+ <div class="col-md-3">
+ <div class="card bg-warning text-dark">
+ <div class="card-body text-center">
+ <h3>@pendientes</h3>
+ <small>Pendientes</small>
+ </div>
+ </div>
+ </div>
+ <div class="col-md-3">
+ <div class="card bg-info text-white">
+ <div class="card-body text-center">
+ <h3>@enProgreso</h3>
+ <small>En Progreso</small>
+ </div>
+ </div>
+ </div>
+ <div class="col-md-3">
+ <div class="card bg-success text-white">
+ <div class="card-body text-center">
+ <h3>@finalizadas</h3>
+ <small>Finalizadas</small>
+ </div>
+ </div>
+ </div>
+ <div class="col-md-3">
+ <div class="card bg-danger text-white">
+ <div class="card-body text-center">
+ <h3>@vencidas</h3>
+ <small>Vencidas</small>
+ </div>
+ </div>
+ </div>
+ </div>
 }
 
 <!-- Tabla de Tareas -->
 <div class="card">
-  <div class="card-body">
-        @if (Model.Tareas.Any())
-        {
-    <div class="table-responsive">
+ <div class="card-body">
+ @if (Model.Tareas.Any())
+ {
+ <div class="table-responsive">
  <table class="table table-hover table-sm">
-       <thead class="table-light">
-      <tr>
-     <th>Título</th>
-         <th>Producto</th>
-   <th>Prioridad</th>
-<th>Estado</th>
-         <th>Progreso</th>
-            <th>Responsable</th>
-         <th>Fecha Límite</th>
-   <th>Creada</th>
-           </tr>
-            </thead>
-         <tbody>
-     @foreach (var tarea in Model.Tareas.OrderByDescending(t => t.FechaCreacion))
-     {
-   var estadoBadge = tarea.Estado switch
-     {
-        "Pendiente" => "bg-warning text-dark",
-          "EnProgreso" => "bg-info",
-         "Finalizada" => "bg-success",
-     "Cancelada" => "bg-secondary",
-            _ => "bg-secondary"
-             };
+ <thead class="table-light">
+ <tr>
+ <th>Título</th>
+ <th>Producto</th>
+ <th>Prioridad</th>
+ <th>Estado</th>
+ <th>Progreso</th>
+ <th>Responsable</th>
+ <th>Fecha Límite</th>
+ <th>Creada</th>
+ </tr>
+ </thead>
+ <tbody>
+ @foreach (var tarea in Model.Tareas.OrderByDescending(t => t.FechaCreacion))
+ {
+ var estadoBadge = tarea.Estado switch
+ {
+ "Pendiente" => "bg-warning text-dark",
+ "EnProgreso" => "bg-info",
+ "Finalizada" => "bg-success",
+ "Cancelada" => "bg-secondary",
+ _ => "bg-secondary"
+ };
+ var prioridadBadge = tarea.Prioridad switch
+ {
+ "Baja" => "bg-secondary",
+ "Media" => "bg-primary",
+ "Alta" => "bg-warning text-dark",
+ "Urgente" => "bg-danger",
+ _ => "bg-secondary"
+ };
+ var vencida = tarea.FechaLimite.HasValue && tarea.FechaLimite.Value < DateTime.UtcNow && tarea.Estado != "Finalizada";
 
-        var prioridadBadge = tarea.Prioridad switch
-  {
-       "Baja" => "bg-secondary",
-            "Media" => "bg-primary",
-         "Alta" => "bg-warning text-dark",
-     "Urgente" => "bg-danger",
-            _ => "bg-secondary"
-       };
-
-              var vencida = tarea.FechaLimite.HasValue && tarea.FechaLimite.Value < DateTime.UtcNow && tarea.Estado != "Finalizada";
-
-    <tr class="@(vencida ? "table-danger" : "")">
-     <td>
-    <strong>@tarea.Titulo</strong>
-            @if (!string.IsNullOrEmpty(tarea.Descripcion))
-        {
-              <br /><small class="text-muted">@tarea.Descripcion.Substring(0, Math.Min(50, tarea.Descripcion.Length))...</small>
-         }
-   </td>
-    <td>
-         @if (tarea.Producto != null)
-          {
-  <small>@tarea.Producto.Nombre</small>
-     }
-        else
-            {
-  <span class="text-muted">-</span>
-            }
-     </td>
-         <td>
-              <span class="badge @prioridadBadge">@tarea.Prioridad</span>
-      </td>
-     <td>
- <span class="badge @estadoBadge">@tarea.Estado</span>
-      </td>
-   <td>
-  <div class="progress" style="height: 20px; width: 100px;">
-   <div class="progress-bar" role="progressbar" style="width: @tarea.Progreso%" 
-  aria-valuenow="@tarea.Progreso" aria-valuemin="0" aria-valuemax="100">
-     @tarea.Progreso%
- </div>
-           </div>
-        </td>
-               <td>
-        <small>@(tarea.ResponsableId ?? "-")</small>
-            </td>
-    <td>
-   @if (tarea.FechaLimite.HasValue)
-          {
-            <span class="@(vencida ? "text-danger fw-bold" : "")">
-            @tarea.FechaLimite.Value.ToString("dd/MM/yyyy")
-     </span>
-  }
-     else
-       {
-        <span class="text-muted">-</span>
-      }
-  </td>
+ <tr class="@(vencida ? "table-danger" : "")">
  <td>
-                <small>@tarea.FechaCreacion.ToString("dd/MM/yyyy")</small>
-  </td>
-     </tr>
-       }
-        </tbody>
+ <strong>@tarea.Titulo</strong>
+ @if (!string.IsNullOrEmpty(tarea.Descripcion))
+ {
+ <br /><small class="text-muted">@tarea.Descripcion.Substring(0, Math.Min(50, tarea.Descripcion.Length))...</small>
+ }
+ </td>
+ <td>
+ @if (tarea.Producto != null)
+ {
+ <small>@tarea.Producto.Nombre</small>
+ }
+ else
+ {
+ <span class="text-muted">-</span>
+ }
+ </td>
+ <td>
+ <span class="badge @prioridadBadge">@tarea.Prioridad</span>
+ </td>
+ <td>
+ <span class="badge @estadoBadge">@tarea.Estado</span>
+ </td>
+ <td>
+ <div class="progress" style="height:20px; width:100px;">
+ <div class="progress-bar" role="progressbar" style="width: @tarea.Progreso%" aria-valuenow="@tarea.Progreso" aria-valuemin="0" aria-valuemax="100">
+ @tarea.Progreso%
+ </div>
+ </div>
+ </td>
+ <td>
+ <small>@(tarea.ResponsableId ?? "-")</small>
+ </td>
+ <td>
+ @if (tarea.FechaLimite.HasValue)
+ {
+ <span class="@(vencida ? "text-danger fw-bold" : "")">
+ @tarea.FechaLimite.Value.ToString("dd/MM/yyyy")
+ </span>
+ }
+ else
+ {
+ <span class="text-muted">-</span>
+ }
+ </td>
+ <td>
+ <small>@tarea.FechaCreacion.ToString("dd/MM/yyyy")</small>
+ </td>
+ </tr>
+ }
+ </tbody>
  </table>
-            </div>
-        }
-    else
-        {
-            <div class="alert alert-info">
-        <i class="bi bi-info-circle"></i> No se encontraron tareas con los filtros aplicados.
-       </div>
-        }
-    </div>
+ </div>
+ }
+ else
+ {
+ <div class="alert alert-info">
+ <i class="bi bi-info-circle"></i> No se encontraron tareas con los filtros aplicados.
+ </div>
+ }
+ </div>
 </div>

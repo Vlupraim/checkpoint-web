@@ -6,139 +6,139 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>?? Registro de Auditoría</h2>
+    <h2><i class="bi bi-journal-text"></i> Registro de Auditoría</h2>
     <div>
-<span class="badge bg-primary">Total: @Model.Logs.Count registros</span>
+        <span class="badge bg-primary">Total: @Model.Logs.Count registros</span>
     </div>
 </div>
 
 <div class="card mb-4">
     <div class="card-header">
-      <h5 class="mb-0">?? Filtros</h5>
+        <h5 class="mb-0"><i class="bi bi-funnel"></i> Filtros</h5>
     </div>
     <div class="card-body">
         <form method="get" class="row g-3">
             <div class="col-md-3">
-         <label class="form-label">Usuario (ID o Email)</label>
-           <input asp-for="UserFilter" class="form-control" placeholder="Buscar por usuario..." />
-          </div>
-     <div class="col-md-3">
-              <label class="form-label">Acción</label>
-           <input asp-for="ActionFilter" class="form-control" placeholder="CreateUser, DeleteSede..." />
-  </div>
- <div class="col-md-2">
-           <label class="form-label">Desde</label>
-      <input asp-for="From" type="date" class="form-control" />
-     </div>
-     <div class="col-md-2">
-     <label class="form-label">Hasta</label>
-        <input asp-for="To" type="date" class="form-control" />
+                <label class="form-label">Usuario (ID o Email)</label>
+                <input asp-for="UserFilter" class="form-control" placeholder="Buscar por usuario..." />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Acción</label>
+                <input asp-for="ActionFilter" class="form-control" placeholder="CreateUser, DeleteSede..." />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Desde</label>
+                <input asp-for="From" type="date" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Hasta</label>
+                <input asp-for="To" type="date" class="form-control" />
             </div>
             <div class="col-md-2 d-flex align-items-end">
-      <button type="submit" class="btn btn-primary w-100">
-      <i class="bi bi-search"></i> Filtrar
- </button>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Filtrar
+                </button>
             </div>
         </form>
         @if (!string.IsNullOrEmpty(Model.UserFilter) || !string.IsNullOrEmpty(Model.ActionFilter) || Model.From.HasValue || Model.To.HasValue)
         {
             <div class="mt-3">
-       <a href="@Url.Page("/Admin/AuditLogs/Index")" class="btn btn-sm btn-outline-secondary">
-          <i class="bi bi-x-circle"></i> Limpiar filtros
-           </a>
-    </div>
-  }
+                <a href="@Url.Page("/Admin/AuditLogs/Index")" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i> Limpiar filtros
+                </a>
+            </div>
+        }
     </div>
 </div>
 
 <div class="card">
     <div class="card-body">
-   @if (Model.Logs.Any())
+        @if (Model.Logs.Any())
         {
-   <div class="table-responsive">
-          <table class="table table-hover table-sm">
-    <thead class="table-light">
- <tr>
-      <th style="width: 160px;">?? Fecha y Hora</th>
-         <th style="width: 200px;">?? Usuario</th>
-        <th style="width: 250px;">? Acción</th>
-      <th>?? Detalles</th>
- </tr>
-              </thead>
-  <tbody>
- @foreach (var log in Model.Logs)
-    {
-     var userName = Model.UserNames.ContainsKey(log.UserId) ? Model.UserNames[log.UserId] : log.UserId;
-      var actionType = log.Action.Split(':')[0];
-           var badgeClass = actionType.Contains("Create") ? "bg-success" :
-  actionType.Contains("Delete") ? "bg-danger" :
- actionType.Contains("Update") || actionType.Contains("Edit") ? "bg-warning" :
-   actionType.Contains("GET") || actionType.Contains("POST") ? "bg-info" :
-          "bg-secondary";
-         
-            <tr>
-   <td>
- <small class="text-muted">@log.Timestamp.ToLocalTime().ToString("dd/MM/yyyy")</small><br/>
-          <strong>@log.Timestamp.ToLocalTime().ToString("HH:mm:ss")</strong>
-         </td>
-          <td>
-             <div class="d-flex align-items-center">
-         <i class="bi bi-person-circle me-2"></i>
-          <div>
-       <strong>@userName</strong>
-           @if (userName != log.UserId)
-    {
-        <br/><small class="text-muted">@log.UserId.Substring(0, 8)...</small>
- }
- </div>
-          </div>
-           </td>
-<td>
-       <span class="badge @badgeClass">@actionType</span>
-             @if (log.Action.Contains(":"))
-          {
-          <br/><small class="text-muted">@log.Action.Split(':')[1]</small>
-      }
-         </td>
-        <td>
-      @if (!string.IsNullOrEmpty(log.Details))
-      {
-            @if (log.Details.Length > 100)
-{
-         <details>
-   <summary class="text-primary" style="cursor: pointer;">Ver detalles...</summary>
-    <pre class="mt-2 p-2 bg-light rounded" style="max-height: 300px; overflow: auto; font-size: 0.85rem;">@log.Details</pre>
-      </details>
-       }
-    else
-          {
-          <code class="text-muted">@log.Details</code>
-     }
-  }
-    else
-   {
-         <em class="text-muted">Sin detalles</em>
-        }
-        </td>
-    </tr>
-            }
-     </tbody>
-     </table>
-   </div>
-     
-     @if (Model.Logs.Count >= 500)
+            <div class="table-responsive">
+                <table class="table table-hover table-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:160px;">Fecha y Hora</th>
+                            <th style="width:200px;">Usuario</th>
+                            <th style="width:250px;">Acción</th>
+                            <th>Detalles</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var log in Model.Logs)
+                        {
+                            var userName = Model.UserNames.ContainsKey(log.UserId) ? Model.UserNames[log.UserId] : log.UserId;
+                            var actionType = log.Action.Split(':')[0];
+                            var badgeClass = actionType.Contains("Create") ? "bg-success" :
+                                             actionType.Contains("Delete") ? "bg-danger" :
+                                             actionType.Contains("Update") || actionType.Contains("Edit") ? "bg-warning" :
+                                             actionType.Contains("GET") || actionType.Contains("POST") ? "bg-info" :
+                                             "bg-secondary";
+
+                            <tr>
+                                <td>
+                                    <small class="text-muted">@log.Timestamp.ToLocalTime().ToString("dd/MM/yyyy")</small><br />
+                                    <strong>@log.Timestamp.ToLocalTime().ToString("HH:mm:ss")</strong>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-person-circle me-2"></i>
+                                        <div>
+                                            <strong>@userName</strong>
+                                            @if (userName != log.UserId)
+                                            {
+                                                <br /><small class="text-muted">@log.UserId.Substring(0, 8)...</small>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge @badgeClass">@actionType</span>
+                                    @if (log.Action.Contains(":"))
+                                    {
+                                        <br /><small class="text-muted">@log.Action.Split(':')[1]</small>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(log.Details))
+                                    {
+                                        @if (log.Details.Length > 100)
+                                        {
+                                            <details>
+                                                <summary class="text-primary" style="cursor: pointer;">Ver detalles...</summary>
+                                                <pre class="mt-2 p-2 bg-light rounded" style="max-height:300px; overflow:auto; font-size:0.85rem;">@log.Details</pre>
+                                            </details>
+                                        }
+                                        else
+                                        {
+                                            <code class="text-muted">@log.Details</code>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <em class="text-muted">Sin detalles</em>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (Model.Logs.Count >= 500)
             {
-           <div class="alert alert-info mt-3">
-          <i class="bi bi-info-circle"></i> Mostrando los últimos 500 registros. Usa los filtros para refinar la búsqueda.
-         </div>
+                <div class="alert alert-info mt-3">
+                    <i class="bi bi-info-circle"></i> Mostrando los últimos 500 registros. Usa los filtros para refinar la búsqueda.
+                </div>
             }
         }
-  else
+        else
         {
             <div class="alert alert-warning">
-    <i class="bi bi-exclamation-triangle"></i> No se encontraron registros de auditoría con los filtros aplicados.
+                <i class="bi bi-exclamation-triangle"></i> No se encontraron registros de auditoría con los filtros aplicados.
             </div>
         }
-  </div>
+    </div>
 </div>
 
