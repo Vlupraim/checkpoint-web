@@ -247,7 +247,33 @@
    });
        });
 
-      // Handle browser back/forward
+      // Intercept clicks in the dashboard content to support SPA navigation for internal links
+ var dashboardContent = document.getElementById('dashboardContent');
+ if (dashboardContent) {
+ dashboardContent.addEventListener('click', function(e) {
+ var anchor = e.target.closest('a');
+ if (!anchor) return;
+ var href = anchor.getAttribute('href');
+ // Only handle same-origin absolute or root-relative links
+ if (!href) return;
+ // Respect explicit targets or download links
+ if (anchor.target && anchor.target !== '' && anchor.target !== '_self') return;
+ if (anchor.hasAttribute('download')) return;
+ try {
+ var url = new URL(href, location.origin);
+ if (url.origin !== location.origin) return; // external link
+ } catch (err) {
+ return;
+ }
+ // Prevent default navigation and load via AJAX
+ e.preventDefault();
+ loadUrl(url.pathname + url.search, false);
+ history.pushState({ url: url.pathname + url.search }, '', url.pathname + url.search);
+ });
+ }
+ +
+
+ // Handle browser back/forward
  window.addEventListener('popstate', function(event) {
        var state = event.state;
   if (state && state.url) {

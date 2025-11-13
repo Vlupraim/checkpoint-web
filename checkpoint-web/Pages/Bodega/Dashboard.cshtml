@@ -5,7 +5,7 @@
   Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_BodegaLayout.cshtml";
 }
 
-<h2>Panel de Bodega</h2>
+<h2><i class="bi bi-speedometer2"></i> Panel de Bodega</h2>
 
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
@@ -64,28 +64,28 @@
 <!-- Acciones Rápidas -->
  <div class="card mb-4">
    <div class="card-header">
-      <h5 class="mb-0">⚡ Acciones Rápidas</h5>
+      <h5 class="mb-0">Acciones Rápidas</h5>
  </div>
 <div class="card-body">
 <div class="row g-2">
      <div class="col-md-3">
 <a href="/Bodega/Recepcion" class="btn btn-success w-100">
- Nueva Recepción
+ <i class="bi bi-box-arrow-in-down me-1"></i> Nueva Recepción
  </a>
     </div>
   <div class="col-md-3">
    <a href="/Bodega/Movimientos" class="btn btn-primary w-100">
-    Registrar Movimiento
+ <i class="bi bi-arrow-left-right me-1"></i> Registrar Movimiento
   </a>
    </div>
    <div class="col-md-3">
  <a href="/Bodega/Ajustes/Create" class="btn btn-warning w-100">
- Solicitar Ajuste
+ <i class="bi bi-sliders me-1"></i> Solicitar Ajuste
   </a>
     </div>
  <div class="col-md-3">
   <a href="/Reportes" class="btn btn-info w-100">
-     Ver Reportes
+ <i class="bi bi-graph-up me-1"></i> Ver Reportes
     </a>
   </div>
    </div>
@@ -97,7 +97,7 @@
   {
   <div class="card">
  <div class="card-header">
-<h5 class="mb-0">📊 Estadísticas Generales</h5>
+<h5 class="mb-0"><i class="bi bi-bar-chart"></i> Estadísticas Generales</h5>
 </div>
   <div class="card-body">
    <div class="row text-center">

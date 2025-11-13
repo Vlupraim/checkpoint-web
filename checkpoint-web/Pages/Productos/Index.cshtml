@@ -1,19 +1,14 @@
 @page
 @model checkpoint_web.Pages.Productos.IndexModel
 @{
- var isPartial = Request.Query["partial"] == "true";
- if (isPartial)
- {
- Layout = null;
- }
- else
- {
- Layout = "/Pages/Shared/_DashboardLayout.cshtml";
- }
+ // Support AJAX partial loading inside the admin dashboard
+ Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_AdminLayout.cshtml";
 }
 <h1>Productos</h1>
 <p>
- <a class="btn btn-primary" asp-page="Create">Crear nuevo Producto</a>
+ <a class="btn btn-primary" asp-page="Create">
+ <i class="bi bi-plus-circle"></i> Crear nuevo Producto
+ </a>
 </p>
 <table class="table">
  <thead>

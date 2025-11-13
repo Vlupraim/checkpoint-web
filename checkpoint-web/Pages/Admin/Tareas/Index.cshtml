@@ -56,22 +56,10 @@
       <div class="col-md-6">
    <label class="form-label">Filtrar por Estado</label>
     <div class="btn-group w-100" role="group">
-      <a asp-page="Index" asp-route-responsable="@Model.FiltroResponsable" 
-    class="btn @(string.IsNullOrEmpty(Model.FiltroEstado) ? "btn-primary" : "btn-outline-primary")">
-    Todas
-     </a>
-      <a asp-page="Index" asp-route-estado="Pendiente" asp-route-responsable="@Model.FiltroResponsable"
-       class="btn @(Model.FiltroEstado == "Pendiente" ? "btn-warning" : "btn-outline-warning")">
-       Pendientes
-     </a>
-       <a asp-page="Index" asp-route-estado="EnProgreso" asp-route-responsable="@Model.FiltroResponsable"
-      class="btn @(Model.FiltroEstado == "EnProgreso" ? "btn-info" : "btn-outline-info")">
-         En Progreso
-     </a>
-      <a asp-page="Index" asp-route-estado="Finalizada" asp-route-responsable="@Model.FiltroResponsable"
- class="btn @(Model.FiltroEstado == "Finalizada" ? "btn-success" : "btn-outline-success")">
-     Finalizadas
-        </a>
+      <button type="submit" name="estado" value="" class="btn @(string.IsNullOrEmpty(Model.FiltroEstado) ? "btn-primary" : "btn-outline-primary")">Todas</button>
+      <button type="submit" name="estado" value="Pendiente" class="btn @(Model.FiltroEstado == "Pendiente" ? "btn-warning" : "btn-outline-warning")">Pendientes</button>
+      <button type="submit" name="estado" value="EnProgreso" class="btn @(Model.FiltroEstado == "EnProgreso" ? "btn-info" : "btn-outline-info")">En Progreso</button>
+      <button type="submit" name="estado" value="Finalizada" class="btn @(Model.FiltroEstado == "Finalizada" ? "btn-success" : "btn-outline-success")">Finalizadas</button>
    </div>
  </div>
       <div class="col-md-4">
@@ -86,7 +74,7 @@
     }
    }
           </select>
-   <input type="hidden" name="estado" value="@Model.FiltroEstado" />
+   <input type="hidden" name="estado" id="estadoHidden" value="@Model.FiltroEstado" />
  </div>
   <div class="col-md-2 d-flex align-items-end">
             @if (!string.IsNullOrEmpty(Model.FiltroEstado) || !string.IsNullOrEmpty(Model.FiltroResponsable))
@@ -151,7 +139,18 @@
        </td>
        <td><span class="@estadoClass">@tarea.Estado</span></td>
          <td><span class="@prioridadClass">@tarea.Prioridad</span></td>
-                 <td>@(tarea.ResponsableId ?? "-")</td>
+                 <td>
+                 @{ 
+                   var respId = tarea.ResponsableId;
+                   if (string.IsNullOrEmpty(respId)) {
+                      @:<span class="text-muted">-</span>
+                   } else if (Model.UserNames != null && Model.UserNames.ContainsKey(respId)) {
+                      @:<small>@Model.UserNames[respId]</small>
+                   } else {
+                      @:<small class="text-muted">@respId.Substring(0, Math.Min(8, respId.Length))...</small>
+                   }
+                 }
+                 </td>
       <td>
      <div class="progress" style="height: 20px;">
              <div class="progress-bar" role="progressbar" style="width: @tarea.Progreso%" aria-valuenow="@tarea.Progreso" aria-valuemin="0" aria-valuemax="100">

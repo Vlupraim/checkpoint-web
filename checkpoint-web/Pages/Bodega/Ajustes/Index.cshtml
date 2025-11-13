@@ -5,7 +5,7 @@
     Layout = "/Pages/Shared/_Layout.cshtml";
 }
 
-<h2>📊 Ajustes de Inventario</h2>
+<h2><i class="bi bi-clipboard-check"></i> Ajustes de Inventario</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -26,7 +26,7 @@
 <!-- Ajustes Pendientes de Aprobacion -->
 <div class="card mb-4">
     <div class="card-header bg-warning">
-     <h5 class="mb-0">⏳ Pendientes de Aprobación (@Model.AjustesPendientes.Count())</h5>
+     <h5 class="mb-0"><i class="bi bi-clock-history me-1"></i> Pendientes de Aprobación (@Model.AjustesPendientes.Count())</h5>
     </div>
  <div class="card-body">
    @if (Model.AjustesPendientes.Any())
@@ -81,7 +81,7 @@
    {
  <form method="post" asp-page-handler="Aprobar" asp-route-id="@ajuste.Id" class="d-inline">
  <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('¿Aprobar este ajuste?');">
-   ✓ Aprobar
+ <i class="bi bi-check2"></i> Aprobar
 </button>
      </form>
      }
@@ -106,7 +106,7 @@
 <!-- Ajustes Aprobados Recientes -->
 <div class="card">
     <div class="card-header bg-success text-white">
-        <h5 class="mb-0">✅ Ajustes Aprobados (Últimos 20)</h5>
+        <h5 class="mb-0"><i class="bi bi-check-circle me-1"></i> Ajustes Aprobados (Últimos 20)</h5>
     </div>
  <div class="card-body">
   @if (Model.AjustesAprobados.Any())

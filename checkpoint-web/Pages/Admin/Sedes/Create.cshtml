@@ -2,31 +2,48 @@
 @model checkpoint_web.Pages.Admin.Sedes.CreateModel
 @{
  ViewData["Title"] = "Crear Sede";
- Layout = "/Pages/Shared/_DashboardLayout.cshtml";
+ Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_AdminLayout.cshtml";
 }
-<h1>Crear Sede</h1>
-<form method="post">
+
+<div class="container">
+ <div class="row">
+ <div class="col-md-8">
+ <h1 class="mb-4"><i class="bi bi-house"></i> Crear Sede</h1>
+
+ <div class="card">
+ <div class="card-body">
+ <form method="post">
  <div class="mb-3">
- <label asp-for="Sede.Codigo" class="form-label"></label>
+ <label asp-for="Sede.Codigo" class="form-label">Código</label>
  <input asp-for="Sede.Codigo" class="form-control" />
  <span asp-validation-for="Sede.Codigo" class="text-danger"></span>
  </div>
  <div class="mb-3">
- <label asp-for="Sede.Nombre" class="form-label"></label>
+ <label asp-for="Sede.Nombre" class="form-label">Nombre</label>
  <input asp-for="Sede.Nombre" class="form-control" />
  <span asp-validation-for="Sede.Nombre" class="text-danger"></span>
  </div>
  <div class="mb-3">
- <label asp-for="Sede.Direccion" class="form-label"></label>
+ <label asp-for="Sede.Direccion" class="form-label">Dirección</label>
  <input asp-for="Sede.Direccion" class="form-control" />
  </div>
  <div class="form-check mb-3">
  <input asp-for="Sede.Activa" class="form-check-input" />
- <label asp-for="Sede.Activa" class="form-check-label"></label>
+ <label asp-for="Sede.Activa" class="form-check-label">Activa</label>
  </div>
- <button type="submit" class="btn btn-primary">Crear</button>
- <a class="btn btn-secondary" asp-page="Index">Cancelar</a>
-</form>
+
+ <div class="d-flex gap-2">
+ <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Crear</button>
+ <a asp-page="Index" class="btn btn-secondary"><i class="bi bi-x-circle"></i> Cancelar</a>
+ </div>
+ </form>
+ </div>
+ </div>
+
+ </div>
+ </div>
+</div>
+
 @section Scripts {
  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

@@ -26,6 +26,9 @@ namespace checkpoint_web.Pages.Admin.Tareas
    public string? FiltroResponsable { get; set; }
         public SelectList? UsuariosSelectList { get; set; }
 
+   // Map userId -> display name (Nombre (email))
+   public Dictionary<string, string> UserNames { get; set; } = new Dictionary<string, string>();
+
    public async Task OnGetAsync(string? estado = null, string? responsable = null)
     {
    FiltroEstado = estado;
@@ -54,6 +57,15 @@ namespace checkpoint_web.Pages.Admin.Tareas
     .Select(u => new { u.Id, Display = u.Nombre + " (" + u.Email + ")" })
   .ToListAsync();
      UsuariosSelectList = new SelectList(usuarios, "Id", "Display");
+
+     // Build UserNames dictionary for display in table
+ foreach (var u in usuarios)
+ {
+ if (!string.IsNullOrEmpty(u.Id) && !UserNames.ContainsKey(u.Id))
+ {
+ UserNames[u.Id] = u.Display;
+ }
+ }
         }
     }
 }
