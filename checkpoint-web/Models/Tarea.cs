@@ -39,7 +39,7 @@ namespace checkpoint_web.Models
         public string? Tipo { get; set; }
 
    [Required]
-public DateTime FechaCreacion { get; set; } = DateTime.Now;
+public DateTime FechaCreacion { get; set; }
 
         public DateTime? FechaInicio { get; set; }
 
