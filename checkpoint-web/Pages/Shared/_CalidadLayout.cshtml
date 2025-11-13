@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/theme-minimal.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/checkpoint_web.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/checkpoint_web.styles.css" asp-append_version="true" />
 </head>
 
 <body data-authenticated="@(User.Identity?.IsAuthenticated == true ? "True" : "False")" data-persistent="@(isPersistent ? "True" : "False")">
@@ -100,9 +100,12 @@
 
    <div class="sidebar-section-header">REPORTES</div>
    <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes">Dashboard Reportes</a>
-<a class="nav-link" href="/Reportes/Movimientos" target="_blank">Historial Movimientos</a>
-  <a class="nav-link" href="/Reportes/Tareas" target="_blank">Reporte Tareas</a>
-        <a class="nav-link" href="/Admin/AuditLogs/Index" target="_blank">Auditor&iacute;a Sistema</a>
+<a class="nav-link" href="#" data-url="/Reportes/Movimientos" data-path="/Reportes/Movimientos">Historial Movimientos</a>
+  <a class="nav-link" href="#" data-url="/Reportes/Tareas" data-path="/Reportes/Tareas">Reporte Tareas</a>
+ @if (User.IsInRole("Administrador"))
+ {
+   <a class="nav-link" href="#" data-url="/Admin/AuditLogs/Index" data-path="/Admin/AuditLogs">Auditor&iacute;a Sistema</a>
+ }
     </div>
    </nav>
  <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-3">
@@ -122,7 +125,10 @@
      const mapping = {
 '/Calidad/ControlCalidad': '/Calidad/ControlCalidad/Index',
        '/Calidad/Historial': '/Calidad/Historial',
-  '/Reportes': '/Reportes/Index'
+  '/Reportes': '/Reportes/Index',
+  '/Reportes/Movimientos': '/Reportes/Movimientos',
+  '/Reportes/Tareas': '/Reportes/Tareas',
+  '/Admin/AuditLogs': '/Admin/AuditLogs/Index'
       };
 
   function loadUrl(url, replaceState) {

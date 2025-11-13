@@ -1,110 +1,190 @@
 @model checkpoint_web.ViewComponents.NotificationsViewModel
 
 <div class="dropdown">
-    <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-     Mis Notificaciones
-   @if (Model.Count > 0)
-   {
-     <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-        @Model.Count
-         <span class="visually-hidden">notificaciones no le&iacute;das</span>
+ <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+ Mis Notificaciones
+ @if (Model.Count >0)
+ {
+ <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+ @Model.Count
+ <span class="visually-hidden">notificaciones no le&iacute;das</span>
 </span>
-        }
-    </a>
-    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
-        <li class="dropdown-header">
-    <strong>Notificaciones</strong>
-  @if (Model.Count > 0)
-      {
-     <span id="notificationHeaderBadge" class="badge bg-primary">@Model.Count nuevas</span>
-        }
-        </li>
-   <li><hr class="dropdown-divider" /></li>
-      
-     @if (Model.Notificaciones.Any())
-        {
+ }
+ </a>
+ <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown" style="min-width:320px; max-height:400px; overflow-y: auto;">
+ <li class="dropdown-header">
+ <strong>Notificaciones</strong>
+ @if (Model.Count >0)
+ {
+ <span id="notificationHeaderBadge" class="badge bg-primary">@Model.Count nuevas</span>
+ }
+ </li>
+ <li><hr class="dropdown-divider" /></li>
+ 
+ @if (Model.Notificaciones.Any())
+ {
  foreach (var notif in Model.Notificaciones.Take(10))
  {
-       var tipoClass = notif.Tipo switch
-  {
-    "Alerta" => "text-danger",
-         "Advertencia" => "text-warning",
-"exito" => "text-success",
-    _ => "text-info"
-       };
-  
-    <li>
-     <a class="dropdown-item @tipoClass" href="@(notif.Url ?? "#")">
-       <div class="d-flex justify-content-between align-items-start">
-      <div>
-     <strong>@notif.Titulo</strong>
+ var tipoClass = notif.Tipo switch
+ {
+ "Alerta" => "text-danger",
+ "Advertencia" => "text-warning",
+ "exito" => "text-success",
+ _ => "text-info"
+ };
+ 
+ <li id="notif-@notif.Id" class="d-flex align-items-start">
+ <a class="dropdown-item @tipoClass flex-grow-1 me-2" href="@(notif.Url ?? "#")">
+ <div class="d-flex justify-content-between align-items-start">
+ <div>
+ <strong>@notif.Titulo</strong>
  @if (!string.IsNullOrEmpty(notif.Mensaje))
-     {
-         <div><small>@notif.Mensaje</small></div>
-      }
-    <div><small class="text-muted">@notif.FechaCreacion.ToString("dd/MM HH:mm")</small></div>
-    </div>
-         </div>
-        </a>
-      </li>
-  }
-        }
-        else
-     {
-            <li class="dropdown-item text-muted">
-       <small>No hay notificaciones nuevas</small>
-   </li>
-        }
-        
-   <li><hr class="dropdown-divider" /></li>
-  <li>
-     <a class="dropdown-item text-center" href="/Notificaciones">
-       Ver todas las notificaciones
-      </a>
-    </li>
-    </ul>
+ {
+ <div><small>@notif.Mensaje</small></div>
+ }
+ <div><small class="text-muted">@notif.FechaCreacion.ToString("dd/MM HH:mm")</small></div>
+ </div>
+ </div>
+ </a>
+ <button type="button" title="Eliminar notificación" class="btn btn-sm btn-link text-muted ms-auto me-2 notif-delete" data-id="@notif.Id">&times;</button>
+ </li>
+ }
+ }
+ else
+ {
+ <li class="dropdown-item text-muted">
+ <small>No hay notificaciones nuevas</small>
+ </li>
+ }
+ 
+ <li><hr class="dropdown-divider" /></li>
+ <li>
+ <a class="dropdown-item text-center" href="/Notificaciones">
+ Ver todas las notificaciones
+ </a>
+ </li>
+ </ul>
+</div>
+
+<!-- Toast container (bottom-right) -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080;">
+ <div id="notificationToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+ <div class="d-flex">
+ <div class="toast-body" id="notificationToastBody">Operación realizada</div>
+ <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+ </div>
+ </div>
 </div>
 
 <script>
-    (function() {
-        var dropdown = document.getElementById('notificationsDropdown');
-        var alreadyMarked = false;
-        
-        if (dropdown) {
-   dropdown.addEventListener('shown.bs.dropdown', function() {
-   // Solo marcar como leídas una vez por carga de página
-   if (alreadyMarked) return;
-                alreadyMarked = true;
-                
-     // Ocultar badges inmediatamente para UX rápida
-     var badge = document.getElementById('notificationBadge');
-              var headerBadge = document.getElementById('notificationHeaderBadge');
-       
-      if (badge) {
-     badge.style.display = 'none';
-       }
-      if (headerBadge) {
-       headerBadge.style.display = 'none';
-    }
+ (function() {
+ var dropdown = document.getElementById('notificationsDropdown');
+ var alreadyMarked = false;
 
-              // Llamar al servidor para marcar como leídas
-                fetch('/api/notifications/mark-all-read', {
-      method: 'POST',
-       credentials: 'same-origin',
-       headers: {
-    'Content-Type': 'application/json',
-                  'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
-   }
-          })
-        .then(function(response) {
-   if (!response.ok) {
-          console.warn('No se pudieron marcar las notificaciones como leídas');
-        }
-                })
-          .catch(function(err) {
-   console.error('Error al marcar notificaciones:', err);
-                });
-            });
-        }
-    })();
+ // Helper to remove notification element and update badges
+ function removeNotifElement(id) {
+ var el = document.getElementById('notif-' + id);
+ if (el) el.remove();
+ // update badges/counts
+ var badge = document.getElementById('notificationBadge');
+ var headerBadge = document.getElementById('notificationHeaderBadge');
+ if (badge) {
+ // decrement numeric value if present
+ var val = parseInt(badge.textContent) ||0;
+ val = Math.max(0, val -1);
+ badge.textContent = val >0 ? val : '';
+ if (val ===0) badge.style.display = 'none';
+ }
+ if (headerBadge) {
+ var hv = parseInt(headerBadge.textContent) ||0;
+ hv = Math.max(0, hv -1);
+ headerBadge.textContent = hv >0 ? hv + ' nuevas' : '';
+ if (hv ===0) headerBadge.style.display = 'none';
+ }
+ }
+
+ // Toast helper
+ function showToast(message, isError) {
+ var toastEl = document.getElementById('notificationToast');
+ var toastBody = document.getElementById('notificationToastBody');
+ if (!toastEl || !toastBody) return;
+ toastBody.textContent = message;
+ // set style
+ if (isError) {
+ toastEl.classList.remove('text-bg-success');
+ toastEl.classList.add('text-bg-danger');
+ } else {
+ toastEl.classList.remove('text-bg-danger');
+ toastEl.classList.add('text-bg-success');
+ }
+ var bsToast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay:3000 });
+ bsToast.show();
+ }
+
+ if (dropdown) {
+ dropdown.addEventListener('shown.bs.dropdown', function() {
+ // Solo marcar como leídas una vez por carga de página
+ if (alreadyMarked) return;
+ alreadyMarked = true;
+
+ // Ocultar badges inmediatamente para UX rápida
+ var badge = document.getElementById('notificationBadge');
+ var headerBadge = document.getElementById('notificationHeaderBadge');
+
+ if (badge) {
+ badge.style.display = 'none';
+ }
+ if (headerBadge) {
+ headerBadge.style.display = 'none';
+ }
+
+ // Llamar al servidor para marcar como leídas
+ fetch('/api/notifications/mark-all-read', {
+ method: 'POST',
+ credentials: 'same-origin',
+ headers: {
+ 'Content-Type': 'application/json',
+ 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+ }
+ })
+ .then(function(response) {
+ if (!response.ok) {
+ console.warn('No se pudieron marcar las notificaciones como leídas');
+ showToast('Error marcando notificaciones', true);
+ } else {
+ showToast('Notificaciones marcadas', false);
+ }
+ })
+ .catch(function(err) {
+ console.error('Error al marcar notificaciones:', err);
+ showToast('Error marcando notificaciones', true);
+ });
+ });
+ }
+
+ // Delete button handlers (delegated)
+ document.addEventListener('click', function(e) {
+ var btn = e.target.closest('.notif-delete');
+ if (!btn) return;
+ e.preventDefault();
+ var id = btn.getAttribute('data-id');
+ if (!id) return;
+ // optimistic UI
+ removeNotifElement(id);
+ fetch('/api/notifications/delete/' + id, {
+ method: 'POST',
+ credentials: 'same-origin',
+ headers: { 'Content-Type': 'application/json' }
+ })
+ .then(function(resp) {
+ if (!resp.ok) {
+ console.warn('No se pudo eliminar la notificación en el servidor');
+ showToast('No se pudo eliminar notificación', true);
+ } else {
+ showToast('Notificación eliminada', false);
+ }
+ })
+ .catch(function(err) { console.error('Error eliminando notificación:', err); showToast('Error eliminando notificación', true); });
+ });
+ })();
 </script>

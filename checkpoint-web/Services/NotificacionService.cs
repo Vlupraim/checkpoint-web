@@ -12,6 +12,7 @@ namespace checkpoint_web.Services
      Task MarcarComoLeidaAsync(int notificacionId);
    Task MarcarTodasComoLeidasAsync(string usuarioId);
         Task GenerarNotificacionesAutomaticasAsync();
+   Task EliminarNotificacionAsync(int notificacionId, string usuarioId);
     }
 
     public class NotificacionService : INotificacionService
@@ -50,7 +51,7 @@ Tipo = tipo,
 Titulo = titulo,
 Mensaje = mensaje,
      Url = url,
-   FechaCreacion = DateTime.UtcNow, // CORREGIDO: UTC
+   FechaCreacion = DateTime.UtcNow,
   Leida = false,
       Activa = true,
    Prioridad = tipo == "Alerta" ? "Alta" : "Media"
@@ -64,10 +65,10 @@ Mensaje = mensaje,
 public async Task MarcarComoLeidaAsync(int notificacionId)
         {
        var notificacion = await _context.Notificaciones.FindAsync(notificacionId);
-if (notificacion != null)
+if (notificacion != null && notificacion.Activa)
    {
  notificacion.Leida = true;
-     notificacion.FechaLeida = DateTime.UtcNow; // CORREGIDO: UTC
+     notificacion.FechaLeida = DateTime.UtcNow;
     await _context.SaveChangesAsync();
  }
 }
@@ -75,22 +76,35 @@ if (notificacion != null)
   public async Task MarcarTodasComoLeidasAsync(string usuarioId)
 {
      var notificaciones = await _context.Notificaciones
-    .Where(n => n.UsuarioId == usuarioId && !n.Leida)
+    .Where(n => n.UsuarioId == usuarioId && !n.Leida && n.Activa)
    .ToListAsync();
 
    foreach (var n in notificaciones)
  {
    n.Leida = true;
-      n.FechaLeida = DateTime.UtcNow; // CORREGIDO: UTC
+      n.FechaLeida = DateTime.UtcNow;
  }
 
       await _context.SaveChangesAsync();
         }
 
+ public async Task EliminarNotificacionAsync(int notificacionId, string usuarioId)
+ {
+     var n = await _context.Notificaciones.FindAsync(notificacionId);
+ if (n == null) return;
+
+     // Solo permitir eliminación a propietarios o admins; aquí se realiza la eliminación lógica si coincide el usuario
+ if (n.UsuarioId == usuarioId)
+ {
+ n.Activa = false;
+ await _context.SaveChangesAsync();
+ }
+ }
+
  public async Task GenerarNotificacionesAutomaticasAsync()
  {
-  // CORREGIDO: Usar DateTime.UtcNow en todas las comparaciones
-    var ahora = DateTime.UtcNow;
+  var ahora = DateTime.UtcNow;
+ var todayStart = ahora.Date;
     var dosDiasDespues = ahora.AddDays(2);
     var sieteDiasDespues = ahora.AddDays(7);
     var doceHorasAtras = ahora.AddHours(-12);
@@ -110,25 +124,27 @@ if (notificacion != null)
       {
   if (!string.IsNullOrEmpty(tarea.ResponsableId))
   {
-       // Solo una notificación por día
+       // Sólo considerar notificaciones activas al verificar duplicados
     var existeNotificacion = await _context.Notificaciones
      .AnyAsync(n => n.UsuarioId == tarea.ResponsableId
        && n.ReferenciaId == tarea.Id.ToString()
 && n.Tipo == "AlertaVenceHoy"
-  && n.FechaCreacion >= ahora.Date);
+  && n.Activa
+  && n.FechaCreacion >= todayStart);
 
     if (!existeNotificacion)
        {
-     await CrearNotificacionAsync(
+ var notif = await CrearNotificacionAsync(
      tarea.ResponsableId,
       "AlertaVenceHoy",
- $"?? URGENTE: Tarea vence HOY: {tarea.Titulo}",
+ $"URGENTE: Tarea vence HOY: {tarea.Titulo}",
     $"Esta tarea debe completarse hoy. Prioridad: {tarea.Prioridad}",
      "/Tareas/MisTareas"
      );
-    _context.Notificaciones.Last().ReferenciaId = tarea.Id.ToString();
-     _context.Notificaciones.Last().Categoria = "Tareas";
-  await _context.SaveChangesAsync();
+
+ notif.ReferenciaId = tarea.Id.ToString();
+ notif.Categoria = "Tareas";
+ await _context.SaveChangesAsync();
      }
     }
  }
@@ -150,20 +166,22 @@ if (notificacion != null)
    .AnyAsync(n => n.UsuarioId == tarea.ResponsableId
  && n.ReferenciaId == tarea.Id.ToString()
      && n.Tipo == "AlertaVenceManana"
-      && n.FechaCreacion >= ahora.Date);
+      && n.Activa
+      && n.FechaCreacion >= todayStart);
 
    if (!existeNotificacion)
        {
-   await CrearNotificacionAsync(
+   var notif = await CrearNotificacionAsync(
      tarea.ResponsableId,
      "AlertaVenceManana",
-     $"?? Tarea vence MAÑANA: {tarea.Titulo}",
+     $"Tarea vence MAÑANA: {tarea.Titulo}",
         $"Recuerda completar esta tarea. Progreso actual: {tarea.Progreso}%",
        "/Tareas/MisTareas"
    );
-      _context.Notificaciones.Last().ReferenciaId = tarea.Id.ToString();
-_context.Notificaciones.Last().Categoria = "Tareas";
-   await _context.SaveChangesAsync();
+
+ notif.ReferenciaId = tarea.Id.ToString();
+ notif.Categoria = "Tareas";
+ await _context.SaveChangesAsync();
        }
     }
         }
@@ -182,24 +200,26 @@ _context.Notificaciones.Last().Categoria = "Tareas";
  {
       if (!string.IsNullOrEmpty(tarea.ResponsableId))
     {
- // Verificar si ya existe notificación reciente
+ // Verificar si ya existe notificación activa reciente
   var existeNotificacion = await _context.Notificaciones
    .AnyAsync(n => n.UsuarioId == tarea.ResponsableId
      && n.ReferenciaId == tarea.Id.ToString()
+ && n.Activa
  && n.FechaCreacion >= doceHorasAtras);
 
       if (!existeNotificacion)
  {
-      await CrearNotificacionAsync(
+      var notif = await CrearNotificacionAsync(
   tarea.ResponsableId,
    "Alerta",
-  $"?? Tarea próxima a vencer: {tarea.Titulo}",
+  $"Tarea próxima a vencer: {tarea.Titulo}",
     $"Vence el {tarea.FechaLimite:dd/MM/yyyy}. Progreso: {tarea.Progreso}%",
   "/Tareas/MisTareas"
   );
-     _context.Notificaciones.Last().ReferenciaId = tarea.Id.ToString();
-    _context.Notificaciones.Last().Categoria = "Tareas";
-         await _context.SaveChangesAsync();
+
+ notif.ReferenciaId = tarea.Id.ToString();
+ notif.Categoria = "Tareas";
+ await _context.SaveChangesAsync();
   }
       }
 }
@@ -217,25 +237,27 @@ _context.Notificaciones.Last().Categoria = "Tareas";
        {
       if (!string.IsNullOrEmpty(tarea.ResponsableId))
       {
-         // Solo una notificación por día para tareas vencidas
+         // Solo una notificación por día para tareas vencidas (considerar sólo activas)
    var existeNotificacion = await _context.Notificaciones
   .AnyAsync(n => n.UsuarioId == tarea.ResponsableId
       && n.ReferenciaId == tarea.Id.ToString()
     && n.Tipo == "TareaVencida"
-     && n.FechaCreacion >= ahora.Date);
+     && n.Activa
+     && n.FechaCreacion >= todayStart);
 
       if (!existeNotificacion)
  {
-     await CrearNotificacionAsync(
+     var notif = await CrearNotificacionAsync(
  tarea.ResponsableId,
       "TareaVencida",
-   $"? Tarea VENCIDA: {tarea.Titulo}",
+   $"Tarea VENCIDA: {tarea.Titulo}",
          $"Esta tarea venció el {tarea.FechaLimite:dd/MM/yyyy}. Requiere atención inmediata.",
        "/Tareas/MisTareas"
 );
- _context.Notificaciones.Last().ReferenciaId = tarea.Id.ToString();
-    _context.Notificaciones.Last().Categoria = "Tareas";
-  await _context.SaveChangesAsync();
+
+ notif.ReferenciaId = tarea.Id.ToString();
+ notif.Categoria = "Tareas";
+ await _context.SaveChangesAsync();
  }
    }
   }
@@ -260,13 +282,16 @@ _context.Notificaciones.Last().Categoria = "Tareas";
 
       foreach (var adminId in admins)
 {
-await CrearNotificacionAsync(
+ var notif = await CrearNotificacionAsync(
     adminId,
     "Advertencia",
-$"?? {lotesProximosVencer.Count} lote(s) próximo(s) a vencer",
+$"{lotesProximosVencer.Count} lote(s) próximo(s) a vencer",
     "Revise el inventario para tomar acciones",
  "/Bodega/Recepcion"
   );
+
+ notif.Categoria = "Inventario";
+ await _context.SaveChangesAsync();
  }
   }
 
@@ -274,33 +299,37 @@ $"?? {lotesProximosVencer.Count} lote(s) próximo(s) a vencer",
  var ajustesPendientes = await _context.Movimientos
    .CountAsync(m => m.Tipo == "Ajuste" && m.Estado == "Pendiente");
 
-  if (ajustesPendientes > 0)
+  if (ajustesPendientes >0)
   {
-    var admins = await _context.UserRoles
-    .Where(ur => ur.RoleId == (
-  _context.Roles.First(r => r.Name == "Administrador").Id
-))
-     .Select(ur => ur.UserId)
-   .ToListAsync();
+ var admins = await _context.UserRoles
+ .Where(ur => ur.RoleId == (
+ _context.Roles.First(r => r.Name == "Administrador").Id
+ ))
+ .Select(ur => ur.UserId)
+ .ToListAsync();
 
-foreach (var adminId in admins)
-    {
-  var existeNotificacion = await _context.Notificaciones
-    .AnyAsync(n => n.UsuarioId == adminId
-       && n.Categoria == "Inventario"
-      && n.FechaCreacion >= seisHorasAtras);
+ foreach (var adminId in admins)
+ {
+ var existeNotificacion = await _context.Notificaciones
+ .AnyAsync(n => n.UsuarioId == adminId
+ && n.Categoria == "Inventario"
+ && n.Activa
+ && n.FechaCreacion >= seisHorasAtras);
 
-     if (!existeNotificacion)
-  {
-   await CrearNotificacionAsync(
-        adminId,
-  "Información",
-   $"?? {ajustesPendientes} ajuste(s) pendiente(s) de aprobación",
-   "Revise los ajustes de inventario",
+ if (!existeNotificacion)
+ {
+ var notif = await CrearNotificacionAsync(
+ adminId,
+ "Informacion",
+ $"{ajustesPendientes} ajuste(s) pendiente(s) de aprobación",
+ "Revise los ajustes de inventario",
  "/Bodega/Ajustes"
-   );
-  }
-}
+ );
+
+ notif.Categoria = "Inventario";
+ await _context.SaveChangesAsync();
+ }
+ }
  }
      }
     }
