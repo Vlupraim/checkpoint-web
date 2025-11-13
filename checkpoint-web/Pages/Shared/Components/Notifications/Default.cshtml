@@ -5,62 +5,106 @@
      Mis Notificaciones
    @if (Model.Count > 0)
    {
-     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+     <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
         @Model.Count
          <span class="visually-hidden">notificaciones no le&iacute;das</span>
-       </span>
+</span>
         }
     </a>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
         <li class="dropdown-header">
-       <strong>Notificaciones</strong>
+    <strong>Notificaciones</strong>
   @if (Model.Count > 0)
-        {
-     <span class="badge bg-primary">@Model.Count nuevas</span>
+      {
+     <span id="notificationHeaderBadge" class="badge bg-primary">@Model.Count nuevas</span>
         }
         </li>
    <li><hr class="dropdown-divider" /></li>
       
      @if (Model.Notificaciones.Any())
         {
-     foreach (var notif in Model.Notificaciones.Take(10))
-    {
+ foreach (var notif in Model.Notificaciones.Take(10))
+ {
        var tipoClass = notif.Tipo switch
   {
     "Alerta" => "text-danger",
          "Advertencia" => "text-warning",
-     "exito" => "text-success",
+"exito" => "text-success",
     _ => "text-info"
        };
-            
+  
     <li>
      <a class="dropdown-item @tipoClass" href="@(notif.Url ?? "#")">
        <div class="d-flex justify-content-between align-items-start">
       <div>
-           <strong>@notif.Titulo</strong>
-             @if (!string.IsNullOrEmpty(notif.Mensaje))
+     <strong>@notif.Titulo</strong>
+ @if (!string.IsNullOrEmpty(notif.Mensaje))
      {
          <div><small>@notif.Mensaje</small></div>
       }
-            <div><small class="text-muted">@notif.FechaCreacion.ToString("dd/MM HH:mm")</small></div>
+    <div><small class="text-muted">@notif.FechaCreacion.ToString("dd/MM HH:mm")</small></div>
     </div>
          </div>
         </a>
       </li>
-         }
+  }
         }
         else
      {
             <li class="dropdown-item text-muted">
-          <small>No hay notificaciones nuevas</small>
+       <small>No hay notificaciones nuevas</small>
    </li>
         }
         
    <li><hr class="dropdown-divider" /></li>
-        <li>
+  <li>
      <a class="dropdown-item text-center" href="/Notificaciones">
        Ver todas las notificaciones
       </a>
-        </li>
+    </li>
     </ul>
 </div>
+
+<script>
+    (function() {
+        var dropdown = document.getElementById('notificationsDropdown');
+        var alreadyMarked = false;
+        
+        if (dropdown) {
+   dropdown.addEventListener('shown.bs.dropdown', function() {
+   // Solo marcar como leídas una vez por carga de página
+   if (alreadyMarked) return;
+                alreadyMarked = true;
+                
+     // Ocultar badges inmediatamente para UX rápida
+     var badge = document.getElementById('notificationBadge');
+              var headerBadge = document.getElementById('notificationHeaderBadge');
+       
+      if (badge) {
+     badge.style.display = 'none';
+       }
+      if (headerBadge) {
+       headerBadge.style.display = 'none';
+    }
+
+              // Llamar al servidor para marcar como leídas
+                fetch('/api/notifications/mark-all-read', {
+      method: 'POST',
+       credentials: 'same-origin',
+       headers: {
+    'Content-Type': 'application/json',
+                  'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+   }
+          })
+        .then(function(response) {
+   if (!response.ok) {
+          console.warn('No se pudieron marcar las notificaciones como leídas');
+        }
+                })
+          .catch(function(err) {
+   console.error('Error al marcar notificaciones:', err);
+                });
+            });
+        }
+    })();
+</script>
