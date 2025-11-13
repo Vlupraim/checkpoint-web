@@ -108,7 +108,7 @@
      _ => "badge bg-secondary"
          };
 
-   var vencida = tarea.FechaLimite.HasValue && tarea.FechaLimite.Value < DateTime.Now && tarea.Estado != "Finalizada";
+   var vencida = tarea.FechaLimite.HasValue && tarea.FechaLimite.Value < DateTime.UtcNow && tarea.Estado != "Finalizada";
 
   <tr class="@(vencida ? "table-danger" : "")">
       <td>

@@ -22,8 +22,8 @@ namespace checkpoint_web.Pages.Reportes
 
     public async Task OnGetAsync(DateTime? desde = null, DateTime? hasta = null, string? estado = null)
         {
-      FechaDesde = desde ?? DateTime.Now.AddDays(-30);
-   FechaHasta = hasta ?? DateTime.Now;
+      FechaDesde = desde ?? DateTime.UtcNow.AddDays(-30);
+   FechaHasta = hasta ?? DateTime.UtcNow;
   EstadoFiltro = estado;
 
    Tareas = await _reporteService.GetTareasAsync(EstadoFiltro, FechaDesde, FechaHasta);

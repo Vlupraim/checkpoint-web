@@ -7,14 +7,14 @@ namespace checkpoint_web.Services
 {
     public class TareaService : ITareaService
     {
-    private readonly CheckpointDbContext _context;
+  private readonly CheckpointDbContext _context;
      private readonly IAuditService _auditService;
 
-     public TareaService(CheckpointDbContext context, IAuditService auditService)
+        public TareaService(CheckpointDbContext context, IAuditService auditService)
         {
-      _context = context;
-  _auditService = auditService;
-  }
+    _context = context;
+ _auditService = auditService;
+        }
 
         public async Task<IEnumerable<Tarea>> GetAllAsync()
         {
@@ -58,18 +58,18 @@ namespace checkpoint_web.Services
 
         public async Task<IEnumerable<Tarea>> GetProximasAVencerAsync(int dias = 7)
         {
-          var fechaLimite = DateTime.Now.AddDays(dias);
+ var fechaLimite = DateTime.UtcNow.AddDays(dias);
             return await _context.Tareas
-.Include(t => t.Producto)
-         .Include(t => t.Lote)
-      .Where(t => t.Activo 
-      && t.Estado != "Finalizada" 
-            && t.Estado != "Cancelada"
+         .Include(t => t.Producto)
+                .Include(t => t.Lote)
+  .Where(t => t.Activo 
+           && t.Estado != "Finalizada" 
+ && t.Estado != "Cancelada"
    && t.FechaLimite.HasValue 
-&& t.FechaLimite.Value <= fechaLimite)
-          .OrderBy(t => t.FechaLimite)
+         && t.FechaLimite.Value <= fechaLimite)
+        .OrderBy(t => t.FechaLimite)
       .ToListAsync();
- }
+     }
 
         public async Task<Tarea?> GetByIdAsync(int id)
         {
@@ -81,64 +81,64 @@ namespace checkpoint_web.Services
 
         public async Task<Tarea> CreateAsync(Tarea tarea)
         {
-       tarea.FechaCreacion = DateTime.Now;
-   tarea.Progreso = 0;
-    
+    tarea.FechaCreacion = DateTime.UtcNow;
+            tarea.Progreso = 0;
+            
         _context.Tareas.Add(tarea);
-      await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
          await _auditService.LogAsync(
-                tarea.CreadoPor ?? "system",
-        $"Creó tarea: {tarea.Titulo} (ID: {tarea.Id})"
-     );
+        tarea.CreadoPor ?? "system",
+      $"Creó tarea: {tarea.Titulo} (ID: {tarea.Id})"
+            );
 
-         return tarea;
+       return tarea;
         }
 
         public async Task<Tarea> UpdateAsync(Tarea tarea)
-        {
-            var existing = await _context.Tareas.FindAsync(tarea.Id);
+  {
+  var existing = await _context.Tareas.FindAsync(tarea.Id);
     if (existing == null)
-   throw new KeyNotFoundException($"Tarea {tarea.Id} no encontrada");
+        throw new KeyNotFoundException($"Tarea {tarea.Id} no encontrada");
 
-            // Registrar cambios en historial
-         var cambios = new List<string>();
- 
-          if (existing.Estado != tarea.Estado)
+      // Registrar cambios en historial
+   var cambios = new List<string>();
+            
+     if (existing.Estado != tarea.Estado)
   cambios.Add($"Estado: {existing.Estado} ? {tarea.Estado}");
- 
+        
             if (existing.ResponsableId != tarea.ResponsableId)
-        cambios.Add($"Responsable cambiado");
+  cambios.Add($"Responsable cambiado");
 
-        if (existing.Progreso != tarea.Progreso)
-     cambios.Add($"Progreso: {existing.Progreso}% ? {tarea.Progreso}%");
+     if (existing.Progreso != tarea.Progreso)
+   cambios.Add($"Progreso: {existing.Progreso}% ? {tarea.Progreso}%");
 
-         if (cambios.Any())
-    {
-            var historialEntry = new
-       {
- Fecha = DateTime.Now,
-  Cambios = cambios
-     };
-      
-    var historialList = string.IsNullOrEmpty(existing.Historial)
-    ? new List<object>()
-         : JsonSerializer.Deserialize<List<object>>(existing.Historial) ?? new List<object>();
+        if (cambios.Any())
+      {
+     var historialEntry = new
+            {
+     Fecha = DateTime.UtcNow,
+     Cambios = cambios
+ };
+
+            var historialList = string.IsNullOrEmpty(existing.Historial)
+        ? new List<object>()
+    : JsonSerializer.Deserialize<List<object>>(existing.Historial) ?? new List<object>();
        
-       historialList.Add(historialEntry);
-             tarea.Historial = JsonSerializer.Serialize(historialList);
-            }
+        historialList.Add(historialEntry);
+           tarea.Historial = JsonSerializer.Serialize(historialList);
+       }
 
             _context.Entry(existing).CurrentValues.SetValues(tarea);
-            await _context.SaveChangesAsync();
+ await _context.SaveChangesAsync();
 
-            await _auditService.LogAsync(
-    "system",
-$"Actualizó tarea: {tarea.Titulo} (ID: {tarea.Id})"
-   );
+await _auditService.LogAsync(
+         "system",
+      $"Actualizó tarea: {tarea.Titulo} (ID: {tarea.Id})"
+            );
 
-     return tarea;
-    }
+      return tarea;
+        }
 
         public async Task<bool> DeleteAsync(int id)
         {
@@ -158,36 +158,36 @@ var tarea = await _context.Tareas.FindAsync(id);
    }
 
         public async Task<bool> CambiarEstadoAsync(int id, string nuevoEstado, string? usuarioId = null)
-        {
-        var tarea = await _context.Tareas.FindAsync(id);
-          if (tarea == null)
-         return false;
+  {
+         var tarea = await _context.Tareas.FindAsync(id);
+            if (tarea == null)
+       return false;
 
-        var estadoAnterior = tarea.Estado;
-        tarea.Estado = nuevoEstado;
+            var estadoAnterior = tarea.Estado;
+            tarea.Estado = nuevoEstado;
 
-        if (nuevoEstado == "EnProgreso" && !tarea.FechaInicio.HasValue)
-       {
-        tarea.FechaInicio = DateTime.Now;
-         }
+       if (nuevoEstado == "EnProgreso" && !tarea.FechaInicio.HasValue)
+            {
+           tarea.FechaInicio = DateTime.UtcNow;
+            }
 
-            if (nuevoEstado == "Finalizada")
-    {
-         tarea.FechaFinalizacion = DateTime.Now;
-          tarea.Progreso = 100;
+     if (nuevoEstado == "Finalizada")
+         {
+      tarea.FechaFinalizacion = DateTime.UtcNow;
+     tarea.Progreso = 100;
             }
 
             await _context.SaveChangesAsync();
 
-    await _auditService.LogAsync(
-    usuarioId ?? "system",
-     $"Cambió estado de tarea {id}: {estadoAnterior} ? {nuevoEstado}"
-            );
+        await _auditService.LogAsync(
+       usuarioId ?? "system",
+           $"Cambió estado de tarea {id}: {estadoAnterior} ? {nuevoEstado}"
+  );
 
-         return true;
+      return true;
         }
 
-        public async Task<bool> AsignarResponsableAsync(int id, string responsableId)
+     public async Task<bool> AsignarResponsableAsync(int id, string responsableId)
         {
    var tarea = await _context.Tareas.FindAsync(id);
          if (tarea == null)
@@ -205,38 +205,39 @@ var tarea = await _context.Tareas.FindAsync(id);
         }
 
     public async Task<bool> ActualizarProgresoAsync(int id, int progreso)
-        {
-var tarea = await _context.Tareas.FindAsync(id);
+    {
+        var tarea = await _context.Tareas.FindAsync(id);
             if (tarea == null)
-             return false;
+    return false;
 
-  tarea.Progreso = Math.Clamp(progreso, 0, 100);
-            
-  if (progreso >= 100)
-      {
-      tarea.Estado = "Finalizada";
-           tarea.FechaFinalizacion = DateTime.Now;
-         }
+         tarea.Progreso = Math.Clamp(progreso, 0, 100);
+   
+       if (progreso >= 100)
+       {
+     tarea.Estado = "Finalizada";
+              tarea.FechaFinalizacion = DateTime.UtcNow;
+ }
 
-            await _context.SaveChangesAsync();
-      return true;
-        }
+      await _context.SaveChangesAsync();
+            return true;
+     }
 
         public async Task<Dictionary<string, int>> GetEstadisticasAsync()
-      {
-  var stats = new Dictionary<string, int>
-      {
-      ["Total"] = await _context.Tareas.CountAsync(t => t.Activo),
-                ["Pendientes"] = await _context.Tareas.CountAsync(t => t.Activo && t.Estado == "Pendiente"),
-     ["EnProgreso"] = await _context.Tareas.CountAsync(t => t.Activo && t.Estado == "EnProgreso"),
-     ["Finalizadas"] = await _context.Tareas.CountAsync(t => t.Activo && t.Estado == "Finalizada"),
-                ["Vencidas"] = await _context.Tareas.CountAsync(t => t.Activo 
-   && t.Estado != "Finalizada" 
-           && t.FechaLimite.HasValue 
-      && t.FechaLimite.Value < DateTime.Now)
-   };
+        {
+       var now = DateTime.UtcNow;
+            var stats = new Dictionary<string, int>
+     {
+     ["Total"] = await _context.Tareas.CountAsync(t => t.Activo),
+     ["Pendientes"] = await _context.Tareas.CountAsync(t => t.Activo && t.Estado == "Pendiente"),
+    ["EnProgreso"] = await _context.Tareas.CountAsync(t => t.Activo && t.Estado == "EnProgreso"),
+      ["Finalizadas"] = await _context.Tareas.CountAsync(t => t.Activo && t.Estado == "Finalizada"),
+     ["Vencidas"] = await _context.Tareas.CountAsync(t => t.Activo 
+    && t.Estado != "Finalizada" 
+ && t.FechaLimite.HasValue 
+     && t.FechaLimite.Value < now)
+            };
 
-         return stats;
-    }
+            return stats;
+  }
     }
 }

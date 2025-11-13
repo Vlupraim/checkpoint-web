@@ -60,7 +60,7 @@
     var pendientes = Model.Tareas.Count(t => t.Estado == "Pendiente");
     var enProgreso = Model.Tareas.Count(t => t.Estado == "EnProgreso");
     var finalizadas = Model.Tareas.Count(t => t.Estado == "Finalizada");
-    var vencidas = Model.Tareas.Count(t => t.FechaLimite.HasValue && t.FechaLimite.Value < DateTime.Now && t.Estado != "Finalizada");
+    var vencidas = Model.Tareas.Count(t => t.FechaLimite.HasValue && t.FechaLimite.Value < DateTime.UtcNow && t.Estado != "Finalizada");
 
     <div class="row g-3 mb-4">
         <div class="col-md-3">
@@ -138,7 +138,7 @@
             _ => "bg-secondary"
        };
 
-              var vencida = tarea.FechaLimite.HasValue && tarea.FechaLimite.Value < DateTime.Now && tarea.Estado != "Finalizada";
+              var vencida = tarea.FechaLimite.HasValue && tarea.FechaLimite.Value < DateTime.UtcNow && tarea.Estado != "Finalizada";
 
     <tr class="@(vencida ? "table-danger" : "")">
      <td>
