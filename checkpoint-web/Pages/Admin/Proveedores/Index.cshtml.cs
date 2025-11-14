@@ -39,9 +39,28 @@ TempData["SuccessMessage"] = "Proveedor creado exitosamente";
 
   public async Task<IActionResult> OnPostDeleteAsync(int id)
 {
- await _proveedorService.DeleteAsync(id);
-   TempData["SuccessMessage"] = "Proveedor eliminado exitosamente";
+ try
+ {
+ var result = await _proveedorService.DeleteAsync(id);
+ if (!result)
+ {
+ TempData["ErrorMessage"] = "Proveedor no encontrado o ya eliminado.";
  return RedirectToPage();
+ }
+
+ TempData["SuccessMessage"] = "Proveedor eliminado exitosamente";
+ return RedirectToPage();
+ }
+ catch (InvalidOperationException ex)
+ {
+ TempData["ErrorMessage"] = ex.Message;
+ return RedirectToPage();
+ }
+ catch (Exception ex)
+ {
+ TempData["ErrorMessage"] = "Error al eliminar el proveedor: " + ex.Message;
+ return RedirectToPage();
+ }
  }
     }
 }

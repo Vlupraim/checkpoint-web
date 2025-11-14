@@ -91,7 +91,8 @@
  <div class="btn-group btn-group-sm">
  <a asp-page="Edit" asp-route-id="@proveedor.Id" class="btn btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
  <form method="post" asp-page-handler="Delete" asp-route-id="@proveedor.Id" class="d-inline" onsubmit="return confirm('¿Eliminar?');">
-<button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> Eliminar</button>
+ @Html.AntiForgeryToken()
+ <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> Eliminar</button>
  </form>
  </div>
  </td>

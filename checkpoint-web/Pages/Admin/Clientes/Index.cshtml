@@ -108,6 +108,7 @@
  </a>
  <form method="post" asp-page-handler="Delete" asp-route-id="@cliente.Id" class="d-inline" 
  onsubmit="return confirm('¿Eliminar cliente @cliente.Nombre?');">
+ @Html.AntiForgeryToken()
  <button type="submit" class="btn btn-outline-danger btn-sm" title="Eliminar">
  <i class="bi bi-trash"></i> Eliminar
  </button>
