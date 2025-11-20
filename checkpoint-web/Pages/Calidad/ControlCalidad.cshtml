@@ -13,12 +13,12 @@
  </div>
 </div>
 
-<!-- Lotes Pendientes de Revisión -->
+<!-- Lotes Pendientes de RevisiÃ³n -->
 <div class="row">
  <div class="col-md-12">
     <div class="card">
 <div class="card-header bg-warning">
-       <h5 class="mb-0">Lotes en Cuarentena - Pendientes de Revisión</h5>
+       <h5 class="mb-0">Lotes en Cuarentena - Pendientes de RevisiÃ³n</h5>
  </div>
      <div class="card-body">
   <div class="table-responsive">
@@ -26,13 +26,13 @@
  <thead>
     <tr>
      <th>Prioridad</th>
- <th>Código Lote</th>
+ <th>CÃ³digo Lote</th>
   <th>Producto</th>
    <th>Fecha Ingreso</th>
     <th>Vencimiento</th>
      <th>Cantidad</th>
          <th>Temp. Ingreso</th>
-    <th>Días en Cuarentena</th>
+    <th>DÃ­as en Cuarentena</th>
    <th>Acciones</th>
   </tr>
     </thead>
@@ -56,7 +56,7 @@
     }
    else if (diasParaVencer <= 7)
         {
-     <span class="badge bg-warning text-dark">PRÓXIMO</span>
+     <span class="badge bg-warning text-dark">PRÃ“XIMO</span>
           }
       else
            {
@@ -79,10 +79,10 @@
    }
   </td>
          <td>@lote.CantidadInicial</td>
- <td>@lote.TempIngreso.ToString("N1")°C</td>
+ <td>@lote.TempIngreso.ToString("N1")Â°C</td>
          <td>
   <span class="badge @(diasCuarentena > 2 ? "bg-danger" : "bg-info")">
-        @diasCuarentena día@(diasCuarentena != 1 ? "s" : "")
+        @diasCuarentena dÃ­a@(diasCuarentena != 1 ? "s" : "")
                   </span>
        </td>
          <td>
@@ -98,8 +98,8 @@
           <tr>
          <td colspan="9" class="text-center text-muted py-4">
    <i class="bi bi-inbox" style="font-size: 2rem;"></i>
-          <p class="mt-2 mb-0">No hay lotes pendientes de revisión</p>
-         <small>Los lotes recién recepcionados aparecerán aquí automáticamente</small>
+          <p class="mt-2 mb-0">No hay lotes pendientes de revisiÃ³n</p>
+         <small>Los lotes reciÃ©n recepcionados aparecerÃ¡n aquÃ­ automÃ¡ticamente</small>
        </td>
  </tr>
         }
@@ -116,7 +116,7 @@
     <div class="modal-dialog modal-lg">
   <div class="modal-content">
       <div class="modal-header">
-      <h5 class="modal-title">Revisión de Lote</h5>
+      <h5 class="modal-title">RevisiÃ³n de Lote</h5>
   <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
   </div>
    <div class="modal-body">
@@ -125,19 +125,19 @@
      <hr />
    <form id="formRevision">
     <div class="mb-3">
-   <label class="form-label">Decisión</label>
+   <label class="form-label">DecisiÃ³n</label>
    <select class="form-select" name="decision" required>
      <option value="">Seleccionar...</option>
-      <option value="Aprobar">? Aprobar para Liberación</option>
+      <option value="Aprobar">? Aprobar para LiberaciÃ³n</option>
  <option value="Rechazar">? Rechazar Lote</option>
-     <option value="Bloquear">?? Bloquear por Investigación</option>
+     <option value="Bloquear">?? Bloquear por InvestigaciÃ³n</option>
      </select>
     </div>
    <div class="mb-3">
     <label class="form-label">Observaciones</label>
   <textarea class="form-control" name="observaciones" rows="3" required></textarea>
   </div>
-  <button type="submit" class="btn btn-primary">Confirmar Decisión</button>
+  <button type="submit" class="btn btn-primary">Confirmar DecisiÃ³n</button>
       </form>
    </div>
         </div>
@@ -146,9 +146,9 @@
 
 @section Scripts {
   <script>
- // Placeholder para lógica de revisión
+ // Placeholder para lÃ³gica de revisiÃ³n
         document.addEventListener('DOMContentLoaded', function() {
-   // Lógica para abrir modal, confirmar decisiones, etc.
+   // LÃ³gica para abrir modal, confirmar decisiones, etc.
      console.log('Control de Calidad: Ready');
      });
     </script>

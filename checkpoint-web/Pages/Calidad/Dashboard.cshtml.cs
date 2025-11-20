@@ -36,7 +36,7 @@ namespace checkpoint_web.Pages.Calidad
             {
                 _logger.LogError(ex, "[CALIDAD] Error loading dashboard");
                 ErrorMessage = "Error al cargar el dashboard. Algunos datos pueden no estar disponibles.";
-                // No lanzar excepción - mostrar dashboard con mensaje de error
+                // No lanzar excepciÃ³n - mostrar dashboard con mensaje de error
             }
         }
     }

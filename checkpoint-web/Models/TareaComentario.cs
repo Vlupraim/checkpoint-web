@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace checkpoint_web.Models
 {
     /// <summary>
-    /// Comentarios o notas en tareas para colaboración
+    /// Comentarios o notas en tareas para colaboraciÃ³n
     /// </summary>
     public class TareaComentario
     {

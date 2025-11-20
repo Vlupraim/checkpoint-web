@@ -1,7 +1,7 @@
 @using Microsoft.AspNetCore.Authentication
 
 @{
-    // Verificar si la sesión es persistente
+    // Verificar si la sesiÃ³n es persistente
     var authProperties = await Context.AuthenticateAsync();
     var isPersistent = authProperties?.Properties?.IsPersistent ?? false;
 }
@@ -77,7 +77,7 @@
     <form method="post" asp-page="/Account/Logout" class="d-inline">
      @Html.AntiForgeryToken()
  <button type="submit" class="btn btn-link dropdown-item text-start">
-     <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+     <i class="bi bi-box-arrow-right"></i> Cerrar SesiÃ³n
       </button>
   </form>
  </li>
@@ -156,7 +156,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     
-  @* Session manager deshabilitado - Las cookies de sesión se gestionan automáticamente *@
+  @* Session manager deshabilitado - Las cookies de sesiÃ³n se gestionan automÃ¡ticamente *@
     @* <script src="~/js/session-manager.js" asp-append-version="true"></script> *@
 
     <script>

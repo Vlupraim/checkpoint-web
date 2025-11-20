@@ -91,17 +91,17 @@ namespace checkpoint_web.Services
 
     await _auditService.LogAsync(
       tarea.CreadoPor ?? "system",
-        $"CreÛ tarea: {tarea.Titulo} (ID: {tarea.Id})"
+        $"Cre√≥ tarea: {tarea.Titulo} (ID: {tarea.Id})"
    );
 
-            // Enviar notificaciÛn al responsable si est· asignado
+            // Enviar notificaci√≥n al responsable si est√° asignado
       if (!string.IsNullOrEmpty(tarea.ResponsableId))
      {
      await _notificacionService.CrearNotificacionAsync(
     tarea.ResponsableId,
       "TareaNueva",
    $"?? Nueva tarea asignada: {tarea.Titulo}",
-       tarea.Descripcion ?? "Sin descripciÛn",
+       tarea.Descripcion ?? "Sin descripci√≥n",
   $"/Admin/Tareas"
    );
       }
@@ -162,7 +162,7 @@ namespace checkpoint_web.Services
 
             await _auditService.LogAsync(
     "system",
-$"ActualizÛ tarea: {tarea.Titulo} (ID: {tarea.Id})"
+$"Actualiz√≥ tarea: {tarea.Titulo} (ID: {tarea.Id})"
    );
 
    return tarea;
@@ -179,7 +179,7 @@ var tarea = await _context.Tareas.FindAsync(id);
 
             await _auditService.LogAsync(
           "system",
-    $"EliminÛ tarea: {tarea.Titulo} (ID: {id})"
+    $"Elimin√≥ tarea: {tarea.Titulo} (ID: {id})"
        );
 
  return true;
@@ -209,7 +209,7 @@ var tarea = await _context.Tareas.FindAsync(id);
 
         await _auditService.LogAsync(
        usuarioId ?? "system",
-           $"CambiÛ estado de tarea {id}: {estadoAnterior} ? {nuevoEstado}"
+           $"Cambi√≥ estado de tarea {id}: {estadoAnterior} ? {nuevoEstado}"
   );
 
       return true;
@@ -226,7 +226,7 @@ var tarea = await _context.Tareas.FindAsync(id);
 
     await _auditService.LogAsync(
  "system",
-        $"AsignÛ responsable a tarea {id}"
+        $"Asign√≥ responsable a tarea {id}"
             );
 
             return true;

@@ -4,26 +4,26 @@ namespace checkpoint_web.Models
 {
     /// <summary>
     /// Estados posibles de un lote en el flujo de control de calidad.
-    /// Según diagrama de flujo del sistema.
+    /// SegÃºn diagrama de flujo del sistema.
     /// </summary>
     public enum EstadoLote
     {
         /// <summary>
-        /// Estado inicial al recepcionar mercadería.
-        /// El lote está en cuarentena esperando revisión de Calidad.
+        /// Estado inicial al recepcionar mercaderÃ­a.
+        /// El lote estÃ¡ en cuarentena esperando revisiÃ³n de Calidad.
         /// </summary>
         [Display(Name = "Cuarentena")]
         Cuarentena = 0,
 
         /// <summary>
-        /// El equipo de Calidad está revisando el lote.
+        /// El equipo de Calidad estÃ¡ revisando el lote.
         /// </summary>
-        [Display(Name = "En Revisión")]
+        [Display(Name = "En RevisiÃ³n")]
         EnRevision = 1,
 
         /// <summary>
         /// El lote fue aprobado por Calidad y puede usarse en operaciones.
-        /// ÚNICO estado que permite movimientos/salidas de inventario.
+        /// ÃšNICO estado que permite movimientos/salidas de inventario.
      /// </summary>
         [Display(Name = "Liberado")]
         Liberado = 2,
@@ -36,8 +36,8 @@ namespace checkpoint_web.Models
         Rechazado = 3,
 
         /// <summary>
-        /// El lote está bloqueado para investigación.
-      /// Requiere análisis adicional antes de tomar decisión final.
+        /// El lote estÃ¡ bloqueado para investigaciÃ³n.
+      /// Requiere anÃ¡lisis adicional antes de tomar decisiÃ³n final.
         /// </summary>
         [Display(Name = "Bloqueado")]
         Bloqueado = 4

@@ -65,7 +65,7 @@ public Tarea Tarea { get; set; } = new();
     {
     if (string.IsNullOrWhiteSpace(contenido))
    {
-  TempData["ErrorMessage"] = "El comentario no puede estar vacío";
+  TempData["ErrorMessage"] = "El comentario no puede estar vacÃ­o";
       return RedirectToPage(new { id = tareaId });
   }
 

@@ -23,7 +23,7 @@
     </div>
 }
 
-<!-- Acciones R醦idas -->
+<!-- Acciones R谩pidas -->
 <div class="btn-group mb-4" role="group">
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#trasladoModal">
  ?? Nuevo Traslado
@@ -32,7 +32,7 @@
   ?? Nueva Salida
     </button>
     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#devolucionModal">
-?? Nueva Devoluci髇
+?? Nueva Devoluci贸n
     </button>
 </div>
 
@@ -117,11 +117,11 @@
       <select asp-for="Traslado.LoteId" asp-items="Model.LotesSelectList" class="form-select" required></select>
        </div>
   <div class="mb-3">
-     <label asp-for="Traslado.OrigenUbicacionId">Ubicaci髇 Origen</label>
+     <label asp-for="Traslado.OrigenUbicacionId">Ubicaci贸n Origen</label>
      <select asp-for="Traslado.OrigenUbicacionId" asp-items="Model.UbicacionesSelectList" class="form-select" required></select>
    </div>
 <div class="mb-3">
-    <label asp-for="Traslado.DestinoUbicacionId">Ubicaci髇 Destino</label>
+    <label asp-for="Traslado.DestinoUbicacionId">Ubicaci贸n Destino</label>
    <select asp-for="Traslado.DestinoUbicacionId" asp-items="Model.UbicacionesSelectList" class="form-select" required></select>
  </div>
     <div class="mb-3">
@@ -157,7 +157,7 @@
      <select asp-for="Salida.LoteId" asp-items="Model.LotesSelectList" class="form-select" required></select>
  </div>
        <div class="mb-3">
-<label asp-for="Salida.UbicacionId">Ubicaci髇</label>
+<label asp-for="Salida.UbicacionId">Ubicaci贸n</label>
       <select asp-for="Salida.UbicacionId" asp-items="Model.UbicacionesSelectList" class="form-select" required></select>
      </div>
     <div class="mb-3">
@@ -184,13 +184,13 @@
  </div>
 </div>
 
-<!-- Modal Devoluci髇 -->
+<!-- Modal Devoluci贸n -->
 <div class="modal fade" id="devolucionModal" tabindex="-1">
  <div class="modal-dialog">
    <div class="modal-content">
     <form method="post" asp-page-handler="Devolucion">
       <div class="modal-header">
-<h5>?? Nueva Devoluci髇</h5>
+<h5>?? Nueva Devoluci贸n</h5>
  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
  </div>
       <div class="modal-body">
@@ -199,7 +199,7 @@
      <select asp-for="Devolucion.LoteId" asp-items="Model.LotesSelectList" class="form-select" required></select>
      </div>
  <div class="mb-3">
- <label asp-for="Devolucion.UbicacionId">Ubicaci髇 Destino</label>
+ <label asp-for="Devolucion.UbicacionId">Ubicaci贸n Destino</label>
     <select asp-for="Devolucion.UbicacionId" asp-items="Model.UbicacionesSelectList" class="form-select" required></select>
    </div>
   <div class="mb-3">
@@ -213,7 +213,7 @@
   </div>
 <div class="modal-footer">
       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-  <button type="submit" class="btn btn-success">Registrar Devoluci髇</button>
+  <button type="submit" class="btn btn-success">Registrar Devoluci贸n</button>
   </div>
   </form>
  </div>

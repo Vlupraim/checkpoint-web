@@ -33,7 +33,7 @@ namespace checkpoint_web.Pages.Admin.Users
           return NotFound();
         }
 
-            // No permitir eliminarse a sí mismo
+            // No permitir eliminarse a sÃ­ mismo
   var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
     if (currentUserId == id)
             {
@@ -45,7 +45,7 @@ namespace checkpoint_web.Pages.Admin.Users
    
    if (result.Succeeded)
   {
-        // Auditar la eliminación
+        // Auditar la eliminaciÃ³n
            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";
         await _auditService.LogAsync(
             userId,

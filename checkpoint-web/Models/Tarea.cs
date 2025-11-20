@@ -48,7 +48,7 @@ public DateTime FechaCreacion { get; set; }
         public DateTime? FechaFinalizacion { get; set; }
 
         /// <summary>
-        /// Usuario que creó la tarea
+        /// Usuario que creÃ³ la tarea
         /// </summary>
         [StringLength(450)]
         public string? CreadoPor { get; set; }
@@ -72,14 +72,14 @@ public DateTime FechaCreacion { get; set; }
         public string? Observaciones { get; set; }
 
         /// <summary>
-        /// Relación opcional con Producto (para tareas de inventario)
+        /// RelaciÃ³n opcional con Producto (para tareas de inventario)
         /// </summary>
    public Guid? ProductoId { get; set; }
   [ForeignKey(nameof(ProductoId))]
         public virtual Producto? Producto { get; set; }
 
      /// <summary>
-/// Relación opcional con Lote (para tareas de calidad)
+/// RelaciÃ³n opcional con Lote (para tareas de calidad)
 /// </summary>
         public Guid? LoteId { get; set; }
  [ForeignKey(nameof(LoteId))]

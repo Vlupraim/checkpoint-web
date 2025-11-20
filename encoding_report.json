@@ -1,0 +1,306 @@
+ï»¿[
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Models\\Cliente.cs",
+        "Samples":  "  /// RUT, NIT, RFC, o identificador fiscal segï¿½n paï¿½s\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Models\\EstadoLote.cs",
+        "Samples":  "    /// Segï¿½n diagrama de flujo del sistema.\r\n        /// Estado inicial al recepcionar mercaderï¿½a.\r\n        /// El lote estï¿½ en cuarentena esperando revisiï¿½n de Calidad.\r\n        /// El equipo de Calidad estï¿½ revisando el lote.\r\n        [Display(Name = \"En Revisiï¿½n\")]\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Models\\Lote.cs",
+        "Samples":  "        /// Proveedor que suministrï¿½ este lote\r\n        /// Inicial: Cuarentena (esperando revisiï¿½n)\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Models\\Movimiento.cs",
+        "Samples":  "        /// Documento de respaldo: Guï¿½a despacho, factura, OC, etc.\r\n        /// Usuario que aprobï¿½ el movimiento (para ajustes)\r\n        /// Stock antes del movimiento (para auditorï¿½a)\r\n        /// Stock despuï¿½s del movimiento (para auditorï¿½a)\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Models\\Notificacion.cs",
+        "Samples":  "      /// Usuario destinatario de la notificaciï¿½n\r\n        /// Tipo: Alerta, Recordatorio, Informaciï¿½n, Advertencia, Error, ï¿½xito\r\n     public string Tipo { get; set; } = \"Informaciï¿½n\";\r\n        /// Tï¿½tulo breve de la notificaciï¿½n\r\n   /// Categorï¿½a: Tarea, Inventario, Calidad, Sistema, Usuario\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Models\\Parametro.cs",
+        "Samples":  "    /// Configuraciï¿½n y parï¿½metros generales del sistema\r\n        /// Clave ï¿½nica del parï¿½metro (ej: \"StockMinimoGeneral\", \"DiasAlertaVencimiento\")\r\n        /// Valor del parï¿½metro (puede ser nï¿½mero, texto, JSON)\r\n        /// Categorï¿½a: Sistema, Inventario, Calidad, Notificaciones, Seguridad\r\n      /// Unidad de medida si aplica (dï¿½as, %, cantidad, etc.)\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Models\\Procedimiento.cs",
+        "Samples":  "    /// Representa un procedimiento o proceso operativo estï¿½ndar (SOP)\r\n        /// Categorï¿½a: Calidad, Operaciones, Seguridad, Logï¿½stica, Administrativo\r\n        /// Versiï¿½n del documento (1.0, 1.1, 2.0, etc.)\r\n   /// Estado: Borrador, Vigente, Revisiï¿½n, Obsoleto\r\n/// Usuario que aprobï¿½ el procedimiento\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Models\\Producto.cs",
+        "Samples":  " // Navegaciï¿½n\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Models\\Proveedor.cs",
+        "Samples":  "        /// RUT, NIT, RFC, o identificador fiscal segï¿½n paï¿½s\r\n      /// Categorï¿½a: MaterialPrima, Embalaje, Servicios, Logï¿½stica\r\n        /// Calificaciï¿½n de 1 a 5 estrellas\r\n     // Navegaciï¿½n\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Models\\Tarea.cs",
+        "Samples":  "        /// Usuario que creï¿½ la tarea\r\n        /// Relaciï¿½n opcional con Producto (para tareas de inventario)\r\n/// Relaciï¿½n opcional con Lote (para tareas de calidad)\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Models\\TareaComentario.cs",
+        "Samples":  "    /// Comentarios o notas en tareas para colaboraciï¿½n\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Account\\CookieDiagnostics.cshtml.cs",
+        "Samples":  " sb.AppendLine($\"  ï¿½ {cookie.Key}\");\r\n sb.AppendLine($\"  ï¿½ {header}\");\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Account\\Login.cshtml.cs",
+        "Samples":  "        public bool RememberMe { get; set; } = false; // Nuevo: checkbox \"Recuï¿½rdame\"\r\n    ModelState.AddModelError(string.Empty, \"Inicio de sesiï¿½n invï¿½lido.\");\r\n    ModelState.AddModelError(string.Empty, \"Inicio de sesiï¿½n invï¿½lido.\");\r\n    // CRï¿½TICO: isPersistent controla si la cookie es temporal o persistente\r\n    // - false (sin RememberMe): Cookie de sesiï¿½n, expira en 10 minutos de inactividad\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Account\\Logout.cshtml.cs",
+        "Samples":  "                // Tambiï¿½n intentar con Secure=false por si acaso\r\n            // Luego eliminar explï¿½citamente TODAS las cookies conocidas (viejas y nuevas)\r\n        // Tambiï¿½n permitir logout por GET para facilitar limpieza\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Admin\\AuditLogs\\Index.cshtml",
+        "Samples":  "    ViewData[\"Title\"] = \"Registro de Auditorï¿½a\";\r\n    \u003ch2\u003e\u003ci class=\"bi bi-journal-text\"\u003e\u003c/i\u003e Registro de Auditorï¿½a\u003c/h2\u003e\r\n                \u003clabel class=\"form-label\"\u003eAcciï¿½n\u003c/label\u003e\r\n                            \u003cth style=\"width:250px;\"\u003eAcciï¿½n\u003c/th\u003e\r\n                    \u003ci class=\"bi bi-info-circle\"\u003e\u003c/i\u003e Mostrando los ï¿½ltimos 500 registros. Usa los filtros para refinar la bï¿½squeda.\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Admin\\Dashboard.cshtml.cs",
+        "Samples":  "                // Generar notificaciones automï¿½ticas\r\n                // No lanzar excepciï¿½n - mostrar dashboard con mensaje de error\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Admin\\Proveedores\\Edit.cshtml",
+        "Samples":  " \u003coption value=\"Logistica\"\u003eLogï¿½stica\u003c/option\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Admin\\Sedes\\Create.cshtml",
+        "Samples":  " \u003clabel asp-for=\"Sede.Codigo\" class=\"form-label\"\u003eCï¿½digo\u003c/label\u003e\r\n \u003clabel asp-for=\"Sede.Direccion\" class=\"form-label\"\u003eDirecciï¿½n\u003c/label\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Admin\\Sedes\\Delete.cshtml",
+        "Samples":  "\u003ch3\u003eï¿½Estï¿½ seguro de que desea eliminar esta sede?\u003c/h3\u003e\r\n \u003cdt class=\"col-sm-3\"\u003eCï¿½digo\u003c/dt\u003e\r\n \u003cdt class=\"col-sm-3\"\u003eDirecciï¿½n\u003c/dt\u003e\r\n \u003cdd class=\"col-sm-9\"\u003e@(Model.Sede.Activa ? \"Sï¿½\" : \"No\")\u003c/dd\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Admin\\Tareas\\_ComentariosPartial.cshtml",
+        "Samples":  "\u003c!-- Secciï¿½n de Comentarios --\u003e\r\n        \u003ch5 class=\"mb-0\"\u003e?? Comentarios y Colaboraciï¿½n\u003c/h5\u003e\r\n   \u003ci class=\"bi bi-info-circle\"\u003e\u003c/i\u003e No hay comentarios aï¿½n. Sï¿½ el primero en comentar.\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Admin\\Tareas\\Create.cshtml",
+        "Samples":  "        \u003csmall class=\"form-text text-muted\"\u003eEl usuario asignado recibirï¿½ una notificaciï¿½n automï¿½ticamente\u003c/small\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Admin\\Tareas\\Edit.cshtml",
+        "Samples":  "\u003csmall class=\"form-text text-muted\"\u003eSi cambias el responsable, se le enviarï¿½ una notificaciï¿½n\u003c/small\u003e\r\n@* Incluir secciï¿½n de comentarios *@\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Admin\\Tareas\\Edit.cshtml.cs",
+        "Samples":  "  TempData[\"ErrorMessage\"] = \"El comentario no puede estar vacï¿½o\";\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Admin\\Ubicaciones\\Create.cshtml",
+        "Samples":  " ViewData[\"Title\"] = \"Crear Ubicaciï¿½n\";\r\n \u003ch1 class=\"mb-4\"\u003e\u003ci class=\"bi bi-geo-alt\"\u003e\u003c/i\u003e Crear Ubicaciï¿½n\u003c/h1\u003e\r\n \u003clabel asp-for=\"Ubicacion.Codigo\" class=\"form-label\"\u003eCï¿½digo\u003c/label\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Admin\\Ubicaciones\\Delete.cshtml",
+        "Samples":  " ViewData[\"Title\"] = \"Eliminar Ubicaciï¿½n\";\r\n\u003ch1\u003eEliminar Ubicaciï¿½n\u003c/h1\u003e\r\n\u003ch3\u003eï¿½Estï¿½ seguro de que desea eliminar esta ubicaciï¿½n?\u003c/h3\u003e\r\n \u003cdt class=\"col-sm-3\"\u003eCï¿½digo\u003c/dt\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Admin\\Ubicaciones\\Delete.cshtml.cs",
+        "Samples":  " TempData[\"SuccessMessage\"] = \"Ubicaciï¿½n eliminada correctamente\";\r\n TempData[\"ErrorMessage\"] = \"Error al eliminar la ubicaciï¿½n: \" + ex.Message;\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Admin\\Ubicaciones\\Edit.cshtml",
+        "Samples":  " ViewData[\"Title\"] = \"Editar Ubicaciï¿½n\";\r\n\u003ch1\u003eEditar Ubicaciï¿½n\u003c/h1\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Admin\\Ubicaciones\\Index.cshtml",
+        "Samples":  "    \u003ci class=\"bi bi-plus-circle\"\u003e\u003c/i\u003e Crear nueva Ubicaciï¿½n\r\n         \u003cth\u003e\u003ci class=\"bi bi-upc\"\u003e\u003c/i\u003e Cï¿½digo\u003c/th\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Admin\\Users\\Create.cshtml",
+        "Samples":  " \u003clabel asp-for=\"Input.Password\" class=\"form-label\"\u003eContraseï¿½a *\u003c/label\u003e\r\n \u003csmall class=\"text-muted\"\u003eMï¿½nimo 6 caracteres\u003c/small\u003e\r\n \u003clabel asp-for=\"Input.ConfirmPassword\" class=\"form-label\"\u003eConfirmar Contraseï¿½a *\u003c/label\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Admin\\Users\\Create.cshtml.cs",
+        "Samples":  "            // Auditar la creaciï¿½n\r\n        [EmailAddress(ErrorMessage = \"Email invï¿½lido\")]\r\n[Required(ErrorMessage = \"La contraseï¿½a es requerida\")]\r\n            [StringLength(100, MinimumLength = 6, ErrorMessage = \"La contraseï¿½a debe tener al menos 6 caracteres\")]\r\n            [Required(ErrorMessage = \"Debe confirmar la contraseï¿½a\")]\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Admin\\Users\\Delete.cshtml.cs",
+        "Samples":  "            // No permitir eliminarse a sï¿½ mismo\r\n        // Auditar la eliminaciï¿½n\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Bodega\\Ajustes.cshtml",
+        "Samples":  "\u003c!-- Secciï¿½n: Solicitar Nuevo Ajuste --\u003e\r\n\u003c!-- Secciï¿½n: Lista de Ajustes --\u003e\r\n      \u003c!-- Filtros rï¿½pidos --\u003e\r\n   \u003csmall\u003eLos ajustes aparecerï¿½n aquï¿½ despuï¿½s de ser solicitados\u003c/small\u003e\r\n      // Aquï¿½ irï¿½a la lï¿½gica para filtrar la tabla\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Bodega\\Ajustes\\Create.cshtml.cs",
+        "Samples":  "     TempData[\"SuccessMessage\"] = \"Ajuste creado. Esperando aprobaciï¿½n de administrador.\";\r\n // Solo mostrar lotes que NO estï¿½n bloqueados\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Bodega\\Lotes.cshtml",
+        "Samples":  "     \u003ch5 class=\"mb-0\"\u003eFiltros de Bï¿½squeda\u003c/h5\u003e\r\n  \u003clabel class=\"form-label\"\u003eCï¿½digo de Lote\u003c/label\u003e\r\n     \u003coption value=\"proximo\"\u003ePrï¿½ximos a vencer (7 dï¿½as)\u003c/option\u003e\r\n       \u003cth\u003eCï¿½digo Lote\u003c/th\u003e\r\n     \u003csmall\u003eLos lotes se crean automï¿½ticamente al registrar una recepciï¿½n\u003c/small\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Bodega\\Movimientos\\Index.cshtml",
+        "Samples":  "\u003c!-- Acciones Rï¿½pidas --\u003e\r\n?? Nueva Devoluciï¿½n\r\n     \u003clabel asp-for=\"Traslado.OrigenUbicacionId\"\u003eUbicaciï¿½n Origen\u003c/label\u003e\r\n    \u003clabel asp-for=\"Traslado.DestinoUbicacionId\"\u003eUbicaciï¿½n Destino\u003c/label\u003e\r\n\u003clabel asp-for=\"Salida.UbicacionId\"\u003eUbicaciï¿½n\u003c/label\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Bodega\\Movimientos\\Index.cshtml.cs",
+        "Samples":  "     Devolucion.Motivo ?? \"Devoluciï¿½n\"\r\n TempData[\"SuccessMessage\"] = \"Devoluciï¿½n registrada exitosamente\";\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Bodega\\Recepcion.cshtml.cs",
+        "Samples":  " // CRï¿½TICO: Create Lote con estado inicial CUARENTENA\r\n Estado = EstadoLote.Cuarentena  // ? ESTADO INICIAL: Cuarentena (esperando revisiï¿½n de Calidad)\r\n TempData[\"Message\"] = $\"Recepciï¿½n registrada correctamente. Lote en CUARENTENA esperando revisiï¿½n de Calidad.\";\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Bodega\\Stock.cshtml",
+        "Samples":  "  \u003ch5 class=\"mb-0\"\u003eFiltros de Bï¿½squeda\u003c/h5\u003e\r\n \u003clabel class=\"form-label\"\u003eUbicaciï¿½n\u003c/label\u003e\r\n     \u003ch5 class=\"mb-0\"\u003eStock por Producto y Ubicaciï¿½n\u003c/h5\u003e\r\n  \u003cth\u003eUbicaciï¿½n\u003c/th\u003e\r\n   \u003cth\u003eï¿½ltima Actualizaciï¿½n\u003c/th\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Bodega\\Traslados.cshtml",
+        "Samples":  "      \u003clabel class=\"form-label\"\u003eUbicaciï¿½n Origen\u003c/label\u003e\r\n   \u003clabel class=\"form-label\"\u003eUbicaciï¿½n Destino\u003c/label\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Calidad\\ControlCalidad.cshtml",
+        "Samples":  "\u003c!-- Lotes Pendientes de Revisiï¿½n --\u003e\r\n       \u003ch5 class=\"mb-0\"\u003eLotes en Cuarentena - Pendientes de Revisiï¿½n\u003c/h5\u003e\r\n \u003cth\u003eCï¿½digo Lote\u003c/th\u003e\r\n    \u003cth\u003eDï¿½as en Cuarentena\u003c/th\u003e\r\n     \u003cspan class=\"badge bg-warning text-dark\"\u003ePRï¿½XIMO\u003c/span\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Calidad\\ControlCalidad\\Index.cshtml",
+        "Samples":  "  \u003ch5 class=\"mb-0\"\u003eLotes Pendientes de Revisiï¿½n\u003c/h5\u003e\r\n        \u003cth\u003eCï¿½digo Lote\u003c/th\u003e\r\n \u003cdiv class=\"alert alert-info\"\u003eNo hay lotes pendientes de revisiï¿½n\u003c/div\u003e\r\n     \u003ch5 class=\"mb-0\"\u003eHistorial de Revisiones (ï¿½ltimos 30)\u003c/h5\u003e\r\n      \u003ch5 class=\"modal-title\"\u003eRevisiï¿½n de Calidad\u003c/h5\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Calidad\\ControlCalidad\\Index.cshtml.cs",
+        "Samples":  "TempData[\"SuccessMessage\"] = \"?? Lote bloqueado para investigaciï¿½n\";\r\n   TempData[\"ErrorMessage\"] = \"? Acciï¿½n no vï¿½lida\";\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Calidad\\Dashboard.cshtml.cs",
+        "Samples":  "                // No lanzar excepciï¿½n - mostrar dashboard con mensaje de error\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Calidad\\Historial.cshtml",
+        "Samples":  "\u003c!-- Filtros Rï¿½pidos con Tabs --\u003e\r\n     \u003cth\u003eFecha Revisiï¿½n\u003c/th\u003e\r\n   \u003cth\u003eCï¿½digo Lote\u003c/th\u003e\r\n       \u003cth\u003eDecisiï¿½n\u003c/th\u003e\r\n \u003csmall\u003eLas decisiones de calidad aparecerï¿½n aquï¿½\u003c/small\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Calidad\\Liberacion.cshtml",
+        "Samples":  "    \u003cstrong\u003eNota:\u003c/strong\u003e Esta pï¿½gina mostrarï¿½ solo los lotes que fueron \u003cstrong\u003eaprobados\u003c/strong\u003e por el equipo de calidad.\r\n  Para ver rechazos y bloqueos, usa la opciï¿½n \"Historial Completo\" del menï¿½ lateral.\r\n \u003cp\u003eLista de lotes liberados para venta/distribuciï¿½n (placeholder).\u003c/p\u003e\r\n       \u003cth\u003eFecha Liberaciï¿½n\u003c/th\u003e\r\n    \u003cth\u003eCï¿½digo Lote\u003c/th\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Fragments\\Usuarios.cshtml",
+        "Samples":  " \u003ch2\u003e\u003ci class=\"bi bi-people\"\u003e\u003c/i\u003e Gestiï¿½n de Usuarios y Roles\u003c/h2\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Productos\\Create.cshtml",
+        "Samples":  " \u003clabel asp-for=\"Producto.VidaUtilDias\" class=\"form-label\"\u003eVida ï¿½til (dï¿½as)\u003c/label\u003e\r\n \u003clabel asp-for=\"Producto.StockMinimo\" class=\"form-label\"\u003eStock Mï¿½nimo\u003c/label\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Productos\\Delete.cshtml",
+        "Samples":  " \u003ch4\u003eï¿½Seguro que desea eliminar este producto?\u003c/h4\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Productos\\Details.cshtml",
+        "Samples":  " \u003cdt class=\"col-sm-2\"\u003eVida ï¿½til\u003c/dt\u003e\r\n \u003cdd class=\"col-sm-10\"\u003e@(Model.Producto?.Activo == true ? \"Sï¿½\" : \"No\")\u003c/dd\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Reportes\\Movimientos.cshtml",
+        "Samples":  "\u003c!-- Estadï¿½sticas Rï¿½pidas --\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Reportes\\Tareas.cshtml",
+        "Samples":  "\u003c!-- Estadï¿½sticas Rï¿½pidas --\u003e\r\n \u003cth\u003eTï¿½tulo\u003c/th\u003e\r\n \u003cth\u003eFecha Lï¿½mite\u003c/th\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Shared\\_AdminLayout.cshtml",
+        "Samples":  "    // Verificar si la sesiï¿½n es persistente\r\n     \u003ci class=\"bi bi-box-arrow-right\"\u003e\u003c/i\u003e Cerrar Sesiï¿½n\r\n  @* Session manager deshabilitado - Las cookies de sesiï¿½n se gestionan automï¿½ticamente *@\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Shared\\_BodegaLayout.cshtml",
+        "Samples":  "    // Verificar si la sesiï¿½n es persistente\r\n     \u003ci class=\"bi bi-box-arrow-right\"\u003e\u003c/i\u003e Cerrar Sesiï¿½n\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Shared\\_CalidadLayout.cshtml",
+        "Samples":  "    // Verificar si la sesiï¿½n es persistente\r\n       \u003ci class=\"bi bi-box-arrow-right\"\u003e\u003c/i\u003e Cerrar Sesiï¿½n\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Shared\\Components\\Notifications\\Default.cshtml",
+        "Samples":  " \u003cbutton type=\"button\" title=\"Eliminar notificaciï¿½n\" class=\"btn btn-sm btn-link text-muted ms-auto me-2 notif-delete\" data-id=\"@notif.Id\"\u003e\u0026times;\u003c/button\u003e\r\n \u003cdiv class=\"toast-body\" id=\"notificationToastBody\"\u003eOperaciï¿½n realizada\u003c/div\u003e\r\n // Solo marcar como leï¿½das una vez por carga de pï¿½gina\r\n // Ocultar badges inmediatamente para UX rï¿½pida\r\n // Llamar al servidor para marcar como leï¿½das\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Pages\\Tareas\\MisTareas.cshtml",
+        "Samples":  "\u003c!-- Estadï¿½sticas Rï¿½pidas --\u003e\r\n   \u003cth\u003eTï¿½tulo\u003c/th\u003e\r\n    \u003cth\u003eFecha Lï¿½mite\u003c/th\u003e\r\n\u003cth\u003eTï¿½tulo\u003c/th\u003e\r\n       \u003cth\u003eFecha Lï¿½mite\u003c/th\u003e\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Services\\AuditService.cs",
+        "Samples":  " // CRï¿½TICO: NO intentar guardar logs para usuarios anonymous o sin autenticar\r\n       Timestamp = DateTime.UtcNow  // CRï¿½TICO: Usar UTC explï¿½citamente\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Services\\CalidadService.cs",
+        "Samples":  "     // Solo lotes en Cuarentena estï¿½n pendientes de revisiï¿½n\r\n      Observacion = \"Revisiï¿½n iniciada\"\r\n    await _auditService.LogAsync(usuarioId, $\"Iniciï¿½ revisiï¿½n de calidad para lote {lote.CodigoLote}\");\r\nawait _auditService.LogAsync(usuarioId, $\"Aprobï¿½ lote {lote.CodigoLote} para uso\");\r\n        await _auditService.LogAsync(usuarioId, $\"Rechazï¿½ lote {lote.CodigoLote}: {motivo}\");\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Services\\ClienteService.cs",
+        "Samples":  "       await _auditService.LogAsync(\"admin\", $\"Creï¿½ cliente: {cliente.Nombre} (ID: {cliente.Id})\");\r\n     await _auditService.LogAsync(\"admin\", $\"Actualizï¿½ cliente: {cliente.Nombre} (ID: {cliente.Id})\");\r\n            await _auditService.LogAsync(\"admin\", $\"Eliminï¿½ cliente: {cliente.Nombre} (ID: {id})\");\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Services\\InventarioService.cs",
+        "Samples":  " // VALIDACIï¿½N CRï¿½TICA: Solo lotes LIBERADOS\r\n // VALIDACIï¿½N CRï¿½TICA: Solo lotes LIBERADOS\r\n  throw new InvalidOperationException(\"Stock insuficiente en ubicaciï¿½n origen\");\r\n // VALIDACIï¿½N CRï¿½TICA: Solo lotes LIBERADOS\r\n $\"Solo lotes LIBERADOS pueden usarse para producciï¿½n/venta.\");\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Services\\MovimientoService.cs",
+        "Samples":  "       await _auditService.LogAsync(usuarioId, $\"Devoluciï¿½n: {cantidad} unidades a lote {loteId}\");\r\n Estado = \"Pendiente\", // Requiere aprobaciï¿½n\r\n            await _auditService.LogAsync(usuarioId, $\"Ajuste creado: {cantidad} unidades de lote {loteId} - Pendiente aprobaciï¿½n\");\r\n       await _auditService.LogAsync(aprobadoPor, $\"Aprobï¿½ ajuste de inventario ID: {movimientoId}\");\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Services\\NotificacionService.cs",
+        "Samples":  "     // Solo permitir eliminaciï¿½n a propietarios o admins; aquï¿½ se realiza la eliminaciï¿½n lï¿½gica si coincide el usuario\r\n       // Sï¿½lo considerar notificaciones activas al verificar duplicados\r\n  // Tareas prï¿½ximas a vencer (maï¿½ana)\r\n     $\"Tarea vence MAï¿½ANA: {tarea.Titulo}\",\r\n  // Tareas prï¿½ximas a vencer (2 dï¿½as)\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Services\\ProveedorService.cs",
+        "Samples":  "     await _auditService.LogAsync(\"admin\", $\"Creï¿½ proveedor: {proveedor.Nombre} (ID: {proveedor.Id})\");\r\n        await _auditService.LogAsync(\"admin\", $\"Actualizï¿½ proveedor: {proveedor.Nombre} (ID: {proveedor.Id})\");\r\n await _auditService.LogAsync(\"admin\", $\"Eliminï¿½ proveedor: {proveedor.Nombre} (ID: {id})\");\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Services\\TareaService.cs",
+        "Samples":  "        $\"Creï¿½ tarea: {tarea.Titulo} (ID: {tarea.Id})\"\r\n            // Enviar notificaciï¿½n al responsable si estï¿½ asignado\r\n       tarea.Descripcion ?? \"Sin descripciï¿½n\",\r\n$\"Actualizï¿½ tarea: {tarea.Titulo} (ID: {tarea.Id})\"\r\n    $\"Eliminï¿½ tarea: {tarea.Titulo} (ID: {id})\"\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\Services\\UbicacionService.cs",
+        "Samples":  " if (existing == null) throw new InvalidOperationException(\"Ubicaciï¿½n no encontrada\");\r\n if (existing == null) throw new InvalidOperationException(\"Ubicaciï¿½n no encontrada\");\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\wwwroot\\js\\session-manager.js",
+        "Samples":  "// GESTIï¿½N DE SESIï¿½N: DESHABILITADO\r\n// Las cookies de sesiï¿½n (IsPersistent=false) ya expiran automï¿½ticamente\r\n// No necesitamos JavaScript para cerrar sesiï¿½n manualmente.\r\n    console.log(\u0027[SESSION-MANAGER] Las cookies de sesiï¿½n se gestionan automï¿½ticamente por el navegador\u0027);\r\n    console.log(\u0027[SESSION-MANAGER] La sesiï¿½n expirarï¿½ al cerrar todas las ventanas del navegador\u0027);\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\checkpoint-web\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.js",
+        "Samples":  " * @Description Brazillian PIS or NIS number (NÃºmero de IdentificaÃ§Ã£o Social Pis ou Pasep) is the equivalent of a\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\commit-iconos-fase2.sh",
+        "Samples":  "git commit -m \"Agregar 40+ iconos minimalistas a todos los layouts y corregir encoding\" -m \"Layouts actualizados: Admin, Bodega, Calidad\" -m \"Iconos agregados a sidebars y dropdowns\" -m \"Corregidas 15+ tildes y caracteres especiales\" -m \"Mejorada experiencia de usuario con navegaciï¿½n visual\" -m \"Ver ICONOS-Y-TEXTOS-FASE2.md para detalles completos\"\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\database-schema.sql",
+        "Samples":  "-- Mensaje de ï¿½xito\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\database-seed.sql",
+        "Samples":  "(\u002733333333-3333-3333-3333-333333333333\u0027::uuid, \u0027SEDE-SUR\u0027, \u0027Bodega Zona Sur\u0027, \u0027Av. Vicuï¿½a Mackenna 8900, La Florida\u0027, true)\r\n    (gen_random_uuid(), \u002711111111-1111-1111-1111-111111111111\u0027::uuid, \u0027CF-01\u0027, \u0027Cï¿½mara Frï¿½a 1\u0027, \u0027CamaraFria\u0027, 5000.000),\r\n  (gen_random_uuid(), \u002722222222-2222-2222-2222-222222222222\u0027::uuid, \u0027CF-02\u0027, \u0027Cï¿½mara Frï¿½a 2\u0027, \u0027CamaraFria\u0027, 8000.000),\r\n    (gen_random_uuid(), \u0027PROD-005\u0027, \u0027Insumo Crï¿½tico Z\u0027, \u0027caja\u0027, 30, 15.0, 25.0, 50.000, true)\r\n     \u0027+56912345678\u0027, \u0027ventas@delsur.cl\u0027, \u0027Juan Pï¿½rez\u0027, \u0027Activo\u0027, \u0027Cliente VIP - Pago al contado\u0027, CURRENT_TIMESTAMP, true),\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\ENCODING-FIX-REPORT.md",
+        "Samples":  "# Correcciï¿½n de Encoding de Caracteres Especiales\r\nEscaneo profundo y correcciï¿½n de todos los problemas de codificaciï¿½n de caracteres especiales (tildes, eï¿½es, emojis) en el proyecto Checkpoint.\r\n- Emojis mal codificados como `??` en lugar de sï¿½mbolos correctos\r\n- ? Corregido `? Acciones Rï¿½pidas` ? `? Acciones Rï¿½pidas`\r\n- ? Corregido `? Acciones Rï¿½pidas` ? `? Acciones Rï¿½pidas`\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\GeneratePasswordHashes.cs",
+        "Samples":  "// Pequeï¿½o programa para generar hashes de password\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\HOTFIX-ICONOS-BOOTSTRAP.md",
+        "Samples":  "# Correcciï¿½n Urgente - Iconos Rotos (Emojis ? Bootstrap Icons)\r\n## Soluciï¿½n Implementada\r\n**Reemplazo completo de emojis por Bootstrap Icons** que ya estï¿½ incluido en el proyecto y es 100% confiable.\r\n- `bi-shield-check` ? Auditorï¿½a Sistema\r\n- `bi-box-arrow-right` ? Cerrar Sesiï¿½n\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\ICONOS-Y-TEXTOS-FASE2.md",
+        "Samples":  "# Revisiï¿½n Completa de Iconos y Textos - Fase 2\r\nSegunda fase de correcciï¿½n de encoding y adiciï¿½n de iconos minimalistas a TODOS los layouts y menï¿½s de navegaciï¿½n.\r\n- ?? GESTIï¿½N DE ACCESOS\r\n- ?? GESTIï¿½N DE PROCESOS\r\n- ?? CATï¿½LOGOS\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\migration-tareas-completo.sql",
+        "Samples":  "-- Descripciï¿½n: Sistema completo de gestiï¿½n de tareas\r\n-- Crear ï¿½ndices para Tareas\r\n-- Crear ï¿½ndices para TareaComentarios\r\n-- Comentarios de documentaciï¿½n\r\nCOMMENT ON TABLE \"Tareas\" IS \u0027Sistema de gestiï¿½n de tareas y procesos asignados a usuarios\u0027;\r"
+    },
+    {
+        "File":  "C:\\Users\\USUARIO\\Documents\\checkpoint-web\\railway-setup-complete.sql",
+        "Samples":  "-- Password: Admin123! (hash de ejemplo - en producciï¿½n usa uno real)\r\n    (\u002733333333-3333-3333-3333-333333333333\u0027::uuid, \u0027SEDE-SUR\u0027, \u0027Bodega Zona Sur\u0027, \u0027Av. Vicuï¿½a Mackenna 8900, La Florida\u0027, true);\r\n    (gen_random_uuid(), \u002711111111-1111-1111-1111-111111111111\u0027::uuid, \u0027CF-01\u0027, \u0027Cï¿½mara Frï¿½a 1\u0027, \u0027CamaraFria\u0027, 5000.000),\r\n    (gen_random_uuid(), \u002722222222-2222-2222-2222-222222222222\u0027::uuid, \u0027CF-02\u0027, \u0027Cï¿½mara Frï¿½a 2\u0027, \u0027CamaraFria\u0027, 8000.000),\r\n    (gen_random_uuid(), \u0027PROD-005\u0027, \u0027Insumo Crï¿½tico Z\u0027, \u0027caja\u0027, 30, 15.0, 25.0, 50.000, true);\r"
+    }
+]

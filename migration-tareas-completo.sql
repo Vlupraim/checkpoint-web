@@ -1,7 +1,7 @@
 -- ============================================
 -- SCRIPT COMPLETO: Crear tabla Tareas y TareaComentarios
 -- Fecha: 2025-01-13
--- Descripci髇: Sistema completo de gesti髇 de tareas
+-- Descripci贸n: Sistema completo de gesti贸n de tareas
 -- ============================================
 
 -- Crear tabla Tareas si no existe
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS "TareaComentarios" (
    ON DELETE RESTRICT
 );
 
--- Crear 韓dices para Tareas
+-- Crear 铆ndices para Tareas
 CREATE INDEX IF NOT EXISTS "IX_Tareas_Estado" ON "Tareas"("Estado");
 CREATE INDEX IF NOT EXISTS "IX_Tareas_ResponsableId" ON "Tareas"("ResponsableId");
 CREATE INDEX IF NOT EXISTS "IX_Tareas_FechaLimite" ON "Tareas"("FechaLimite");
@@ -67,14 +67,14 @@ CREATE INDEX IF NOT EXISTS "IX_Tareas_ProductoId" ON "Tareas"("ProductoId");
 CREATE INDEX IF NOT EXISTS "IX_Tareas_LoteId" ON "Tareas"("LoteId");
 CREATE INDEX IF NOT EXISTS "IX_Tareas_Activo" ON "Tareas"("Activo");
 
--- Crear 韓dices para TareaComentarios
+-- Crear 铆ndices para TareaComentarios
 CREATE INDEX IF NOT EXISTS "IX_TareaComentarios_TareaId" ON "TareaComentarios"("TareaId");
 CREATE INDEX IF NOT EXISTS "IX_TareaComentarios_UsuarioId" ON "TareaComentarios"("UsuarioId");
 CREATE INDEX IF NOT EXISTS "IX_TareaComentarios_FechaCreacion" ON "TareaComentarios"("FechaCreacion" DESC);
 
--- Comentarios de documentaci髇
-COMMENT ON TABLE "Tareas" IS 'Sistema de gesti髇 de tareas y procesos asignados a usuarios';
-COMMENT ON TABLE "TareaComentarios" IS 'Comentarios y notas en tareas para colaboraci髇';
+-- Comentarios de documentaci贸n
+COMMENT ON TABLE "Tareas" IS 'Sistema de gesti贸n de tareas y procesos asignados a usuarios';
+COMMENT ON TABLE "TareaComentarios" IS 'Comentarios y notas en tareas para colaboraci贸n';
 
 COMMENT ON COLUMN "Tareas"."Estado" IS 'Estados: Pendiente, EnProgreso, Finalizada, Cancelada, Bloqueada';
 COMMENT ON COLUMN "Tareas"."Prioridad" IS 'Prioridad: Baja, Media, Alta, Urgente';

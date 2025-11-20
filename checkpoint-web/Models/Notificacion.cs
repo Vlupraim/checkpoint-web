@@ -13,21 +13,21 @@ namespace checkpoint_web.Models
  public int Id { get; set; }
 
         /// <summary>
-      /// Usuario destinatario de la notificaci髇
+      /// Usuario destinatario de la notificaci贸n
         /// </summary>
  [Required]
  [StringLength(450)]
  public string UsuarioId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Tipo: Alerta, Recordatorio, Informaci髇, Advertencia, Error, 蓌ito
+        /// Tipo: Alerta, Recordatorio, Informaci贸n, Advertencia, Error, 脡xito
  /// </summary>
     [Required]
         [StringLength(50)]
-     public string Tipo { get; set; } = "Informaci髇";
+     public string Tipo { get; set; } = "Informaci贸n";
 
         /// <summary>
-        /// T韙ulo breve de la notificaci髇
+        /// T铆tulo breve de la notificaci贸n
  /// </summary>
   [Required]
 [StringLength(200)]
@@ -46,7 +46,7 @@ namespace checkpoint_web.Models
       public string? Url { get; set; }
 
      /// <summary>
-   /// Categor韆: Tarea, Inventario, Calidad, Sistema, Usuario
+   /// Categor铆a: Tarea, Inventario, Calidad, Sistema, Usuario
   /// </summary>
         [StringLength(50)]
         public string? Categoria { get; set; }
@@ -62,7 +62,7 @@ namespace checkpoint_web.Models
         public DateTime? FechaLeida { get; set; }
 
         /// <summary>
-        /// Fecha de vencimiento de la notificaci髇 (para recordatorios)
+        /// Fecha de vencimiento de la notificaci贸n (para recordatorios)
     /// </summary>
         public DateTime? FechaVencimiento { get; set; }
 
@@ -81,7 +81,7 @@ namespace checkpoint_web.Models
 
   public bool Activa { get; set; } = true;
 
-        // Navegaci髇
+        // Navegaci贸n
         [ForeignKey(nameof(UsuarioId))]
 public virtual ApplicationUser? Usuario { get; set; }
     }

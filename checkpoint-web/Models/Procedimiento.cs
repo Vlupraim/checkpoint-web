@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace checkpoint_web.Models
 {
     /// <summary>
-    /// Representa un procedimiento o proceso operativo est·ndar (SOP)
+    /// Representa un procedimiento o proceso operativo est√°ndar (SOP)
     /// </summary>
     public class Procedimiento
     {
@@ -23,19 +23,19 @@ namespace checkpoint_web.Models
         public string? Descripcion { get; set; }
 
     /// <summary>
-        /// CategorÌa: Calidad, Operaciones, Seguridad, LogÌstica, Administrativo
+        /// Categor√≠a: Calidad, Operaciones, Seguridad, Log√≠stica, Administrativo
  /// </summary>
         [StringLength(50)]
    public string? Categoria { get; set; }
 
         /// <summary>
-        /// VersiÛn del documento (1.0, 1.1, 2.0, etc.)
+        /// Versi√≥n del documento (1.0, 1.1, 2.0, etc.)
         /// </summary>
         [StringLength(20)]
         public string Version { get; set; } = "1.0";
 
         /// <summary>
-   /// Estado: Borrador, Vigente, RevisiÛn, Obsoleto
+   /// Estado: Borrador, Vigente, Revisi√≥n, Obsoleto
         /// </summary>
         [StringLength(20)]
     public string Estado { get; set; } = "Borrador";
@@ -55,7 +55,7 @@ namespace checkpoint_web.Models
       public string? ResponsableId { get; set; }
 
         /// <summary>
-/// Usuario que aprobÛ el procedimiento
+/// Usuario que aprob√≥ el procedimiento
         /// </summary>
  [StringLength(450)]
         public string? AprobadoPor { get; set; }
@@ -70,7 +70,7 @@ namespace checkpoint_web.Models
 public string? Observaciones { get; set; }
 
         /// <summary>
-      /// Frecuencia de revisiÛn en meses
+      /// Frecuencia de revisi√≥n en meses
         /// </summary>
  public int? FrecuenciaRevisionMeses { get; set; }
 

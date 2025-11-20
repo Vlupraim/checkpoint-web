@@ -59,7 +59,7 @@ namespace checkpoint_web.Pages.Bodega
  return Page();
  }
 
- // CRÕTICO: Create Lote con estado inicial CUARENTENA
+ // CR√çTICO: Create Lote con estado inicial CUARENTENA
  // El lote NO puede usarse hasta que Calidad lo libere
  var lote = new Lote
  {
@@ -71,7 +71,7 @@ namespace checkpoint_web.Pages.Bodega
  TempIngreso = TempIngreso,
  CantidadInicial = Cantidad,
  CantidadDisponible = Cantidad,
- Estado = EstadoLote.Cuarentena  // ? ESTADO INICIAL: Cuarentena (esperando revisiÛn de Calidad)
+ Estado = EstadoLote.Cuarentena  // ? ESTADO INICIAL: Cuarentena (esperando revisi√≥n de Calidad)
  };
  _context.Lotes.Add(lote);
 
@@ -91,7 +91,7 @@ namespace checkpoint_web.Pages.Bodega
     $"Recepcion: Lote={CodigoLote}, Cantidad={Cantidad}, Estado={EstadoLote.Cuarentena}", 
     System.Text.Json.JsonSerializer.Serialize(new { lote, stock }));
 
- TempData["Message"] = $"RecepciÛn registrada correctamente. Lote en CUARENTENA esperando revisiÛn de Calidad.";
+ TempData["Message"] = $"Recepci√≥n registrada correctamente. Lote en CUARENTENA esperando revisi√≥n de Calidad.";
  return RedirectToPage();
  }
  }

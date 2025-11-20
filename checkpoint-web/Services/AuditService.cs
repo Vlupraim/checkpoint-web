@@ -11,7 +11,7 @@ namespace checkpoint_web.Services
 
  public async Task LogAsync(string userId, string action, string? details = null)
         {
- // CRÕTICO: NO intentar guardar logs para usuarios anonymous o sin autenticar
+ // CR√çTICO: NO intentar guardar logs para usuarios anonymous o sin autenticar
        // Esto evita violaciones de FK constraint con AspNetUsers
             if (string.IsNullOrEmpty(userId) || 
       userId == "anonymous" || 
@@ -27,7 +27,7 @@ namespace checkpoint_web.Services
          UserId = userId, 
        Action = action, 
                 Details = details,
-       Timestamp = DateTime.UtcNow  // CRÕTICO: Usar UTC explÌcitamente
+       Timestamp = DateTime.UtcNow  // CR√çTICO: Usar UTC expl√≠citamente
             };
         
         _context.AuditLogs.Add(entry);

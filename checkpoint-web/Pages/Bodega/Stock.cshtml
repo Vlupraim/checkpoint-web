@@ -11,7 +11,7 @@ Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Page
   <div class="col-md-12">
    <div class="card">
  <div class="card-header">
-  <h5 class="mb-0">Filtros de B鷖queda</h5>
+  <h5 class="mb-0">Filtros de B煤squeda</h5>
     </div>
    <div class="card-body">
            <form method="get">
@@ -27,7 +27,7 @@ Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Page
          </select>
    </div>
    <div class="col-md-3">
- <label class="form-label">Ubicaci髇</label>
+ <label class="form-label">Ubicaci贸n</label>
      <select class="form-select" name="ubicacionId">
       <option value="">Todas las ubicaciones</option>
        </select>
@@ -45,7 +45,7 @@ Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Page
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-     <h5 class="mb-0">Stock por Producto y Ubicaci髇</h5>
+     <h5 class="mb-0">Stock por Producto y Ubicaci贸n</h5>
    <button class="btn btn-sm btn-success" onclick="exportToExcel()">
        <i class="bi bi-file-excel"></i> Exportar Excel
      </button>
@@ -58,18 +58,18 @@ Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Page
    <th>Producto</th>
         <th>SKU</th>
       <th>Sede</th>
-  <th>Ubicaci髇</th>
+  <th>Ubicaci贸n</th>
       <th>Cantidad</th>
        <th>Unidad</th>
     <th>Estado</th>
-   <th>趌tima Actualizaci髇</th>
+   <th>脷ltima Actualizaci贸n</th>
      </tr>
        </thead>
     <tbody>
        <tr>
        <td colspan="8" class="text-center text-muted">
    <p class="my-4">No hay stock registrado o no coincide con los filtros aplicados</p>
-      <small>Utiliza los filtros para buscar productos espec韋icos</small>
+      <small>Utiliza los filtros para buscar productos espec铆ficos</small>
        </td>
 </tr>
         </tbody>
@@ -81,7 +81,7 @@ Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Page
 @section Scripts {
     <script>
   function exportToExcel() {
-  alert('Funcionalidad de exportaci髇 en desarrollo');
+  alert('Funcionalidad de exportaci贸n en desarrollo');
      }
     </script>
 }

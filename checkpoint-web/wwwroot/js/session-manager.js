@@ -1,17 +1,17 @@
 // ============================================
-// GESTI”N DE SESI”N: DESHABILITADO
-// Las cookies de sesiÛn (IsPersistent=false) ya expiran autom·ticamente
+// GESTI√ìN DE SESI√ìN: DESHABILITADO
+// Las cookies de sesi√≥n (IsPersistent=false) ya expiran autom√°ticamente
 // cuando el usuario cierra TODAS las ventanas del navegador.
-// No necesitamos JavaScript para cerrar sesiÛn manualmente.
+// No necesitamos JavaScript para cerrar sesi√≥n manualmente.
 // ============================================
 
 (function() {
     'use strict';
     
     console.log('[SESSION-MANAGER] DESHABILITADO');
-    console.log('[SESSION-MANAGER] Las cookies de sesiÛn se gestionan autom·ticamente por el navegador');
-    console.log('[SESSION-MANAGER] La sesiÛn expirar· al cerrar todas las ventanas del navegador');
-    console.log('[SESSION-MANAGER] Usa el botÛn "Cerrar SesiÛn" para logout manual');
+    console.log('[SESSION-MANAGER] Las cookies de sesi√≥n se gestionan autom√°ticamente por el navegador');
+    console.log('[SESSION-MANAGER] La sesi√≥n expirar√° al cerrar todas las ventanas del navegador');
+    console.log('[SESSION-MANAGER] Usa el bot√≥n "Cerrar Sesi√≥n" para logout manual');
     
-    // NO hacemos nada m·s - dejamos que el navegador maneje las cookies de sesiÛn naturalmente
+    // NO hacemos nada m√°s - dejamos que el navegador maneje las cookies de sesi√≥n naturalmente
 })();

@@ -25,7 +25,7 @@ namespace checkpoint_web.Pages.Account
                     Secure = Request.IsHttps,
                     SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax
                 });
-                // También intentar con Secure=false por si acaso
+                // TambiÃ©n intentar con Secure=false por si acaso
                 Response.Cookies.Delete(name, new Microsoft.AspNetCore.Http.CookieOptions
                 {
                     Path = "/",
@@ -47,7 +47,7 @@ namespace checkpoint_web.Pages.Account
             // Primero hacer SignOut de Identity
             await _signInManager.SignOutAsync();
 
-            // Luego eliminar explícitamente TODAS las cookies conocidas (viejas y nuevas)
+            // Luego eliminar explÃ­citamente TODAS las cookies conocidas (viejas y nuevas)
             var known = new[]
             {
                 // Cookies nuevas
@@ -72,7 +72,7 @@ namespace checkpoint_web.Pages.Account
             return RedirectToPage("/Account/Login");
         }
 
-        // También permitir logout por GET para facilitar limpieza
+        // TambiÃ©n permitir logout por GET para facilitar limpieza
         public async Task<IActionResult> OnGetAsync()
         {
             return await OnPostAsync();
