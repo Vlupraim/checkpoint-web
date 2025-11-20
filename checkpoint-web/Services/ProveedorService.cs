@@ -40,7 +40,7 @@ public async Task<IEnumerable<Proveedor>> GetAllAsync() =>
       proveedor.FechaRegistro = DateTime.Now;
   _context.Proveedores.Add(proveedor);
   await _context.SaveChangesAsync();
-     await _auditService.LogAsync("admin", $"Creó proveedor: {proveedor.Nombre} (ID: {proveedor.Id})");
+     await _auditService.LogAsync("admin", $"CreÃ³ proveedor: {proveedor.Nombre} (ID: {proveedor.Id})");
        return proveedor;
      }
 
@@ -49,7 +49,7 @@ public async Task<IEnumerable<Proveedor>> GetAllAsync() =>
       proveedor.UltimaActualizacion = DateTime.Now;
 _context.Entry(proveedor).State = EntityState.Modified;
          await _context.SaveChangesAsync();
-        await _auditService.LogAsync("admin", $"Actualizó proveedor: {proveedor.Nombre} (ID: {proveedor.Id})");
+        await _auditService.LogAsync("admin", $"ActualizÃ³ proveedor: {proveedor.Nombre} (ID: {proveedor.Id})");
      return proveedor;
    }
 
@@ -59,7 +59,7 @@ _context.Entry(proveedor).State = EntityState.Modified;
 if (proveedor == null) return false;
  proveedor.Activo = false;
    await _context.SaveChangesAsync();
- await _auditService.LogAsync("admin", $"Eliminó proveedor: {proveedor.Nombre} (ID: {id})");
+ await _auditService.LogAsync("admin", $"EliminÃ³ proveedor: {proveedor.Nombre} (ID: {id})");
   return true;
         }
 

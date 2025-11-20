@@ -56,7 +56,7 @@ await LoadSelectListsAsync();
        User.Identity?.Name ?? "unknown",
   Motivo
   );
-     TempData["SuccessMessage"] = "Ajuste creado. Esperando aprobación de administrador.";
+     TempData["SuccessMessage"] = "Ajuste creado. Esperando aprobaciÃ³n de administrador.";
 return RedirectToPage("./Index");
      }
  catch (Exception ex)
@@ -69,7 +69,7 @@ await LoadSelectListsAsync();
 
 private async Task LoadSelectListsAsync()
         {
- // Solo mostrar lotes que NO estén bloqueados
+ // Solo mostrar lotes que NO estÃ©n bloqueados
  var lotes = await _context.Lotes
   .Include(l => l.Producto)
       .Where(l => l.Estado != EstadoLote.Bloqueado)

@@ -46,7 +46,7 @@
  </div>
  </div>
  </a>
- <button type="button" title="Eliminar notificaci髇" class="btn btn-sm btn-link text-muted ms-auto me-2 notif-delete" data-id="@notif.Id">&times;</button>
+ <button type="button" title="Eliminar notificaci贸n" class="btn btn-sm btn-link text-muted ms-auto me-2 notif-delete" data-id="@notif.Id">&times;</button>
  </li>
  }
  }
@@ -70,7 +70,7 @@
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080;">
  <div id="notificationToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
  <div class="d-flex">
- <div class="toast-body" id="notificationToastBody">Operaci髇 realizada</div>
+ <div class="toast-body" id="notificationToastBody">Operaci贸n realizada</div>
  <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
  </div>
  </div>
@@ -123,11 +123,11 @@
 
  if (dropdown) {
  dropdown.addEventListener('shown.bs.dropdown', function() {
- // Solo marcar como le韉as una vez por carga de p醙ina
+ // Solo marcar como le铆das una vez por carga de p谩gina
  if (alreadyMarked) return;
  alreadyMarked = true;
 
- // Ocultar badges inmediatamente para UX r醦ida
+ // Ocultar badges inmediatamente para UX r谩pida
  var badge = document.getElementById('notificationBadge');
  var headerBadge = document.getElementById('notificationHeaderBadge');
 
@@ -138,7 +138,7 @@
  headerBadge.style.display = 'none';
  }
 
- // Llamar al servidor para marcar como le韉as
+ // Llamar al servidor para marcar como le铆das
  fetch('/api/notifications/mark-all-read', {
  method: 'POST',
  credentials: 'same-origin',
@@ -149,7 +149,7 @@
  })
  .then(function(response) {
  if (!response.ok) {
- console.warn('No se pudieron marcar las notificaciones como le韉as');
+ console.warn('No se pudieron marcar las notificaciones como le铆das');
  showToast('Error marcando notificaciones', true);
  } else {
  showToast('Notificaciones marcadas', false);
@@ -178,13 +178,13 @@
  })
  .then(function(resp) {
  if (!resp.ok) {
- console.warn('No se pudo eliminar la notificaci髇 en el servidor');
- showToast('No se pudo eliminar notificaci髇', true);
+ console.warn('No se pudo eliminar la notificaci贸n en el servidor');
+ showToast('No se pudo eliminar notificaci贸n', true);
  } else {
- showToast('Notificaci髇 eliminada', false);
+ showToast('Notificaci贸n eliminada', false);
  }
  })
- .catch(function(err) { console.error('Error eliminando notificaci髇:', err); showToast('Error eliminando notificaci髇', true); });
+ .catch(function(err) { console.error('Error eliminando notificaci贸n:', err); showToast('Error eliminando notificaci贸n', true); });
  });
  })();
 </script>

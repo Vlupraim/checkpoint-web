@@ -48,7 +48,7 @@ namespace checkpoint_web.Models
         public string? Motivo { get; set; }
 
         /// <summary>
-        /// Documento de respaldo: Guía despacho, factura, OC, etc.
+        /// Documento de respaldo: GuÃ­a despacho, factura, OC, etc.
         /// </summary>
         [MaxLength(100)]
         public string? NumeroDocumento { get; set; }
@@ -60,7 +60,7 @@ namespace checkpoint_web.Models
         public string? Estado { get; set; } = "Completado";
 
         /// <summary>
-        /// Usuario que aprobó el movimiento (para ajustes)
+        /// Usuario que aprobÃ³ el movimiento (para ajustes)
         /// </summary>
         [MaxLength(450)]
         public string? AprobadoPor { get; set; }
@@ -68,13 +68,13 @@ namespace checkpoint_web.Models
         public DateTime? FechaAprobacion { get; set; }
 
         /// <summary>
-        /// Stock antes del movimiento (para auditoría)
+        /// Stock antes del movimiento (para auditorÃ­a)
         /// </summary>
         [Column(TypeName = "decimal(18,3)")]
         public decimal? StockAnterior { get; set; }
 
         /// <summary>
-        /// Stock después del movimiento (para auditoría)
+        /// Stock despuÃ©s del movimiento (para auditorÃ­a)
         /// </summary>
         [Column(TypeName = "decimal(18,3)")]
         public decimal? StockPosterior { get; set; }

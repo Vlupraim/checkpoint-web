@@ -20,7 +20,7 @@ namespace checkpoint_web.Pages.Account
     [BindProperty]
   public string Password { get; set; } = string.Empty;
       [BindProperty]
-        public bool RememberMe { get; set; } = false; // Nuevo: checkbox "Recuérdame"
+        public bool RememberMe { get; set; } = false; // Nuevo: checkbox "RecuÃ©rdame"
    public string ReturnUrl { get; set; } = string.Empty;
 
         public async Task OnGetAsync(string? returnUrl = null)
@@ -53,7 +53,7 @@ namespace checkpoint_web.Pages.Account
      if (user == null)
     {
       _logger.LogWarning("[LOGIN] User not found: {email}", Email);
-    ModelState.AddModelError(string.Empty, "Inicio de sesión inválido.");
+    ModelState.AddModelError(string.Empty, "Inicio de sesiÃ³n invÃ¡lido.");
 return Page();
 }
 
@@ -63,15 +63,15 @@ return Page();
         if (!result.Succeeded)
     {
     _logger.LogWarning("[LOGIN] Password check failed for {email}. Result: {result}", Email, result);
-    ModelState.AddModelError(string.Empty, "Inicio de sesión inválido.");
+    ModelState.AddModelError(string.Empty, "Inicio de sesiÃ³n invÃ¡lido.");
          return Page();
     }
 
     _logger.LogInformation("[LOGIN] Password correct for {email}, signing in...", Email);
 
-    // CRÍTICO: isPersistent controla si la cookie es temporal o persistente
-    // - false (sin RememberMe): Cookie de sesión, expira en 10 minutos de inactividad
-    // - true (con RememberMe): Cookie persistente, dura 30 días
+    // CRÃTICO: isPersistent controla si la cookie es temporal o persistente
+    // - false (sin RememberMe): Cookie de sesiÃ³n, expira en 10 minutos de inactividad
+    // - true (con RememberMe): Cookie persistente, dura 30 dÃ­as
     await _signInManager.SignInAsync(user, isPersistent: RememberMe);
 
     var roles = await _userManager.GetRolesAsync(user);

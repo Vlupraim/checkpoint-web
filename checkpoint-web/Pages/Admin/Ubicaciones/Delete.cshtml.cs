@@ -35,7 +35,7 @@ namespace checkpoint_web.Pages.Admin.Ubicaciones
  await _ubicacionService.DeleteAsync(id.Value);
  var userId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier) ?? "anonymous";
  await _audit_service.LogAsync(userId, $"DeleteUbicacion:{id}", System.Text.Json.JsonSerializer.Serialize(before));
- TempData["SuccessMessage"] = "Ubicación eliminada correctamente";
+ TempData["SuccessMessage"] = "UbicaciÃ³n eliminada correctamente";
  return RedirectToPage("Index");
  }
  catch (InvalidOperationException ex)
@@ -45,7 +45,7 @@ namespace checkpoint_web.Pages.Admin.Ubicaciones
  }
  catch (Exception ex)
  {
- TempData["ErrorMessage"] = "Error al eliminar la ubicación: " + ex.Message;
+ TempData["ErrorMessage"] = "Error al eliminar la ubicaciÃ³n: " + ex.Message;
  return RedirectToPage("Index");
  }
  }

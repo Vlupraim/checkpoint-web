@@ -36,7 +36,7 @@ namespace checkpoint_web.Pages.Account
  var value = cookie.Value.Length > 80
  ? cookie.Value.Substring(0, 80) + "..."
  : cookie.Value;
- sb.AppendLine($"  • {cookie.Key}");
+ sb.AppendLine($"  â€¢ {cookie.Key}");
  sb.AppendLine($"    Value: {value}");
  sb.AppendLine($"    Length: {cookie.Value.Length} bytes");
  CookieDetails[cookie.Key] = $"{cookie.Value.Length} bytes";
@@ -52,7 +52,7 @@ namespace checkpoint_web.Pages.Account
  {
  foreach (var header in Response.Headers["Set-Cookie"])
  {
- sb.AppendLine($"  • {header}");
+ sb.AppendLine($"  â€¢ {header}");
 
  // Analyze the cookie
  if (header.ToString().Contains("expires="))

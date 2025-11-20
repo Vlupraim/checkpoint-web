@@ -19,7 +19,7 @@ public string Nombre { get; set; } = string.Empty;
         public string? NombreComercial { get; set; }
 
         /// <summary>
-        /// RUT, NIT, RFC, o identificador fiscal según país
+        /// RUT, NIT, RFC, o identificador fiscal segÃºn paÃ­s
     /// </summary>
         [StringLength(50)]
         public string? IdentificadorFiscal { get; set; }
@@ -44,13 +44,13 @@ public string Nombre { get; set; } = string.Empty;
         public string? PersonaContacto { get; set; }
 
         /// <summary>
-      /// Categoría: MaterialPrima, Embalaje, Servicios, Logística
+      /// CategorÃ­a: MaterialPrima, Embalaje, Servicios, LogÃ­stica
         /// </summary>
      [StringLength(50)]
         public string? Categoria { get; set; }
 
         /// <summary>
-        /// Calificación de 1 a 5 estrellas
+        /// CalificaciÃ³n de 1 a 5 estrellas
         /// </summary>
         [Range(0, 5)]
 public int? Calificacion { get; set; }
@@ -70,7 +70,7 @@ public string Estado { get; set; } = "Activo";
 
         public bool Activo { get; set; } = true;
 
-     // Navegación
+     // NavegaciÃ³n
      public virtual ICollection<Lote>? Lotes { get; set; }
     }
 }

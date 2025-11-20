@@ -1,4 +1,4 @@
-# CorrecciÛn Urgente - Iconos Rotos (Emojis ? Bootstrap Icons)
+# Correcci√≥n Urgente - Iconos Rotos (Emojis ? Bootstrap Icons)
 
 ## Fecha: 2025-01-13
 
@@ -8,8 +8,8 @@ Los emojis Unicode se mostraban como `??` en el navegador debido a problemas de:
 - Fuentes del sistema sin soporte para todos los emojis
 - Rendering inconsistente entre diferentes plataformas
 
-## SoluciÛn Implementada
-**Reemplazo completo de emojis por Bootstrap Icons** que ya est· incluido en el proyecto y es 100% confiable.
+## Soluci√≥n Implementada
+**Reemplazo completo de emojis por Bootstrap Icons** que ya est√° incluido en el proyecto y es 100% confiable.
 
 ## Cambios Realizados
 
@@ -26,19 +26,19 @@ Los emojis Unicode se mostraban como `??` en el navegador debido a problemas de:
 - `bi-graph-up` ? Dashboard Reportes
 - `bi-list-check` ? Historial Movimientos
 - `bi-clipboard-data` ? Reporte Tareas
-- `bi-shield-check` ? AuditorÌa Sistema
+- `bi-shield-check` ? Auditor√≠a Sistema
 
 **Dropdown:**
 - `bi-house` ? Mi Panel
 - `bi-gear` ? Panel Administrador
 - `bi-box` ? Panel Bodega
 - `bi-check-circle` ? Panel Calidad
-- `bi-box-arrow-right` ? Cerrar SesiÛn
+- `bi-box-arrow-right` ? Cerrar Sesi√≥n
 
 ### 2. _BodegaLayout.cshtml (14 iconos)
 **Sidebar:**
 - `bi-speedometer2` ? Dashboard
-- `bi-box-arrow-in-down` ? Nueva RecepciÛn
+- `bi-box-arrow-in-down` ? Nueva Recepci√≥n
 - `bi-arrow-left-right` ? Movimientos
 - `bi-truck` ? Traslados
 - `bi-sliders` ? Ajustes
@@ -52,7 +52,7 @@ Los emojis Unicode se mostraban como `??` en el navegador debido a problemas de:
 - `bi-house` ? Mi Panel
 - `bi-gear` ? Panel Administrador
 - `bi-check-circle` ? Panel Calidad
-- `bi-box-arrow-right` ? Cerrar SesiÛn
+- `bi-box-arrow-right` ? Cerrar Sesi√≥n
 
 ### 3. _CalidadLayout.cshtml (11 iconos)
 **Sidebar:**
@@ -61,20 +61,20 @@ Los emojis Unicode se mostraban como `??` en el navegador debido a problemas de:
 - `bi-graph-up` ? Dashboard Reportes
 - `bi-list-check` ? Historial Movimientos
 - `bi-clipboard-data` ? Reporte Tareas
-- `bi-shield-check` ? AuditorÌa Sistema
+- `bi-shield-check` ? Auditor√≠a Sistema
 
 **Dropdown:**
 - `bi-search` ? Revisar Lotes
 - `bi-gear` ? Panel Administrador
 - `bi-box` ? Panel Bodega
-- `bi-box-arrow-right` ? Cerrar SesiÛn
+- `bi-box-arrow-right` ? Cerrar Sesi√≥n
 
-### 4. P·ginas Individuales
-- **Usuarios.cshtml**: `bi-people` en tÌtulo
+### 4. P√°ginas Individuales
+- **Usuarios.cshtml**: `bi-people` en t√≠tulo
 - **Ubicaciones/Index.cshtml**: 5 iconos en tabla
-  - `bi-geo-alt` ? TÌtulo
+  - `bi-geo-alt` ? T√≠tulo
   - `bi-building` ? Sede
-  - `bi-upc` ? CÛdigo
+  - `bi-upc` ? C√≥digo
   - `bi-archive` ? Tipo
   - `bi-rulers` ? Capacidad
 
@@ -96,14 +96,14 @@ Los emojis Unicode se mostraban como `??` en el navegador debido a problemas de:
 4. `Pages/Fragments/Usuarios.cshtml`
 5. `Pages/Admin/Ubicaciones/Index.cshtml`
 
-## VerificaciÛn
-- ? CompilaciÛn exitosa
+## Verificaci√≥n
+- ? Compilaci√≥n exitosa
 - ? Bootstrap Icons cargando correctamente
-- ? No m·s sÌmbolos `??`
+- ? No m√°s s√≠mbolos `??`
 - ? Todos los layouts funcionando
 
-## LecciÛn Aprendida
-**Nunca usar emojis Unicode directos en producciÛn**. Siempre preferir:
+## Lecci√≥n Aprendida
+**Nunca usar emojis Unicode directos en producci√≥n**. Siempre preferir:
 1. Bootstrap Icons (actual)
 2. Font Awesome
 3. Material Icons

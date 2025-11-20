@@ -32,7 +32,7 @@ namespace checkpoint_web.Models
 
  public bool Activo { get; set; } = true;
 
- // Navegación
+ // NavegaciÃ³n
  public ICollection<Lote> Lotes { get; set; } = new List<Lote>();
 
  // Comportamientos simples de dominio

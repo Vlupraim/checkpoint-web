@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace checkpoint_web.Models
 {
     /// <summary>
-    /// ConfiguraciÛn y par·metros generales del sistema
+    /// Configuraci√≥n y par√°metros generales del sistema
     /// </summary>
     public class Parametro
   {
@@ -12,7 +12,7 @@ namespace checkpoint_web.Models
         public int Id { get; set; }
 
         /// <summary>
-        /// Clave ˙nica del par·metro (ej: "StockMinimoGeneral", "DiasAlertaVencimiento")
+        /// Clave √∫nica del par√°metro (ej: "StockMinimoGeneral", "DiasAlertaVencimiento")
         /// </summary>
         [Required]
         [StringLength(100)]
@@ -26,7 +26,7 @@ namespace checkpoint_web.Models
    public string? Descripcion { get; set; }
 
         /// <summary>
-        /// Valor del par·metro (puede ser n˙mero, texto, JSON)
+        /// Valor del par√°metro (puede ser n√∫mero, texto, JSON)
         /// </summary>
   [Required]
         [StringLength(2000)]
@@ -39,19 +39,19 @@ namespace checkpoint_web.Models
         public string TipoDato { get; set; } = "String";
 
  /// <summary>
-        /// CategorÌa: Sistema, Inventario, Calidad, Notificaciones, Seguridad
+        /// Categor√≠a: Sistema, Inventario, Calidad, Notificaciones, Seguridad
  /// </summary>
         [StringLength(50)]
         public string? Categoria { get; set; }
 
         /// <summary>
-      /// Unidad de medida si aplica (dÌas, %, cantidad, etc.)
+      /// Unidad de medida si aplica (d√≠as, %, cantidad, etc.)
         /// </summary>
         [StringLength(20)]
      public string? Unidad { get; set; }
 
         /// <summary>
-        /// Indica si el par·metro puede ser modificado por el usuario
+        /// Indica si el par√°metro puede ser modificado por el usuario
   /// </summary>
  public bool EsEditable { get; set; } = true;
 

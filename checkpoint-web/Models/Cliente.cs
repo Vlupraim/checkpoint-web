@@ -19,7 +19,7 @@ namespace checkpoint_web.Models
         public string? NombreComercial { get; set; }
 
         /// <summary>
-  /// RUT, NIT, RFC, o identificador fiscal seg�n pa�s
+  /// RUT, NIT, RFC, o identificador fiscal segï¿½n paï¿½s
         /// </summary>
         [StringLength(50)]
         public string? IdentificadorFiscal { get; set; }
