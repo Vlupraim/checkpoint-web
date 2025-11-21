@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace checkpoint_web.Pages.Bodega
 {
@@ -13,9 +14,11 @@ namespace checkpoint_web.Pages.Bodega
     public class LotesModel : PageModel
     {
         private readonly CheckpointDbContext _context;
-        public LotesModel(CheckpointDbContext context)
+        private readonly ILogger<LotesModel> _logger;
+        public LotesModel(CheckpointDbContext context, ILogger<LotesModel> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public IList<Lote> Lotes { get; set; } = new List<Lote>();
@@ -26,18 +29,29 @@ namespace checkpoint_web.Pages.Bodega
 
         public async Task OnGetAsync()
         {
-            // Load recent lotes with related Producto and Sede via Stocks->Ubicacion->Sede not necessary for listing
-            Lotes = await _context.Lotes
-                .Include(l => l.Producto)
-                .OrderByDescending(l => l.FechaIngreso)
-                .Take(100)
-                .AsNoTracking()
-                .ToListAsync();
+            try
+            {
+                // Load recent lotes with related Producto
+                Lotes = await _context.Lotes
+                    .Include(l => l.Producto)
+                    .OrderByDescending(l => l.FechaIngreso)
+                    .Take(100)
+                    .AsNoTracking()
+                    .ToListAsync();
 
-            CountCuarentena = await _context.Lotes.CountAsync(l => l.Estado == EstadoLote.Cuarentena);
-            CountLiberado = await _context.Lotes.CountAsync(l => l.Estado == EstadoLote.Liberado);
-            CountRechazado = await _context.Lotes.CountAsync(l => l.Estado == EstadoLote.Rechazado);
-            CountBloqueado = await _context.Lotes.CountAsync(l => l.Estado == EstadoLote.Bloqueado);
+                CountCuarentena = await _context.Lotes.CountAsync(l => l.Estado == EstadoLote.Cuarentena);
+                CountLiberado = await _context.Lotes.CountAsync(l => l.Estado == EstadoLote.Liberado);
+                CountRechazado = await _context.Lotes.CountAsync(l => l.Estado == EstadoLote.Rechazado);
+                CountBloqueado = await _context.Lotes.CountAsync(l => l.Estado == EstadoLote.Bloqueado);
+            }
+            catch (System.Exception ex)
+            {
+                // Log and provide safe defaults so view renders without throwing
+                _logger.LogError(ex, "Error loading lotes for Lotes page");
+                Lotes = new List<Lote>();
+                CountCuarentena = CountLiberado = CountRechazado = CountBloqueado = 0;
+                // Do not rethrow to avoid HTTP 500 when called via AJAX
+            }
         }
     }
 }

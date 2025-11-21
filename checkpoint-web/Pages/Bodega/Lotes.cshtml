@@ -89,15 +89,15 @@
        foreach (var lote in Model.Lotes)
        {
            <tr>
-               <td>@lote.CodigoLote</td>
+               <td>@(string.IsNullOrEmpty(lote.CodigoLote) ? "-" : lote.CodigoLote)</td>
                <td>@(lote.Producto?.Nombre ?? "-")</td>
-               <td>@lote.FechaIngreso.ToString("yyyy-MM-dd")</td>
+               <td>@(lote.FechaIngreso.ToString("yyyy-MM-dd"))</td>
                <td>@(lote.FechaVencimiento.HasValue ? lote.FechaVencimiento.Value.ToString("yyyy-MM-dd") : "-")</td>
                <td>@lote.CantidadDisponible</td>
                <td>@lote.Estado</td>
                <td>@lote.TempIngreso</td>
                <td>
-                   <a class="btn btn-sm btn-outline-primary" href="/Bodega/Lotes/Details?id=@lote.Id">Ver</a>
+                   <a class="btn btn-sm btn-outline-primary" href="@Url.Page("/Bodega/Lotes/Details", new { id = lote.Id })">Ver</a>
                </td>
            </tr>
        }
