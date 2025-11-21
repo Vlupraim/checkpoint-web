@@ -6,23 +6,23 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-<h2>Panel de Administraci&oacute;n</h2>
+<h2>Panel de Administración</h2>
  <small class="text-muted">@DateTime.Now.ToString("dddd, dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-ES"))</small>
 </div>
 
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
  <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>Atenci&oacute;n:</strong> @Model.ErrorMessage
+        <strong>Atención:</strong> @Model.ErrorMessage
      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
     </div>
     
     <div class="card">
   <div class="card-body text-center py-5">
    <h3>Bienvenido al Sistema Checkpoint</h3>
-  <p class="lead">Login exitoso! Est&aacute;s autenticado como <strong>@User.Identity?.Name</strong></p>
+  <p class="lead">Login exitoso! Estás autenticado como <strong>@User.Identity?.Name</strong></p>
  <hr class="my-4">
-  <p>El sistema est&aacute; configur&aacute;ndose. Algunas funcionalidades estar&aacute;n disponibles pronto.</p>
+  <p>El sistema está configurándose. Algunas funcionalidades estarán disponibles pronto.</p>
             <p class="text-muted">Utiliza el menú lateral para navegar por las diferentes secciones del sistema.</p>
         </div>
     </div>
@@ -56,7 +56,7 @@
   <div class="text-center">
          <h6 class="text-muted mb-2">Lotes en QC</h6>
  <h2 class="text-info mb-0">@Model.Resumen.LotesPendientesCalidad</h2>
-          <small>Pendientes de revisi&oacute;n</small>
+          <small>Pendientes de revisión</small>
      </div>
         </div>
     </div>
@@ -65,7 +65,7 @@
         <div class="text-center">
    <h6 class="text-muted mb-2">Ajustes Pendientes</h6>
         <h2 class="text-danger mb-0">@Model.Resumen.AjustesPendientes</h2>
-        <small>Requieren aprobaci&oacute;n</small>
+        <small>Requieren aprobación</small>
          </div>
          </div>
    </div>
@@ -105,7 +105,7 @@
 else
 {
     <div class="alert alert-warning">
-     <strong>Cargando datos...</strong> El sistema est&aacute; generando las estad&iacute;sticas.
+     <strong>Cargando datos...</strong> El sistema está generando las estadísticas.
     </div>
 }
 

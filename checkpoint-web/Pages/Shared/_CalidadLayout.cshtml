@@ -13,6 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@ViewData["Title"] - Checkpoint Calidad</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/theme-minimal.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/checkpoint_web.styles.css" asp-append_version="true" />
@@ -104,11 +105,11 @@
   <a class="nav-link" href="#" data-url="/Reportes/Tareas" data-path="/Reportes/Tareas">Reporte Tareas</a>
  @if (User.IsInRole("Administrador"))
  {
-   <a class="nav-link" href="#" data-url="/Admin/AuditLogs/Index" data-path="/Admin/AuditLogs">Auditor&iacute;a Sistema</a>
+   <a class="nav-link" href="#" data-url="/Admin/AuditLogs/Index" data-path="/Admin/AuditLogs">Auditoría Sistema</a>
  }
     </div>
    </nav>
- <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-3">
+ <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-md-4 py-3">
     <div id="calidadContent">
 @RenderBody()
            </div>
