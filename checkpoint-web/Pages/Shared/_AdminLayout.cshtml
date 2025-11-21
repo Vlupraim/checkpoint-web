@@ -1,7 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Authentication
 
 @{
-    // Verificar si la sesiÃ³n es persistente
     var authProperties = await Context.AuthenticateAsync();
     var isPersistent = authProperties?.Properties?.IsPersistent ?? false;
 }
@@ -15,289 +14,171 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/theme-minimal.css" asp-append-version="true" />
-  <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/checkpoint_web.styles.css" asp-append-version="true" />
 </head>
 
 <body data-authenticated="@(User.Identity?.IsAuthenticated == true ? "True" : "False")" data-persistent="@(isPersistent ? "True" : "False")">
     <!-- Single Header -->
     <header>
- <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom box-shadow mb-0">
-       <div class="container-fluid">
-      <a class="navbar-brand me-3 d-flex align-items-center" href="/Admin/Dashboard">
-     <img src="~/images/logo-icon.png" alt="Logo Checkpoint" class="logo-mini me-1" />
-       <img src="~/images/logo-text.png" alt="Texto Checkpoint" class="logo-text" />
-  </a>
+        <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom box-shadow mb-0">
+            <div class="container-fluid">
+                <a class="navbar-brand me-3 d-flex align-items-center" href="/Admin/Dashboard">
+                    <img src="~/images/logo-icon.png" alt="Logo Checkpoint" class="logo-mini me-1" />
+                    <img src="~/images/logo-text.png" alt="Texto Checkpoint" class="logo-text" />
+                </a>
 
-  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavbar"
-   aria-controls="#topNavbar" aria-expanded="false" aria-label="Toggle navigation">
-  <span class="navbar-toggler-icon"></span>
-    </button>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavbar"
+                        aria-controls="#topNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-   <div class="collapse navbar-collapse" id="topNavbar">
- <ul class="navbar-nav me-auto mb-2 mb-md-0">
-   <li class="nav-item">
-    <a class="nav-link" href="/Admin/Dashboard">Inicio</a>
- </li>
-       </ul>
+                <div class="collapse navbar-collapse" id="topNavbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Admin/Dashboard">Inicio</a>
+                        </li>
+                    </ul>
 
- <form class="d-none d-md-flex mx-auto" method="get">
-          <input class="form-control me-2 search-bar" type="search" placeholder="Buscar..." aria-label="Buscar" />
-    <button class="btn btn-outline-secondary" type="submit">Buscar</button>
- </form>
+                    <form class="d-none d-md-flex mx-auto" method="get">
+                        <input class="form-control me-2 search-bar" type="search" placeholder="Buscar..." aria-label="Buscar" />
+                        <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+                    </form>
 
-<ul class="navbar-nav ms-auto">
-   @if (User.Identity?.IsAuthenticated == true) {
-       @await Component.InvokeAsync("Notifications")
-    <li class="nav-item dropdown">
- <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button"
- data-bs-toggle="dropdown" aria-expanded="false">
- Hola, @User.Identity.Name
-    </a>
-       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-   <li><a class="dropdown-item" href="/Account/DashboardRedirect">
-       <i class="bi bi-house"></i> Mi Panel
-   </a></li>
- @if (User.IsInRole("Administrador")) {
-     <li><a class="dropdown-item" href="/Admin/Dashboard">
-        <i class="bi bi-gear"></i> Panel Administrador
-    </a></li>
-    }
-       @if (User.IsInRole("PersonalBodega")) {
-         <li><a class="dropdown-item" href="/Bodega/Dashboard">
-    <i class="bi bi-box"></i> Panel Bodega
-         </a></li>
-    }
-  @if (User.IsInRole("ControlCalidad")) {
- <li><a class="dropdown-item" href="/Calidad/Dashboard">
-    <i class="bi bi-check-circle"></i> Panel Calidad
-        </a></li>
-}
- <li><hr class="dropdown-divider" /></li>
-      <li>
-    <form method="post" asp-page="/Account/Logout" class="d-inline">
-     @Html.AntiForgeryToken()
- <button type="submit" class="btn btn-link dropdown-item text-start">
-     <i class="bi bi-box-arrow-right"></i> Cerrar SesiÃ³n
-      </button>
-  </form>
- </li>
-     </ul>
-     </li>
-    }
-     </ul>
-           </div>
-    </div>
+                    <ul class="navbar-nav ms-auto">
+                        @if (User.Identity?.IsAuthenticated == true) {
+                            try { @await Component.InvokeAsync("Notifications"); } catch {}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Hola, @User.Identity.Name
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                                    <li><a class="dropdown-item" href="/Account/DashboardRedirect"><i class="bi bi-house"></i> Mi Panel</a></li>
+                                    @if (User.IsInRole("Administrador")) { <li><a class="dropdown-item" href="/Admin/Dashboard"><i class="bi bi-gear"></i> Panel Administrador</a></li> }
+                                    @if (User.IsInRole("PersonalBodega")) { <li><a class="dropdown-item" href="/Bodega/Dashboard"><i class="bi bi-box"></i> Panel Bodega</a></li> }
+                                    @if (User.IsInRole("ControlCalidad")) { <li><a class="dropdown-item" href="/Calidad/Dashboard"><i class="bi bi-check-circle"></i> Panel Calidad</a></li> }
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        <form method="post" asp-page="/Account/Logout" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-link dropdown-item text-start"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
         </nav>
     </header>
 
     <!-- Dashboard Layout -->
     <div class="container-fluid">
-   <div class="row">
-  <nav class="col-md-2 d-none d-md-block sidebar py-3">
-      <div class="nav flex-column">
-<div class="sidebar-section-header">PANEL PRINCIPAL</div>
-   <a class="nav-link active" href="#" data-url="/Admin/Dashboard" data-path="/Admin/Dashboard">
-     <i class="bi bi-speedometer2"></i> Dashboard
-    </a>
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block sidebar py-3">
+                <div class="nav flex-column">
+                    <div class="sidebar-section-header">PANEL PRINCIPAL</div>
+                    <a class="nav-link active" href="#" data-url="/Admin/Dashboard" data-path="/Admin/Dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
 
-        <div class="sidebar-section-header">GESTIÃ“N DE ACCESOS</div>
-  <a class="nav-link" href="#" data-url="/Fragments/Usuarios" data-path="/Admin/Users">
-      <i class="bi bi-people"></i> Usuarios y Roles
-         </a>
+                    <div class="sidebar-section-header">GESTIÓN DE ACCESOS</div>
+                    <a class="nav-link" href="#" data-url="/Fragments/Usuarios" data-path="/Admin/Users"><i class="bi bi-people"></i> Usuarios y Roles</a>
 
-   <div class="sidebar-section-header">INFRAESTRUCTURA</div>
-         <a class="nav-link" href="#" data-url="/Admin/Sedes/Index" data-path="/Admin/Sedes">
-   <i class="bi bi-building"></i> Sedes
-          </a>
-    <a class="nav-link" href="#" data-url="/Admin/Ubicaciones/Index" data-path="/Admin/Ubicaciones">
-     <i class="bi bi-geo-alt"></i> Ubicaciones
-     </a>
+                    <div class="sidebar-section-header">INFRAESTRUCTURA</div>
+                    <a class="nav-link" href="#" data-url="/Admin/Sedes/Index" data-path="/Admin/Sedes"><i class="bi bi-building"></i> Sedes</a>
+                    <a class="nav-link" href="#" data-url="/Admin/Ubicaciones/Index" data-path="/Admin/Ubicaciones"><i class="bi bi-geo-alt"></i> Ubicaciones</a>
 
-   <div class="sidebar-section-header">GESTIÃ“N DE PROCESOS</div>
-           <a class="nav-link" href="#" data-url="/Admin/Tareas/Index" data-path="/Admin/Tareas">
-    <i class="bi bi-check2-square"></i> Tareas y Procesos
-         </a>
+                    <div class="sidebar-section-header">GESTIÓN DE PROCESOS</div>
+                    <a class="nav-link" href="#" data-url="/Admin/Tareas/Index" data-path="/Admin/Tareas"><i class="bi bi-check2-square"></i> Tareas y Procesos</a>
 
-     <div class="sidebar-section-header">CATÃLOGOS</div>
-   <a class="nav-link" href="#" data-url="/Fragments/Productos" data-path="/Productos">
-  <i class="bi bi-box-seam"></i> Productos
-      </a>
-  <a class="nav-link" href="#" data-url="/Admin/Clientes/Index" data-path="/Admin/Clientes">
-           <i class="bi bi-person-badge"></i> Clientes
-          </a>
-   <a class="nav-link" href="#" data-url="/Admin/Proveedores/Index" data-path="/Admin/Proveedores">
-    <i class="bi bi-truck"></i> Proveedores
-  </a>
+                    <div class="sidebar-section-header">CATÁLOGOS</div>
+                    <a class="nav-link" href="#" data-url="/Fragments/Productos" data-path="/Productos"><i class="bi bi-box-seam"></i> Productos</a>
+                    <a class="nav-link" href="#" data-url="/Admin/Clientes/Index" data-path="/Admin/Clientes"><i class="bi bi-person-badge"></i> Clientes</a>
+                    <a class="nav-link" href="#" data-url="/Admin/Proveedores/Index" data-path="/Admin/Proveedores"><i class="bi bi-truck"></i> Proveedores</a>
 
-  <div class="sidebar-section-header">REPORTES</div>
-    <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes">
-  <i class="bi bi-graph-up"></i> Dashboard Reportes
-       </a>
- <a class="nav-link" href="#" data-url="/Reportes/Movimientos" data-path="/Reportes/Movimientos">
-     <i class="bi bi-list-check"></i> Historial Movimientos
-    </a>
-    <a class="nav-link" href="#" data-url="/Reportes/Tareas" data-path="/Reportes/Tareas">
-       <i class="bi bi-clipboard-data"></i> Reporte Tareas
-       </a>
-  <a class="nav-link" href="#" data-url="/Admin/AuditLogs/Index" data-path="/Admin/AuditLogs">
-     <i class="bi bi-shield-check"></i> AuditorÃ­a Sistema
-      </a>
-  </div>
-        </nav>
- <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-md-4 py-3">
-     <div id="dashboardContent">
-           @RenderBody()
- </div>
-       </main>
+                    <div class="sidebar-section-header">REPORTES</div>
+                    <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes"><i class="bi bi-graph-up"></i> Dashboard Reportes</a>
+                    <a class="nav-link" href="#" data-url="/Reportes/Movimientos" data-path="/Reportes/Movimientos"><i class="bi bi-list-check"></i> Historial Movimientos</a>
+                    <a class="nav-link" href="#" data-url="/Reportes/Tareas" data-path="/Reportes/Tareas"><i class="bi bi-clipboard-data"></i> Reporte Tareas</a>
+                    <a class="nav-link" href="#" data-url="/Admin/AuditLogs/Index" data-path="/Admin/AuditLogs"><i class="bi bi-shield-check"></i> Auditoría Sistema</a>
+                </div>
+            </nav>
+            <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-md-4 py-3">
+                <div id="dashboardContent">
+                    @RenderBody()
+                </div>
+            </main>
         </div>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    
-  @* Session manager deshabilitado - Las cookies de sesiÃ³n se gestionan automÃ¡ticamente *@
-    @* <script src="~/js/session-manager.js" asp-append-version="true"></script> *@
 
     <script>
-  (function() {
-  const mapping = {
-     '/Productos': '/Fragments/Productos',
-'/Admin/Users': '/Fragments/Usuarios',
-    '/Admin/Dashboard': '/Admin/Dashboard',
-'/Admin/Sedes': '/Admin/Sedes/Index',
-      '/Admin/Ubicaciones': '/Admin/Ubicaciones/Index',
-      '/Admin/Tareas': '/Admin/Tareas/Index',
-  '/Admin/Clientes': '/Admin/Clientes/Index',
-    '/Admin/Proveedores': '/Admin/Proveedores/Index',
- '/Reportes': '/Reportes/Index',
-      '/Reportes/Movimientos': '/Reportes/Movimientos',
-      '/Reportes/Tareas': '/Reportes/Tareas',
-  '/Admin/AuditLogs': '/Admin/AuditLogs/Index'
- };
+        (function() {
+            const mapping = {
+                '/Productos': '/Fragments/Productos',
+                '/Admin/Users': '/Fragments/Usuarios',
+                '/Admin/Dashboard': '/Admin/Dashboard',
+                '/Admin/Sedes': '/Admin/Sedes/Index',
+                '/Admin/Ubicaciones': '/Admin/Ubicaciones/Index',
+                '/Admin/Tareas': '/Admin/Tareas/Index',
+                '/Admin/Clientes': '/Admin/Clientes/Index',
+                '/Admin/Proveedores': '/Admin/Proveedores/Index',
+                '/Reportes': '/Reportes/Index',
+                '/Reportes/Movimientos': '/Reportes/Movimientos',
+                '/Reportes/Tareas': '/Reportes/Tareas',
+                '/Admin/AuditLogs': '/Admin/AuditLogs/Index'
+            };
 
-    function loadUrl(url, replaceState) {
-    fetch(url, {
-   credentials: 'same-origin',
-   headers: {
-   'X-Requested-With': 'XMLHttpRequest'
-   }
- })
-  .then(function(resp) {
- if (!resp.ok) {
-      console.error('HTTP error:', resp.status, resp.statusText);
-    throw new Error('HTTP ' + resp.status);
-   }
-           return resp.text();
-    })
-    .then(function(html) {
-   document.getElementById('dashboardContent').innerHTML = html;
-           if (replaceState) {
-  history.replaceState({
-    url: url
-       }, '', location.pathname);
- }
-  })
-      .catch(function(err) {
-       console.error('Load error:', err);
- document.getElementById('dashboardContent').innerHTML =
-      '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>';
-        });
-         }
+            function loadUrl(url, replaceState) {
+                fetch(url, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(function(resp) {
+                        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                        return resp.text();
+                    })
+                    .then(function(html) {
+                        document.getElementById('dashboardContent').innerHTML = html;
+                        if (replaceState) history.replaceState({ url: url }, '', location.pathname);
+                    })
+                    .catch(function(err) {
+                        console.error('Load error:', err);
+                        document.getElementById('dashboardContent').innerHTML = '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>';
+                    });
+            }
 
-      document.addEventListener('DOMContentLoaded', function() {
-      // Click handlers for sidebar links
-         document.querySelectorAll('.sidebar a[data-url]').forEach(function(a) {
-       a.addEventListener('click', function(e) {
-     e.preventDefault();
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('.sidebar a[data-url]').forEach(function(a) {
+                    a.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        document.querySelectorAll('.sidebar a').forEach(function(link) { link.classList.remove('active'); });
+                        a.classList.add('active');
+                        var url = a.getAttribute('data-url');
+                        var path = a.getAttribute('data-path') || url;
+                        fetch(url, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                            .then(function(resp) { if (!resp.ok) throw new Error('HTTP ' + resp.status); return resp.text(); })
+                            .then(function(html) { document.getElementById('dashboardContent').innerHTML = html; history.pushState({ url: url }, '', path); })
+                            .catch(function(err) { console.error('Navigation error:', err); document.getElementById('dashboardContent').innerHTML = '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>'; });
+                    });
+                });
 
-    // Update active state
-   document.querySelectorAll('.sidebar a').forEach(function(link) {
-       link.classList.remove('active');
-    });
-        a.classList.add('active');
+                window.addEventListener('popstate', function(event) {
+                    var state = event.state;
+                    if (state && state.url) loadUrl(state.url, false);
+                    else {
+                        var frag = mapping[location.pathname];
+                        if (frag) loadUrl(frag, true);
+                        else window.location = location.pathname;
+                    }
+                });
 
-   var url = a.getAttribute('data-url');
-      var path = a.getAttribute('data-path') || url;
-
-         fetch(url, {
-     credentials: 'same-origin',
-          headers: {
-    'X-Requested-With': 'XMLHttpRequest'
- }
-   })
-     .then(function(resp) {
-    if (!resp.ok) {
-   console.error('Navigation error - HTTP:', resp.status, resp.statusText);
-    throw new Error('HTTP ' + resp.status);
-  }
-         return resp.text();
-      })
-      .then(function(html) {
-   document.getElementById('dashboardContent').innerHTML = html;
-    history.pushState({
-       url: url
-         }, '', path);
-          })
-    .catch(function(err) {
-     console.error('Navigation error:', err);
-           document.getElementById('dashboardContent').innerHTML =
-          '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>';
-        });
-   });
-       });
-
-      // Intercept clicks in the dashboard content to support SPA navigation for internal links
- var dashboardContent = document.getElementById('dashboardContent');
- if (dashboardContent) {
- dashboardContent.addEventListener('click', function(e) {
- var anchor = e.target.closest('a');
- if (!anchor) return;
- var href = anchor.getAttribute('href');
- // Only handle same-origin absolute or root-relative links
- if (!href) return;
- // Respect explicit targets or download links
- if (anchor.target && anchor.target !== '' && anchor.target !== '_self') return;
- if (anchor.hasAttribute('download')) return;
- try {
- var url = new URL(href, location.origin);
- if (url.origin !== location.origin) return; // external link
- } catch (err) {
- return;
- }
- // Prevent default navigation and load via AJAX
- e.preventDefault();
- loadUrl(url.pathname + url.search, false);
- history.pushState({ url: url.pathname + url.search }, '', url.pathname + url.search);
- });
- }
-
- // Handle browser back/forward
- window.addEventListener('popstate', function(event) {
-       var state = event.state;
-  if (state && state.url) {
-  loadUrl(state.url, false);
-        } else {
-  var frag = mapping[location.pathname];
-  if (frag) {
-    loadUrl(frag, true);
-    } else {
-   window.location = location.pathname;
-      }
- }
-       });
-
-      // Initial load: if not on dashboard root, load mapped fragment
-          var initial = location.pathname;
-        if (initial && initial !== '/Admin/Dashboard' && mapping[initial]) {
-       loadUrl(mapping[initial], true);
-      }
-    });
-   })();
+                var initial = location.pathname;
+                if (initial && initial !== '/Admin/Dashboard' && mapping[initial]) loadUrl(mapping[initial], true);
+            });
+        })();
     </script>
 
-  @await RenderSectionAsync("Scripts", required: false)
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
-
 </html>

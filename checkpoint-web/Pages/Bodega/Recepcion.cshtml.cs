@@ -142,10 +142,10 @@ namespace checkpoint_web.Pages.Bodega
             }
             catch (Exception ex)
             {
-                // Log minimal info via audit (if possible) or set error for UI
+                // Log full exception via audit (if possible) or set error for UI
                 var userIdForLog = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";
                 try {
-                    await _auditService.LogAsync(userIdForLog, "ErrorRecepcion", ex.Message);
+                    await _auditService.LogAsync(userIdForLog, "ErrorRecepcion", ex.ToString());
                 } catch {}
                 TempData["Error"] = "Error al registrar la recepción. Contacte al administrador.";
                 var productos = await _producto_service_fallback();
