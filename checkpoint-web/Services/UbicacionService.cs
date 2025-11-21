@@ -38,7 +38,7 @@ namespace checkpoint_web.Services
  public async Task UpdateAsync(Ubicacion ubicacion)
  {
  var existing = await _context.Ubicaciones.FindAsync(ubicacion.Id);
- if (existing == null) throw new InvalidOperationException("Ubicación no encontrada");
+ if (existing == null) throw new InvalidOperationException("UbicaciÃ³n no encontrada");
  existing.SedeId = ubicacion.SedeId;
  existing.Codigo = ubicacion.Codigo;
  existing.Tipo = ubicacion.Tipo;
@@ -49,7 +49,7 @@ namespace checkpoint_web.Services
  public async Task DeleteAsync(Guid id)
  {
  var existing = await _context.Ubicaciones.FindAsync(id);
- if (existing == null) throw new InvalidOperationException("Ubicación no encontrada");
+ if (existing == null) throw new InvalidOperationException("UbicaciÃ³n no encontrada");
 
  // Check for dependent movimientos or stocks that would block deletion (FK restrict)
  var movimientosCount = await _context.Movimientos

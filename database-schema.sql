@@ -381,7 +381,7 @@ CREATE INDEX IF NOT EXISTS "IX_AuditLogs_Timestamp" ON "AuditLogs" ("Timestamp")
 
 COMMIT;
 
--- Mensaje de éxito
+-- Mensaje de Ã©xito
 DO $$
 BEGIN
     RAISE NOTICE '============================================';

@@ -64,10 +64,10 @@ case "Rechazar":
 return RedirectToPage();
   }
    await _calidadService.BloquearLoteAsync(LoteId, usuario, Observacion);
-TempData["SuccessMessage"] = "?? Lote bloqueado para investigaciÛn";
+TempData["SuccessMessage"] = "?? Lote bloqueado para investigaci√≥n";
       break;
        default:
-   TempData["ErrorMessage"] = "? AcciÛn no v·lida";
+   TempData["ErrorMessage"] = "? Acci√≥n no v√°lida";
      break;
 }
  }

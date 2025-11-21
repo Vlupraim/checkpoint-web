@@ -93,7 +93,7 @@ if (notificacion != null && notificacion.Activa)
      var n = await _context.Notificaciones.FindAsync(notificacionId);
  if (n == null) return;
 
-     // Solo permitir eliminación a propietarios o admins; aquí se realiza la eliminación lógica si coincide el usuario
+     // Solo permitir eliminaciÃ³n a propietarios o admins; aquÃ­ se realiza la eliminaciÃ³n lÃ³gica si coincide el usuario
  if (n.UsuarioId == usuarioId)
  {
  n.Activa = false;
@@ -124,7 +124,7 @@ if (notificacion != null && notificacion.Activa)
       {
   if (!string.IsNullOrEmpty(tarea.ResponsableId))
   {
-       // Sólo considerar notificaciones activas al verificar duplicados
+       // SÃ³lo considerar notificaciones activas al verificar duplicados
     var existeNotificacion = await _context.Notificaciones
      .AnyAsync(n => n.UsuarioId == tarea.ResponsableId
        && n.ReferenciaId == tarea.Id.ToString()
@@ -149,7 +149,7 @@ if (notificacion != null && notificacion.Activa)
     }
  }
 
-  // Tareas próximas a vencer (mañana)
+  // Tareas prÃ³ximas a vencer (maÃ±ana)
        var tareasVencenManana = await _context.Tareas
  .Where(t => t.Activo 
      && t.Estado != "Finalizada" 
@@ -174,7 +174,7 @@ if (notificacion != null && notificacion.Activa)
    var notif = await CrearNotificacionAsync(
      tarea.ResponsableId,
      "AlertaVenceManana",
-     $"Tarea vence MAÑANA: {tarea.Titulo}",
+     $"Tarea vence MAÃ‘ANA: {tarea.Titulo}",
         $"Recuerda completar esta tarea. Progreso actual: {tarea.Progreso}%",
        "/Tareas/MisTareas"
    );
@@ -186,7 +186,7 @@ if (notificacion != null && notificacion.Activa)
     }
         }
 
-  // Tareas próximas a vencer (2 días)
+  // Tareas prÃ³ximas a vencer (2 dÃ­as)
     var tareasProximasVencer = await _context.Tareas
       .Where(t => t.Activo 
   && t.Estado != "Finalizada" 
@@ -200,7 +200,7 @@ if (notificacion != null && notificacion.Activa)
  {
       if (!string.IsNullOrEmpty(tarea.ResponsableId))
     {
- // Verificar si ya existe notificación activa reciente
+ // Verificar si ya existe notificaciÃ³n activa reciente
   var existeNotificacion = await _context.Notificaciones
    .AnyAsync(n => n.UsuarioId == tarea.ResponsableId
      && n.ReferenciaId == tarea.Id.ToString()
@@ -212,7 +212,7 @@ if (notificacion != null && notificacion.Activa)
       var notif = await CrearNotificacionAsync(
   tarea.ResponsableId,
    "Alerta",
-  $"Tarea próxima a vencer: {tarea.Titulo}",
+  $"Tarea prÃ³xima a vencer: {tarea.Titulo}",
     $"Vence el {tarea.FechaLimite:dd/MM/yyyy}. Progreso: {tarea.Progreso}%",
   "/Tareas/MisTareas"
   );
@@ -237,7 +237,7 @@ if (notificacion != null && notificacion.Activa)
        {
       if (!string.IsNullOrEmpty(tarea.ResponsableId))
       {
-         // Solo una notificación por día para tareas vencidas (considerar sólo activas)
+         // Solo una notificaciÃ³n por dÃ­a para tareas vencidas (considerar sÃ³lo activas)
    var existeNotificacion = await _context.Notificaciones
   .AnyAsync(n => n.UsuarioId == tarea.ResponsableId
       && n.ReferenciaId == tarea.Id.ToString()
@@ -251,7 +251,7 @@ if (notificacion != null && notificacion.Activa)
  tarea.ResponsableId,
       "TareaVencida",
    $"Tarea VENCIDA: {tarea.Titulo}",
-         $"Esta tarea venció el {tarea.FechaLimite:dd/MM/yyyy}. Requiere atención inmediata.",
+         $"Esta tarea venciÃ³ el {tarea.FechaLimite:dd/MM/yyyy}. Requiere atenciÃ³n inmediata.",
        "/Tareas/MisTareas"
 );
 
@@ -262,7 +262,7 @@ if (notificacion != null && notificacion.Activa)
    }
   }
 
-    // Lotes próximos a vencer (7 días)
+    // Lotes prÃ³ximos a vencer (7 dÃ­as)
    var lotesProximosVencer = await _context.Lotes
    .Where(l => l.FechaVencimiento.HasValue 
 && l.FechaVencimiento.Value <= sieteDiasDespues
@@ -285,7 +285,7 @@ if (notificacion != null && notificacion.Activa)
  var notif = await CrearNotificacionAsync(
     adminId,
     "Advertencia",
-$"{lotesProximosVencer.Count} lote(s) próximo(s) a vencer",
+$"{lotesProximosVencer.Count} lote(s) prÃ³ximo(s) a vencer",
     "Revise el inventario para tomar acciones",
  "/Bodega/Recepcion"
   );
@@ -295,7 +295,7 @@ $"{lotesProximosVencer.Count} lote(s) próximo(s) a vencer",
  }
   }
 
-     // Ajustes pendientes de aprobación
+     // Ajustes pendientes de aprobaciÃ³n
  var ajustesPendientes = await _context.Movimientos
    .CountAsync(m => m.Tipo == "Ajuste" && m.Estado == "Pendiente");
 
@@ -321,7 +321,7 @@ $"{lotesProximosVencer.Count} lote(s) próximo(s) a vencer",
  var notif = await CrearNotificacionAsync(
  adminId,
  "Informacion",
- $"{ajustesPendientes} ajuste(s) pendiente(s) de aprobación",
+ $"{ajustesPendientes} ajuste(s) pendiente(s) de aprobaciÃ³n",
  "Revise los ajustes de inventario",
  "/Bodega/Ajustes"
  );

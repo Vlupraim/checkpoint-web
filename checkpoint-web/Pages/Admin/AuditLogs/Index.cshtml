@@ -1,12 +1,12 @@
 @page
 @model checkpoint_web.Pages.Admin.AuditLogs.IndexModel
 @{
-    ViewData["Title"] = "Registro de Auditoría";
+    ViewData["Title"] = "Registro de AuditorÃ­a";
     Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_AdminLayout.cshtml";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="bi bi-journal-text"></i> Registro de Auditoría</h2>
+    <h2><i class="bi bi-journal-text"></i> Registro de AuditorÃ­a</h2>
     <div>
         <span class="badge bg-primary">Total: @Model.Logs.Count registros</span>
     </div>
@@ -23,7 +23,7 @@
                 <input asp-for="UserFilter" class="form-control" placeholder="Buscar por usuario..." />
             </div>
             <div class="col-md-3">
-                <label class="form-label">Acción</label>
+                <label class="form-label">AcciÃ³n</label>
                 <input asp-for="ActionFilter" class="form-control" placeholder="CreateUser, DeleteSede..." />
             </div>
             <div class="col-md-2">
@@ -61,7 +61,7 @@
                         <tr>
                             <th style="width:160px;">Fecha y Hora</th>
                             <th style="width:200px;">Usuario</th>
-                            <th style="width:250px;">Acción</th>
+                            <th style="width:250px;">AcciÃ³n</th>
                             <th>Detalles</th>
                         </tr>
                     </thead>
@@ -129,14 +129,14 @@
             @if (Model.Logs.Count >= 500)
             {
                 <div class="alert alert-info mt-3">
-                    <i class="bi bi-info-circle"></i> Mostrando los últimos 500 registros. Usa los filtros para refinar la búsqueda.
+                    <i class="bi bi-info-circle"></i> Mostrando los Ãºltimos 500 registros. Usa los filtros para refinar la bÃºsqueda.
                 </div>
             }
         }
         else
         {
             <div class="alert alert-warning">
-                <i class="bi bi-exclamation-triangle"></i> No se encontraron registros de auditoría con los filtros aplicados.
+                <i class="bi bi-exclamation-triangle"></i> No se encontraron registros de auditorÃ­a con los filtros aplicados.
             </div>
         }
     </div>

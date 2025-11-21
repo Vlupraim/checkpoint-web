@@ -15,7 +15,7 @@ namespace checkpoint_web.Models
         public Producto? Producto { get; set; }
 
         /// <summary>
-        /// Proveedor que suministró este lote
+        /// Proveedor que suministrÃ³ este lote
       /// </summary>
    public int? ProveedorId { get; set; }
    [ForeignKey(nameof(ProveedorId))]
@@ -38,7 +38,7 @@ namespace checkpoint_web.Models
 
         /// <summary>
         /// Estado del lote en el flujo de control de calidad.
-        /// Inicial: Cuarentena (esperando revisión)
+        /// Inicial: Cuarentena (esperando revisiÃ³n)
         /// Solo lotes LIBERADOS pueden usarse en operaciones.
         /// </summary>
         public EstadoLote Estado { get; set; } = EstadoLote.Cuarentena;

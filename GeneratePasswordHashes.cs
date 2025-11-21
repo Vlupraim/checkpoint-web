@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using checkpoint_web.Models;
 
-// Pequeño programa para generar hashes de password
+// PequeÃ±o programa para generar hashes de password
 var hasher = new PasswordHasher<ApplicationUser>();
 var user = new ApplicationUser();
 

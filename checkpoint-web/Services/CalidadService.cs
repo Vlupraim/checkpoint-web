@@ -29,7 +29,7 @@ Task<Dictionary<string, int>> GetEstadisticasAsync();
 
      public async Task<IEnumerable<Lote>> GetLotesPendientesRevisionAsync()
     {
-     // Solo lotes en Cuarentena están pendientes de revisión
+     // Solo lotes en Cuarentena estÃ¡n pendientes de revisiÃ³n
    return await _context.Lotes
    .Include(l => l.Producto)
 .Include(l => l.Proveedor)
@@ -67,14 +67,14 @@ public async Task<CalidadLiberacion?> GetByIdAsync(Guid id)
  UsuarioId = usuarioId,
           Fecha = DateTime.UtcNow,
  Estado = "EnRevision",
-      Observacion = "Revisión iniciada"
+      Observacion = "RevisiÃ³n iniciada"
         };
 
        lote.Estado = EstadoLote.EnRevision;
     _context.CalidadLiberaciones.Add(revision);
       await _context.SaveChangesAsync();
 
-    await _auditService.LogAsync(usuarioId, $"Inició revisión de calidad para lote {lote.CodigoLote}");
+    await _auditService.LogAsync(usuarioId, $"IniciÃ³ revisiÃ³n de calidad para lote {lote.CodigoLote}");
 return revision;
   }
 
@@ -98,7 +98,7 @@ UsuarioId = usuarioId,
   _context.CalidadLiberaciones.Add(liberacion);
 await _context.SaveChangesAsync();
 
-await _auditService.LogAsync(usuarioId, $"Aprobó lote {lote.CodigoLote} para uso");
+await _auditService.LogAsync(usuarioId, $"AprobÃ³ lote {lote.CodigoLote} para uso");
 return liberacion;
         }
 
@@ -122,7 +122,7 @@ throw new KeyNotFoundException("Lote no encontrado");
    _context.CalidadLiberaciones.Add(rechazo);
        await _context.SaveChangesAsync();
 
-        await _auditService.LogAsync(usuarioId, $"Rechazó lote {lote.CodigoLote}: {motivo}");
+        await _auditService.LogAsync(usuarioId, $"RechazÃ³ lote {lote.CodigoLote}: {motivo}");
        return rechazo;
      }
 
@@ -146,7 +146,7 @@ LoteId = loteId,
    _context.CalidadLiberaciones.Add(bloqueo);
        await _context.SaveChangesAsync();
 
-await _auditService.LogAsync(usuarioId, $"Bloqueó lote {lote.CodigoLote}: {motivo}");
+await _auditService.LogAsync(usuarioId, $"BloqueÃ³ lote {lote.CodigoLote}: {motivo}");
             return bloqueo;
      }
 

@@ -78,7 +78,7 @@ INSERT INTO "Sedes" ("Id", "Codigo", "Nombre", "Direccion", "Activa")
 VALUES
     ('11111111-1111-1111-1111-111111111111'::uuid, 'SEDE-STGO', 'Sede Santiago Centro', 'Av. Libertador Bernardo O''Higgins 1234, Santiago', true),
     ('22222222-2222-2222-2222-222222222222'::uuid, 'SEDE-NORTE', 'Bodega Zona Norte', 'Calle Los Aromos 567, Quilicura', true),
-('33333333-3333-3333-3333-333333333333'::uuid, 'SEDE-SUR', 'Bodega Zona Sur', 'Av. Vicuña Mackenna 8900, La Florida', true)
+('33333333-3333-3333-3333-333333333333'::uuid, 'SEDE-SUR', 'Bodega Zona Sur', 'Av. VicuÃ±a Mackenna 8900, La Florida', true)
 ON CONFLICT ("Id") DO NOTHING;
 
 -- 5. UBICACIONES (con Nombre y Tipo)
@@ -86,9 +86,9 @@ INSERT INTO "Ubicaciones" ("Id", "SedeId", "Codigo", "Nombre", "Tipo", "Capacida
 VALUES
 (gen_random_uuid(), '11111111-1111-1111-1111-111111111111'::uuid, 'A-01', 'Estante A-01', 'Estante', 1000.000),
     (gen_random_uuid(), '11111111-1111-1111-1111-111111111111'::uuid, 'A-02', 'Estante A-02', 'Estante', 1000.000),
-    (gen_random_uuid(), '11111111-1111-1111-1111-111111111111'::uuid, 'CF-01', 'Cámara Fría 1', 'CamaraFria', 5000.000),
+    (gen_random_uuid(), '11111111-1111-1111-1111-111111111111'::uuid, 'CF-01', 'CÃ¡mara FrÃ­a 1', 'CamaraFria', 5000.000),
     (gen_random_uuid(), '22222222-2222-2222-2222-222222222222'::uuid, 'B-01', 'Estante B-01', 'Estante', 1500.000),
-  (gen_random_uuid(), '22222222-2222-2222-2222-222222222222'::uuid, 'CF-02', 'Cámara Fría 2', 'CamaraFria', 8000.000),
+  (gen_random_uuid(), '22222222-2222-2222-2222-222222222222'::uuid, 'CF-02', 'CÃ¡mara FrÃ­a 2', 'CamaraFria', 8000.000),
     (gen_random_uuid(), '33333333-3333-3333-3333-333333333333'::uuid, 'C-01', 'Pallet C-01', 'Pallet', 2000.000)
 ON CONFLICT DO NOTHING;
 
@@ -99,7 +99,7 @@ VALUES
     (gen_random_uuid(), 'PROD-002', 'Materia Prima B', 'kg', 60, 0.0, 25.0, 300.000, true),
     (gen_random_uuid(), 'PROD-003', 'Producto Terminado X', 'unidad', 180, -5.0, 5.0, 100.000, true),
     (gen_random_uuid(), 'PROD-004', 'Producto Terminado Y', 'litro', 120, 2.0, 8.0, 200.000, true),
-    (gen_random_uuid(), 'PROD-005', 'Insumo Crítico Z', 'caja', 30, 15.0, 25.0, 50.000, true)
+    (gen_random_uuid(), 'PROD-005', 'Insumo CrÃ­tico Z', 'caja', 30, 15.0, 25.0, 50.000, true)
 ON CONFLICT DO NOTHING;
 
 -- 7. CLIENTES (con todas las columnas)
@@ -109,13 +109,13 @@ INSERT INTO "Clientes" (
 )
 VALUES
     ('Distribuidora Del Sur S.A.', 'Del Sur', '76.123.456-7', 'Av. Grecia 1234', 'Santiago', 'Chile', 
-     '+56912345678', 'ventas@delsur.cl', 'Juan Pérez', 'Activo', 'Cliente VIP - Pago al contado', CURRENT_TIMESTAMP, true),
+     '+56912345678', 'ventas@delsur.cl', 'Juan PÃ©rez', 'Activo', 'Cliente VIP - Pago al contado', CURRENT_TIMESTAMP, true),
     
-    ('Retail Express Ltda.', 'Retail Express', '77.987.654-3', 'Los Alamos 567', 'Valparaíso', 'Chile',
-     '+56987654321', 'compras@retailexpress.cl', 'María González', 'Activo', 'Descuento 10% volumen', CURRENT_TIMESTAMP, true),
+    ('Retail Express Ltda.', 'Retail Express', '77.987.654-3', 'Los Alamos 567', 'ValparaÃ­so', 'Chile',
+     '+56987654321', 'compras@retailexpress.cl', 'MarÃ­a GonzÃ¡lez', 'Activo', 'Descuento 10% volumen', CURRENT_TIMESTAMP, true),
     
-    ('Importadora Nacional', 'Imp. Nacional', '78.555.888-K', 'Calle Comercio 890', 'Concepción', 'Chile',
-     '+56966666666', 'contacto@impnacional.cl', 'Carlos Rodríguez', 'Activo', NULL, CURRENT_TIMESTAMP, true)
+    ('Importadora Nacional', 'Imp. Nacional', '78.555.888-K', 'Calle Comercio 890', 'ConcepciÃ³n', 'Chile',
+     '+56966666666', 'contacto@impnacional.cl', 'Carlos RodrÃ­guez', 'Activo', NULL, CURRENT_TIMESTAMP, true)
 ON CONFLICT DO NOTHING;
 
 -- 8. PROVEEDORES (con todas las columnas)
@@ -126,10 +126,10 @@ INSERT INTO "Proveedores" (
 )
 VALUES
     ('Proveedora Industrial S.A.', 'Prov. Industrial', '79.111.222-3', 'Av. Industrial 100', 'Santiago', 'Chile',
-     '+56922222222', 'ventas@provin.cl', 'Ana Martínez', 'MateriaPrima', 5, 'Activo', 
+     '+56922222222', 'ventas@provin.cl', 'Ana MartÃ­nez', 'MateriaPrima', 5, 'Activo', 
 'Proveedor certificado ISO 9001', CURRENT_TIMESTAMP, true),
     
-    ('Alimentos Frescos Chile', 'Frescos Chile', '80.333.444-5', 'Camino Agrícola 200', 'Rancagua', 'Chile',
+    ('Alimentos Frescos Chile', 'Frescos Chile', '80.333.444-5', 'Camino AgrÃ­cola 200', 'Rancagua', 'Chile',
    '+56933333333', 'contacto@frescochile.cl', 'Pedro Soto', 'Perecibles', 4, 'Activo',
      'Entrega diaria', CURRENT_TIMESTAMP, true),
     
@@ -141,9 +141,9 @@ ON CONFLICT DO NOTHING;
 -- 9. PARAMETROS DEL SISTEMA
 INSERT INTO "Parametros" ("Clave", "Nombre", "Descripcion", "Valor", "TipoDato", "Categoria", "EsEditable", "Activo")
 VALUES
-    ('TEMP_MIN_ALMACENAMIENTO', 'Temperatura Mínima de Almacenamiento', 'Temperatura mínima permitida en cámaras frías', '-5', 'Decimal', 'Calidad', true, true),
-    ('TEMP_MAX_ALMACENAMIENTO', 'Temperatura Máxima de Almacenamiento', 'Temperatura máxima permitida en cámaras frías', '8', 'Decimal', 'Calidad', true, true),
-    ('DIAS_ALERTA_VENCIMIENTO', 'Días de Alerta de Vencimiento', 'Días previos al vencimiento para generar alerta', '7', 'Integer', 'Inventario', true, true),
+    ('TEMP_MIN_ALMACENAMIENTO', 'Temperatura MÃ­nima de Almacenamiento', 'Temperatura mÃ­nima permitida en cÃ¡maras frÃ­as', '-5', 'Decimal', 'Calidad', true, true),
+    ('TEMP_MAX_ALMACENAMIENTO', 'Temperatura MÃ¡xima de Almacenamiento', 'Temperatura mÃ¡xima permitida en cÃ¡maras frÃ­as', '8', 'Decimal', 'Calidad', true, true),
+    ('DIAS_ALERTA_VENCIMIENTO', 'DÃ­as de Alerta de Vencimiento', 'DÃ­as previos al vencimiento para generar alerta', '7', 'Integer', 'Inventario', true, true),
     ('EMAIL_NOTIFICACIONES', 'Email de Notificaciones', 'Email para notificaciones del sistema', 'admin@checkpoint.com', 'String', 'Sistema', true, true)
 ON CONFLICT ("Clave") DO NOTHING;
 
@@ -170,6 +170,6 @@ BEGIN
     RAISE NOTICE '  ? 5 Productos';
     RAISE NOTICE '  ? 3 Clientes';
     RAISE NOTICE '  ? 3 Proveedores';
-  RAISE NOTICE '  ? 4 Parámetros del sistema';
+  RAISE NOTICE '  ? 4 ParÃ¡metros del sistema';
     RAISE NOTICE '============================================';
 END $$;

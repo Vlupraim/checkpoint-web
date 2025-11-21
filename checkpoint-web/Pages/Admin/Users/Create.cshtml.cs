@@ -81,7 +81,7 @@ namespace checkpoint_web.Pages.Admin.Users
          await _userManager.AddToRolesAsync(user, SelectedRoles);
             }
 
-            // Auditar la creación
+            // Auditar la creaciÃ³n
   var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";
   var rolesString = SelectedRoles != null && SelectedRoles.Any() ? string.Join(", ", SelectedRoles) : "Ninguno";
        await _auditService.LogAsync(
@@ -97,20 +97,20 @@ namespace checkpoint_web.Pages.Admin.Users
         public class InputModel
         {
             [Required(ErrorMessage = "El email es requerido")]
-        [EmailAddress(ErrorMessage = "Email inválido")]
+        [EmailAddress(ErrorMessage = "Email invÃ¡lido")]
             public string Email { get; set; } = string.Empty;
 
             [Required(ErrorMessage = "El nombre es requerido")]
      [StringLength(100, ErrorMessage = "El nombre no puede exceder 100 caracteres")]
       public string Nombre { get; set; } = string.Empty;
 
-[Required(ErrorMessage = "La contraseña es requerida")]
-            [StringLength(100, MinimumLength = 6, ErrorMessage = "La contraseña debe tener al menos 6 caracteres")]
+[Required(ErrorMessage = "La contraseÃ±a es requerida")]
+            [StringLength(100, MinimumLength = 6, ErrorMessage = "La contraseÃ±a debe tener al menos 6 caracteres")]
             [DataType(DataType.Password)]
      public string Password { get; set; } = string.Empty;
 
-            [Required(ErrorMessage = "Debe confirmar la contraseña")]
- [Compare("Password", ErrorMessage = "Las contraseñas no coinciden")]
+            [Required(ErrorMessage = "Debe confirmar la contraseÃ±a")]
+ [Compare("Password", ErrorMessage = "Las contraseÃ±as no coinciden")]
    [DataType(DataType.Password)]
        public string ConfirmPassword { get; set; } = string.Empty;
 

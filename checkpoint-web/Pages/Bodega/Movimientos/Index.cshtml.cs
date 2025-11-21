@@ -100,9 +100,9 @@ TempData["SuccessMessage"] = "Salida registrada exitosamente";
   Devolucion.UbicacionId,
       Devolucion.Cantidad,
 User.Identity?.Name ?? "unknown",
-     Devolucion.Motivo ?? "Devolución"
+     Devolucion.Motivo ?? "DevoluciÃ³n"
        );
- TempData["SuccessMessage"] = "Devolución registrada exitosamente";
+ TempData["SuccessMessage"] = "DevoluciÃ³n registrada exitosamente";
  }
   catch (Exception ex)
             {

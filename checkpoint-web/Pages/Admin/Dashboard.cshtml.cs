@@ -35,7 +35,7 @@ namespace checkpoint_web.Pages.Admin
                 Resumen = await _reporteService.GetResumenOperativoAsync();
                 Inventario = await _reporteService.GetInventarioActualAsync();
 
-                // Generar notificaciones autom·ticas
+                // Generar notificaciones autom√°ticas
                 await _notificacionService.GenerarNotificacionesAutomaticasAsync();
 
                 _logger.LogInformation("[DASHBOARD] Dashboard loaded successfully");
@@ -44,7 +44,7 @@ namespace checkpoint_web.Pages.Admin
             {
                 _logger.LogError(ex, "[DASHBOARD] Error loading dashboard");
                 ErrorMessage = "Error al cargar el dashboard. Algunos datos pueden no estar disponibles.";
-                // No lanzar excepciÛn - mostrar dashboard con mensaje de error
+                // No lanzar excepci√≥n - mostrar dashboard con mensaje de error
             }
         }
     }

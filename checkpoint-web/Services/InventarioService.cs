@@ -18,7 +18,7 @@ namespace checkpoint_web.Services
 
  public async Task RegistrarIngresoAsync(Guid loteId, Guid ubicacionId, decimal cantidad, string usuarioId)
  {
- // VALIDACI”N CRÕTICA: Solo lotes LIBERADOS
+ // VALIDACI√ìN CR√çTICA: Solo lotes LIBERADOS
  var lote = await _context.Lotes.FindAsync(loteId);
  if (lote == null)
   throw new KeyNotFoundException($"Lote {loteId} no encontrado");
@@ -68,7 +68,7 @@ namespace checkpoint_web.Services
 
  public async Task RegistrarMovimientoInternoAsync(Guid loteId, Guid origenUbicacionId, Guid destinoUbicacionId, decimal cantidad, string usuarioId)
  {
- // VALIDACI”N CRÕTICA: Solo lotes LIBERADOS
+ // VALIDACI√ìN CR√çTICA: Solo lotes LIBERADOS
  var lote = await _context.Lotes.FindAsync(loteId);
  if (lote == null)
   throw new KeyNotFoundException($"Lote {loteId} no encontrado");
@@ -81,7 +81,7 @@ namespace checkpoint_web.Services
 
  var stockOrigen = await GetStockAsync(loteId, origenUbicacionId);
  if (stockOrigen == null || stockOrigen.Cantidad < cantidad)
-  throw new InvalidOperationException("Stock insuficiente en ubicaciÛn origen");
+  throw new InvalidOperationException("Stock insuficiente en ubicaci√≥n origen");
 
  stockOrigen.Cantidad -= cantidad;
  stockOrigen.ActualizadoEn = DateTime.UtcNow;
@@ -123,7 +123,7 @@ namespace checkpoint_web.Services
 
  public async Task RegistrarSalidaAsync(Guid loteId, Guid ubicacionId, decimal cantidad, string usuarioId)
  {
- // VALIDACI”N CRÕTICA: Solo lotes LIBERADOS
+ // VALIDACI√ìN CR√çTICA: Solo lotes LIBERADOS
  var lote = await _context.Lotes.FindAsync(loteId);
  if (lote == null)
   throw new KeyNotFoundException($"Lote {loteId} no encontrado");
@@ -132,7 +132,7 @@ namespace checkpoint_web.Services
   throw new InvalidOperationException(
  $"? No se puede registrar salida del lote {lote.CodigoLote}. " +
     $"Estado actual: {lote.Estado}. " +
- $"Solo lotes LIBERADOS pueden usarse para producciÛn/venta.");
+ $"Solo lotes LIBERADOS pueden usarse para producci√≥n/venta.");
 
  var stock = await GetStockAsync(loteId, ubicacionId);
  if (stock == null || stock.Cantidad < cantidad)

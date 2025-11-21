@@ -164,7 +164,7 @@ await _context.SaveChangesAsync();
   await ActualizarStockAsync(loteId, ubicacionId, cantidad, esIncremento: true);
 await _context.SaveChangesAsync();
 
-       await _auditService.LogAsync(usuarioId, $"Devolución: {cantidad} unidades a lote {loteId}");
+       await _auditService.LogAsync(usuarioId, $"DevoluciÃ³n: {cantidad} unidades a lote {loteId}");
        return movimiento;
  }
 
@@ -182,7 +182,7 @@ DestinoUbicacionId = cantidad > 0 ? ubicacionId : null,
       Cantidad = Math.Abs(cantidad),
      UsuarioId = usuarioId,
     Motivo = motivo,
- Estado = "Pendiente", // Requiere aprobación
+ Estado = "Pendiente", // Requiere aprobaciÃ³n
      StockAnterior = stockAntes,
            StockPosterior = stockAntes + cantidad
  };
@@ -190,7 +190,7 @@ DestinoUbicacionId = cantidad > 0 ? ubicacionId : null,
        _context.Movimientos.Add(movimiento);
     await _context.SaveChangesAsync();
 
-            await _auditService.LogAsync(usuarioId, $"Ajuste creado: {cantidad} unidades de lote {loteId} - Pendiente aprobación");
+            await _auditService.LogAsync(usuarioId, $"Ajuste creado: {cantidad} unidades de lote {loteId} - Pendiente aprobaciÃ³n");
      return movimiento;
     }
 
@@ -210,7 +210,7 @@ movimiento.FechaAprobacion = DateTime.Now;
 await ActualizarStockAsync(movimiento.LoteId, ubicacionId, movimiento.Cantidad, esIncremento);
 
        await _context.SaveChangesAsync();
-       await _auditService.LogAsync(aprobadoPor, $"Aprobó ajuste de inventario ID: {movimientoId}");
+       await _auditService.LogAsync(aprobadoPor, $"AprobÃ³ ajuste de inventario ID: {movimientoId}");
      return true;
       }
 
