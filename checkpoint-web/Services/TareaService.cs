@@ -2,6 +2,7 @@ using checkpoint_web.Data;
 using checkpoint_web.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace checkpoint_web.Services
 {
@@ -10,12 +11,14 @@ namespace checkpoint_web.Services
         private readonly CheckpointDbContext _context;
         private readonly IAuditService _auditService;
         private readonly INotificacionService _notificacionService;
+        private readonly ILogger<TareaService> _logger;
 
-        public TareaService(CheckpointDbContext context, IAuditService auditService, INotificacionService notificacionService)
+        public TareaService(CheckpointDbContext context, IAuditService auditService, INotificacionService notificacionService, ILogger<TareaService> logger)
         {
             _context = context;
             _auditService = auditService;
             _notificacionService = notificacionService;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<Tarea>> GetAllAsync()
@@ -170,20 +173,37 @@ $"Actualizó tarea: {tarea.Titulo} (ID: {tarea.Id})"
 
         public async Task<bool> DeleteAsync(int id)
         {
-var tarea = await _context.Tareas.FindAsync(id);
-            if (tarea == null)
-  return false;
+            try
+            {
+                var tarea = await _context.Tareas.FindAsync(id);
+                if (tarea == null)
+                {
+                    _logger.LogWarning("DeleteAsync: tarea {TareaId} not found", id);
+                    return false;
+                }
 
-            tarea.Activo = false;
-       await _context.SaveChangesAsync();
+                tarea.Activo = false;
+                await _context.SaveChangesAsync();
 
-            await _auditService.LogAsync(
-          "system",
-    $"Eliminó tarea: {tarea.Titulo} (ID: {id})"
-       );
+                await _auditService.LogAsync(
+                    "system",
+                    $"Eliminó tarea: {tarea.Titulo} (ID: {id})"
+                );
 
- return true;
-   }
+                _logger.LogInformation("DeleteAsync: tarea {TareaId} soft-deleted", id);
+                return true;
+            }
+            catch (DbUpdateException dbex)
+            {
+                _logger.LogError(dbex, "DeleteAsync: DB update error deleting tarea {TareaId}", id);
+                throw; // rethrow so caller can surface message
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "DeleteAsync: unexpected error deleting tarea {TareaId}", id);
+                throw;
+            }
+        }
 
         public async Task<bool> CambiarEstadoAsync(int id, string nuevoEstado, string? usuarioId = null)
   {

@@ -2,10 +2,10 @@
 @model checkpoint_web.Pages.Admin.Tareas.EditModel
 @{
     ViewData["Title"] = "Editar Tarea";
-    Layout = "/Pages/Shared/_AdminLayout.cshtml";
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_AdminLayout.cshtml";
 }
 
-<h2>?? Editar Tarea</h2>
+<h2>Editar Tarea</h2>
 
 <div class="card">
     <div class="card-body">
