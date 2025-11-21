@@ -6,6 +6,7 @@ using checkpoint_web.Models;
 using checkpoint_web.Services;
 using checkpoint_web.Data;
 using System;
+using System.Security.Claims;
 
 namespace checkpoint_web.Pages.Bodega
 {
@@ -87,9 +88,15 @@ namespace checkpoint_web.Pages.Bodega
  _context.Stocks.Add(stock);
 
  await _context.SaveChangesAsync();
- await _auditService.LogAsync(User.Identity?.Name ?? "anonymous", 
-    $"Recepcion: Lote={CodigoLote}, Cantidad={Cantidad}, Estado={EstadoLote.Cuarentena}", 
-    System.Text.Json.JsonSerializer.Serialize(new { lote, stock }));
+
+ // Use NameIdentifier claim for user id (consistent with other services)
+ var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+ // Fallback to system if empty (AuditService ignores anonymous/system if configured)
+ if (string.IsNullOrEmpty(userId)) userId = "system";
+
+ await _auditService.LogAsync(userId,
+ $"Recepcion: Lote={CodigoLote}, Cantidad={Cantidad}, Estado={EstadoLote.Cuarentena}",
+ System.Text.Json.JsonSerializer.Serialize(new { lote, stock }));
 
  TempData["Message"] = $"Recepción registrada correctamente. Lote en CUARENTENA esperando revisión de Calidad.";
  return RedirectToPage();
