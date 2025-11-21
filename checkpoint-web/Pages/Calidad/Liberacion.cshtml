@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model object
 @{
     Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_CalidadLayout.cshtml";
@@ -8,8 +8,8 @@
 <h2>Historial de Liberaciones</h2>
 
 <div class="alert alert-info">
-    <strong>Nota:</strong> Esta página mostrará solo los lotes que fueron <strong>aprobados</strong> por el equipo de calidad.
-  Para ver rechazos y bloqueos, usa la opción "Historial Completo" del menú lateral.
+    <strong>Nota:</strong> Esta pÃ¡gina mostrarÃ¡ solo los lotes que fueron <strong>aprobados</strong> por el equipo de calidad.
+  Para ver rechazos y bloqueos, usa la opciÃ³n "Historial Completo" del menÃº lateral.
 </div>
 
 <div class="card">
@@ -17,13 +17,13 @@
      <h5 class="mb-0">Lotes Liberados</h5>
     </div>
     <div class="card-body">
- <p>Lista de lotes liberados para venta/distribución (placeholder).</p>
+ <p>Lista de lotes liberados para venta/distribuciÃ³n (placeholder).</p>
   <div class="table-responsive">
       <table class="table table-striped">
         <thead>
     <tr>
-       <th>Fecha Liberación</th>
-    <th>Código Lote</th>
+       <th>Fecha LiberaciÃ³n</th>
+    <th>CÃ³digo Lote</th>
         <th>Producto</th>
         <th>Cantidad Liberada</th>
        <th>Revisado Por</th>

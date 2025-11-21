@@ -1,12 +1,12 @@
-@page
+﻿@page
 @model checkpoint_web.Pages.Admin.Proveedores.IndexModel
 @{
-    ViewData["Title"] = "Gestión de Proveedores";
+    ViewData["Title"] = "GestiÃ³n de Proveedores";
     Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_AdminLayout.cshtml";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
- <h2>Gestión de Proveedores</h2>
+ <h2>GestiÃ³n de Proveedores</h2>
  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoProveedorModal">
  <i class="bi bi-plus-circle"></i> Nuevo Proveedor
  </button>
@@ -56,9 +56,9 @@
  <thead>
  <tr>
  <th>Nombre</th>
- <th>Categoría</th>
+ <th>CategorÃ­a</th>
  <th>Contacto</th>
- <th>Calificación</th>
+ <th>CalificaciÃ³n</th>
  <th>Estado</th>
  <th>Acciones</th>
  </tr>
@@ -90,7 +90,7 @@
  <td>
  <div class="btn-group btn-group-sm">
  <a asp-page="Edit" asp-route-id="@proveedor.Id" class="btn btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
- <form method="post" asp-page-handler="Delete" asp-route-id="@proveedor.Id" class="d-inline" onsubmit="return confirm('¿Eliminar?');">
+ <form method="post" asp-page-handler="Delete" asp-route-id="@proveedor.Id" class="d-inline" onsubmit="return confirm('Â¿Eliminar?');">
  @Html.AntiForgeryToken()
  <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> Eliminar</button>
  </form>
@@ -129,7 +129,7 @@
  <option value="MaterialPrima">Materia Prima</option>
  <option value="Embalaje">Embalaje</option>
  <option value="Servicios">Servicios</option>
- <option value="Logistica">Logística</option>
+ <option value="Logistica">LogÃ­stica</option>
  </select>
  </div>
  </div>

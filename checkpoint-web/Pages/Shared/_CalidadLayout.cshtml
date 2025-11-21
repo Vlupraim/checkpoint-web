@@ -1,7 +1,7 @@
-@using Microsoft.AspNetCore.Authentication
+﻿@using Microsoft.AspNetCore.Authentication
 
 @{
-    // Verificar si la sesión es persistente
+    // Verificar si la sesiÃ³n es persistente
     var authProperties = await Context.AuthenticateAsync();
   var isPersistent = authProperties?.Properties?.IsPersistent ?? false;
 }
@@ -76,7 +76,7 @@
  <form method="post" asp-page="/Account/Logout" class="d-inline">
   @Html.AntiForgeryToken()
     <button type="submit" class="btn btn-link dropdown-item text-start">
-       <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+       <i class="bi bi-box-arrow-right"></i> Cerrar SesiÃ³n
      </button>
  </form>
     </li>
@@ -105,7 +105,7 @@
   <a class="nav-link" href="#" data-url="/Reportes/Tareas" data-path="/Reportes/Tareas">Reporte Tareas</a>
  @if (User.IsInRole("Administrador"))
  {
-   <a class="nav-link" href="#" data-url="/Admin/AuditLogs/Index" data-path="/Admin/AuditLogs">Auditoría Sistema</a>
+   <a class="nav-link" href="#" data-url="/Admin/AuditLogs/Index" data-path="/Admin/AuditLogs">AuditorÃ­a Sistema</a>
  }
     </div>
    </nav>

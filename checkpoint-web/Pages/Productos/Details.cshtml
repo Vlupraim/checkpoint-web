@@ -1,4 +1,4 @@
-@page "{id:guid}"
+﻿@page "{id:guid}"
 @model checkpoint_web.Pages.Productos.DetailsModel
 @{
  ViewData["Title"] = "Detalles Producto";
@@ -12,7 +12,7 @@
  <dd class="col-sm-10">@Model.Producto?.Nombre</dd>
  <dt class="col-sm-2">Unidad</dt>
  <dd class="col-sm-10">@Model.Producto?.Unidad</dd>
- <dt class="col-sm-2">Vida útil</dt>
+ <dt class="col-sm-2">Vida Ãºtil</dt>
  <dd class="col-sm-10">@Model.Producto?.VidaUtilDias</dd>
  <dt class="col-sm-2">Temp min</dt>
  <dd class="col-sm-10">@Model.Producto?.TempMin</dd>
@@ -21,7 +21,7 @@
  <dt class="col-sm-2">Stock Minimo</dt>
  <dd class="col-sm-10">@Model.Producto?.StockMinimo</dd>
  <dt class="col-sm-2">Activo</dt>
- <dd class="col-sm-10">@(Model.Producto?.Activo == true ? "Sí" : "No")</dd>
+ <dd class="col-sm-10">@(Model.Producto?.Activo == true ? "SÃ­" : "No")</dd>
  </dl>
  <a class="btn btn-secondary" asp-page="Index">Volver</a>
  <a class="btn btn-primary" asp-page="Edit" asp-route-id="@Model.Producto?.Id">Editar</a>
