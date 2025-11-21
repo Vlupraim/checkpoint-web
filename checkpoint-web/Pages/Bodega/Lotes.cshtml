@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model checkpoint_web.Pages.Bodega.LotesModel
 @{
  ViewData["Title"] = "Consulta de Lotes";
@@ -6,6 +6,11 @@
 }
 
 <h2>Consulta de Lotes</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
 
 <div class="row mb-3">
     <div class="col-md-12">
@@ -57,10 +62,10 @@
     <div class="card-header d-flex justify-content-between align-items-center">
  <h5 class="mb-0">Lotes Registrados</h5>
   <div>
-         <span class="badge bg-warning me-2">Cuarentena: 0</span>
-       <span class="badge bg-success me-2">Liberado: 0</span>
-   <span class="badge bg-danger me-2">Rechazado: 0</span>
-      <span class="badge bg-dark">Bloqueado: 0</span>
+         <span class="badge bg-warning me-2">Cuarentena: @Model.CountCuarentena</span>
+       <span class="badge bg-success me-2">Liberado: @Model.CountLiberado</span>
+   <span class="badge bg-danger me-2">Rechazado: @Model.CountRechazado</span>
+      <span class="badge bg-dark">Bloqueado: @Model.CountBloqueado</span>
        </div>
     </div>
     <div class="card-body">
@@ -79,12 +84,33 @@
       </tr>
          </thead>
       <tbody>
-   <tr>
+   @if (Model.Lotes != null && Model.Lotes.Count > 0)
+   {
+       foreach (var lote in Model.Lotes)
+       {
+           <tr>
+               <td>@lote.CodigoLote</td>
+               <td>@(lote.Producto?.Nombre ?? "-")</td>
+               <td>@lote.FechaIngreso.ToString("yyyy-MM-dd")</td>
+               <td>@(lote.FechaVencimiento.HasValue ? lote.FechaVencimiento.Value.ToString("yyyy-MM-dd") : "-")</td>
+               <td>@lote.CantidadDisponible</td>
+               <td>@lote.Estado</td>
+               <td>@lote.TempIngreso</td>
+               <td>
+                   <a class="btn btn-sm btn-outline-primary" href="/Bodega/Lotes/Details?id=@lote.Id">Ver</a>
+               </td>
+           </tr>
+       }
+   }
+   else
+   {
+      <tr>
       <td colspan="8" class="text-center text-muted">
      <p class="my-4">No hay lotes registrados o no coinciden con los filtros</p>
      <small>Los lotes se crean automáticamente al registrar una recepción</small>
         </td>
  </tr>
+   }
      </tbody>
     </table>
    </div>

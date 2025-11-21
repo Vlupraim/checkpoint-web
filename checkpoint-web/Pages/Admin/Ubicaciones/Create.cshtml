@@ -1,14 +1,14 @@
-@page
+﻿@page
 @model checkpoint_web.Pages.Admin.Ubicaciones.CreateModel
 @{
- ViewData["Title"] = "Crear Ubicación";
+ ViewData["Title"] = "Crear UbicaciÃ³n";
  Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_AdminLayout.cshtml";
 }
 
 <div class="container">
  <div class="row">
  <div class="col-md-8">
- <h1 class="mb-4"><i class="bi bi-geo-alt"></i> Crear Ubicación</h1>
+ <h1 class="mb-4"><i class="bi bi-geo-alt"></i> Crear UbicaciÃ³n</h1>
 
  <div class="card">
  <div class="card-body">
@@ -22,7 +22,7 @@
  </div>
 
  <div class="mb-3">
- <label asp-for="Ubicacion.Codigo" class="form-label">Código</label>
+ <label asp-for="Ubicacion.Codigo" class="form-label">CÃ³digo</label>
  <input asp-for="Ubicacion.Codigo" class="form-control" />
  <span asp-validation-for="Ubicacion.Codigo" class="text-danger"></span>
  </div>

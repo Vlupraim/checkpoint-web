@@ -1,4 +1,4 @@
-@model checkpoint_web.ViewComponents.NotificationsViewModel
+﻿@model checkpoint_web.ViewComponents.NotificationsViewModel
 
 <div class="dropdown">
  <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -46,7 +46,7 @@
  </div>
  </div>
  </a>
- <button type="button" title="Eliminar notificación" class="btn btn-sm btn-link text-muted ms-auto me-2 notif-delete" data-id="@notif.Id">&times;</button>
+ <button type="button" title="Eliminar notificaciÃ³n" class="btn btn-sm btn-link text-muted ms-auto me-2 notif-delete" data-id="@notif.Id">&times;</button>
  </li>
  }
  }
@@ -70,7 +70,7 @@
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080;">
  <div id="notificationToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
  <div class="d-flex">
- <div class="toast-body" id="notificationToastBody">Operación realizada</div>
+ <div class="toast-body" id="notificationToastBody">OperaciÃ³n realizada</div>
  <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
  </div>
  </div>
@@ -123,11 +123,11 @@
 
  if (dropdown) {
  dropdown.addEventListener('shown.bs.dropdown', function() {
- // Solo marcar como leídas una vez por carga de página
+ // Solo marcar como leÃ­das una vez por carga de pÃ¡gina
  if (alreadyMarked) return;
  alreadyMarked = true;
 
- // Ocultar badges inmediatamente para UX rápida
+ // Ocultar badges inmediatamente para UX rÃ¡pida
  var badge = document.getElementById('notificationBadge');
  var headerBadge = document.getElementById('notificationHeaderBadge');
 
@@ -138,7 +138,7 @@
  headerBadge.style.display = 'none';
  }
 
- // Llamar al servidor para marcar como leídas
+ // Llamar al servidor para marcar como leÃ­das
  fetch('/api/notifications/mark-all-read', {
  method: 'POST',
  credentials: 'same-origin',
@@ -149,7 +149,7 @@
  })
  .then(function(response) {
  if (!response.ok) {
- console.warn('No se pudieron marcar las notificaciones como leídas');
+ console.warn('No se pudieron marcar las notificaciones como leÃ­das');
  showToast('Error marcando notificaciones', true);
  } else {
  showToast('Notificaciones marcadas', false);
@@ -178,13 +178,13 @@
  })
  .then(function(resp) {
  if (!resp.ok) {
- console.warn('No se pudo eliminar la notificación en el servidor');
- showToast('No se pudo eliminar notificación', true);
+ console.warn('No se pudo eliminar la notificaciÃ³n en el servidor');
+ showToast('No se pudo eliminar notificaciÃ³n', true);
  } else {
- showToast('Notificación eliminada', false);
+ showToast('NotificaciÃ³n eliminada', false);
  }
  })
- .catch(function(err) { console.error('Error eliminando notificación:', err); showToast('Error eliminando notificación', true); });
+ .catch(function(err) { console.error('Error eliminando notificaciÃ³n:', err); showToast('Error eliminando notificaciÃ³n', true); });
  });
  })();
 </script>

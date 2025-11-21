@@ -1,4 +1,4 @@
-@using Microsoft.AspNetCore.Authentication
+ï»¿@using Microsoft.AspNetCore.Authentication
 
 @{
     var authProperties = await Context.AuthenticateAsync();
@@ -56,7 +56,7 @@
                                     <li>
                                         <form method="post" asp-page="/Account/Logout" class="d-inline">
                                             @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-link dropdown-item text-start">Cerrar Sesión</button>
+                                            <button type="submit" class="btn btn-link dropdown-item text-start">Cerrar SesiÃ³n</button>
                                         </form>
                                     </li>
                                 </ul>
@@ -64,7 +64,7 @@
                         }
                         else
                         {
-                            <li class="nav-item"><a class="nav-link" asp-page="/Account/Login">Iniciar Sesión</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-page="/Account/Login">Iniciar SesiÃ³n</a></li>
                         }
                     </ul>
                 </div>

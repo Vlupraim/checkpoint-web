@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model checkpoint_web.Pages.Admin.Sedes.IndexModel
 @{
     ViewData["Title"] = "Sedes";
@@ -17,7 +17,7 @@
  <td>@s.Codigo</td>
  <td>@s.Nombre</td>
  <td>@s.Direccion</td>
- <td>@(s.Activa ? "Sí" : "No")</td>
+ <td>@(s.Activa ? "SÃ­" : "No")</td>
  <td>
  <a class="btn btn-sm btn-primary" asp-page="Edit" asp-route-id="@s.Id">Editar</a>
  <a class="btn btn-sm btn-danger" asp-page="Delete" asp-route-id="@s.Id">Eliminar</a>

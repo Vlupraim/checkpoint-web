@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model checkpoint_web.Pages.Reportes.MovimientosModel
 @{
     ViewData["Title"] = "Historial de Movimientos";
@@ -54,7 +54,7 @@
  </div>
 </div>
 
-<!-- Estadísticas Rápidas -->
+<!-- EstadÃ­sticas RÃ¡pidas -->
 @if (Model.Movimientos.Any())
 {
  var ingresos = Model.Movimientos.Count(m => m.Tipo == "Ingreso");

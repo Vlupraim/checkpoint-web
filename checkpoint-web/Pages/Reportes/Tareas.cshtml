@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model checkpoint_web.Pages.Reportes.TareasModel
 @{
  ViewData["Title"] = "Reporte de Tareas";
@@ -54,7 +54,7 @@
  </div>
 </div>
 
-<!-- Estadísticas Rápidas -->
+<!-- EstadÃ­sticas RÃ¡pidas -->
 @if (Model.Tareas.Any())
 {
  var pendientes = Model.Tareas.Count(t => t.Estado == "Pendiente");
@@ -107,13 +107,13 @@
  <table class="table table-hover table-sm">
  <thead class="table-light">
  <tr>
- <th>Título</th>
+ <th>TÃ­tulo</th>
  <th>Producto</th>
  <th>Prioridad</th>
  <th>Estado</th>
  <th>Progreso</th>
  <th>Responsable</th>
- <th>Fecha Límite</th>
+ <th>Fecha LÃ­mite</th>
  <th>Creada</th>
  </tr>
  </thead>

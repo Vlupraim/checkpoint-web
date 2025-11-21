@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model checkpoint_web.Pages.Bodega.AjustesModel
 @{
     ViewData["Title"] = "Ajustes de Inventario";
@@ -7,7 +7,7 @@
 
 <h2>Ajustes de Inventario</h2>
 
-<!-- Sección: Solicitar Nuevo Ajuste -->
+<!-- SecciÃ³n: Solicitar Nuevo Ajuste -->
 <div class="row mb-4">
     <div class="col-md-12">
   <div class="card border-primary">
@@ -58,7 +58,7 @@
  </div>
 </div>
 
-<!-- Sección: Lista de Ajustes -->
+<!-- SecciÃ³n: Lista de Ajustes -->
 <div class="row">
     <div class="col-md-12">
   <div class="card">
@@ -71,7 +71,7 @@
        </div>
        </div>
    <div class="card-body">
-      <!-- Filtros rápidos -->
+      <!-- Filtros rÃ¡pidos -->
     <div class="mb-3">
     <div class="btn-group" role="group">
  <input type="radio" class="btn-check" name="filtroEstado" id="filtroTodos" autocomplete="off" checked />
@@ -109,7 +109,7 @@
    <tr>
  <td colspan="10" class="text-center text-muted">
     <p class="my-4">No hay ajustes registrados</p>
-   <small>Los ajustes aparecerán aquí después de ser solicitados</small>
+   <small>Los ajustes aparecerÃ¡n aquÃ­ despuÃ©s de ser solicitados</small>
    </td>
     </tr>
       </tbody>
@@ -127,7 +127,7 @@
   radio.addEventListener('change', function() {
  var estado = this.id.replace('filtro', '');
       console.log('Filtrar por estado:', estado);
-      // Aquí iría la lógica para filtrar la tabla
+      // AquÃ­ irÃ­a la lÃ³gica para filtrar la tabla
   });
    });
     </script>
