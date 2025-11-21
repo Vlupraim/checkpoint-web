@@ -123,7 +123,7 @@ body {
     font-weight: 500;
     border-radius: 6px;
     padding: 0.5rem 1.25rem;
-transition: all 0.3s ease;
+    transition: all 0.3s ease;
     border: none;
 }
 
@@ -167,6 +167,18 @@ background: var(--accent-blue);
 .btn-info {
     background: var(--info);
     color: white;
+}
+
+/* Botón pequeño: solo propiedades esenciales para ajustar al texto interior */
+.btn-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1;
+    white-space: nowrap;
+    min-width: 0;
 }
 
 /* Inputs Minimalistas */
