@@ -20,3 +20,16 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* Override: ensure table action buttons show their text and size correctly */
+.table td a.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1;
+  white-space: nowrap;
+  min-width: 0;
+  color: inherit;
+}
