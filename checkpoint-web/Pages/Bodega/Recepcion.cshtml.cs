@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace checkpoint_web.Pages.Bodega
 {
@@ -21,9 +22,10 @@ namespace checkpoint_web.Pages.Bodega
         private readonly IUbicacionService _ubicacionService;
         private readonly CheckpointDbContext _context;
         private readonly IAuditService _auditService;
-        public RecepcionModel(IProductoService productoService, IUbicacionService ubicacionService, CheckpointDbContext context, IAuditService auditService)
+        private readonly ILogger<RecepcionModel> _logger;
+        public RecepcionModel(IProductoService productoService, IUbicacionService ubicacionService, CheckpointDbContext context, IAuditService auditService, ILogger<RecepcionModel> logger)
         {
-            (_productoService, _ubicacionService, _context, _auditService) = (productoService, ubicacionService, context, auditService);
+            (_productoService, _ubicacionService, _context, _auditService, _logger) = (productoService, ubicacionService, context, auditService, logger);
         }
 
         [BindProperty]
@@ -74,7 +76,7 @@ namespace checkpoint_web.Pages.Bodega
 
             if (!ModelState.IsValid)
             {
-                var productos = await _productoService.GetAllAsync();
+                var productos = await _producto_service_fallback();
                 Productos = new SelectList(productos, "Id", "Nombre");
                 var ubicaciones = await _ubicacion_service_fallback();
                 Ubicaciones = new SelectList(ubicaciones.Select(u => new { u.Id, Codigo = $"{u.Sede?.Nombre} - {u.Codigo}" }), "Id", "Codigo");
@@ -145,8 +147,14 @@ namespace checkpoint_web.Pages.Bodega
                 // Log full exception via audit (if possible) or set error for UI
                 var userIdForLog = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";
                 try {
+                    // Audit service may ignore system/anonymous; log only if userId is valid
                     await _auditService.LogAsync(userIdForLog, "ErrorRecepcion", ex.ToString());
-                } catch {}
+                } catch (Exception auditEx) {
+                    _logger.LogError(auditEx, "Failed to record audit for recepcion error");
+                }
+
+                _logger.LogError(ex, "Error saving new recepcion lote {CodigoLote} by user {User}", CodigoLote, userIdForLog);
+
                 TempData["Error"] = "Error al registrar la recepción. Contacte al administrador.";
                 var productos = await _producto_service_fallback();
                 Productos = new SelectList(productos, "Id", "Nombre");
@@ -165,7 +173,7 @@ namespace checkpoint_web.Pages.Bodega
                 System.Text.Json.JsonSerializer.Serialize(new { lote, stock }));
 
             TempData["Message"] = $"Recepción registrada correctamente. Lote en CUARENTENA esperando revisión de Calidad.";
-            // Redirect to Lotes list so the user sees the created lote immediately
+            // Redirect to Lotes list so the user sees the created lote inmediatamente
             return RedirectToPage("/Bodega/Lotes");
         }
 
@@ -176,8 +184,9 @@ namespace checkpoint_web.Pages.Bodega
             {
                 return await _ubicacionService.GetAllAsync();
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogWarning(ex, "UbicacionService failed in fallback, using DbContext");
                 // fallback to context if service fails
                 return await Task.FromResult(_context.Ubicaciones.Include(u => u.Sede).AsNoTracking().ToList());
             }
@@ -189,8 +198,9 @@ namespace checkpoint_web.Pages.Bodega
             {
                 return await _productoService.GetAllAsync();
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogWarning(ex, "ProductoService failed in fallback, using DbContext");
                 return await Task.FromResult(_context.Productos.AsNoTracking().ToList());
             }
         }
@@ -201,8 +211,9 @@ namespace checkpoint_web.Pages.Bodega
             {
                 await _auditService.LogAsync(userId, action, details);
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogWarning(ex, "AuditService failed while recording recepcion");
                 // swallow to avoid failing the request
             }
         }
