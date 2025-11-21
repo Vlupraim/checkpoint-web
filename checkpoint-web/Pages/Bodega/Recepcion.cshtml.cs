@@ -7,6 +7,9 @@ using checkpoint_web.Services;
 using checkpoint_web.Data;
 using System;
 using System.Security.Claims;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace checkpoint_web.Pages.Bodega
 {
@@ -51,11 +54,49 @@ namespace checkpoint_web.Pages.Bodega
 
  public async Task<IActionResult> OnPostAsync()
  {
+ // Server-side validations for required selects / values
+ if (ProductoId == Guid.Empty)
+ {
+ ModelState.AddModelError(nameof(ProductoId), "Seleccione un producto.");
+ }
+ if (UbicacionId == Guid.Empty)
+ {
+ ModelState.AddModelError(nameof(UbicacionId), "Seleccione una ubicación.");
+ }
+ if (Cantidad <= 0)
+ {
+ ModelState.AddModelError(nameof(Cantidad), "La cantidad debe ser mayor que 0.");
+ }
+ if (string.IsNullOrWhiteSpace(CodigoLote))
+ {
+ ModelState.AddModelError(nameof(CodigoLote), "El código de lote es requerido.");
+ }
+
  if (!ModelState.IsValid)
  {
  var productos = await _productoService.GetAllAsync();
  Productos = new SelectList(productos, "Id", "Nombre");
- var ubicaciones = await _ubicacionService.GetAllAsync();
+ var ubicaciones = await _ubicacion_service_fallback();
+ Ubicaciones = new SelectList(ubicaciones.Select(u => new { u.Id, Codigo = $"{u.Sede?.Nombre} - {u.Codigo}" }), "Id", "Codigo");
+ return Page();
+ }
+
+ // Verify referenced entities exist to avoid FK violations
+ var productoExists = await _context.Productos.FindAsync(ProductoId) != null;
+ var ubicacionExists = await _context.Ubicaciones.FindAsync(UbicacionId) != null;
+ if (!productoExists)
+ {
+ ModelState.AddModelError(nameof(ProductoId), "Producto no encontrado.");
+ }
+ if (!ubicacionExists)
+ {
+ ModelState.AddModelError(nameof(UbicacionId), "Ubicación no encontrada.");
+ }
+ if (!ModelState.IsValid)
+ {
+ var productos = await _producto_service_fallback();
+ Productos = new SelectList(productos, "Id", "Nombre");
+ var ubicaciones = await _ubicacion_service_fallback();
  Ubicaciones = new SelectList(ubicaciones.Select(u => new { u.Id, Codigo = $"{u.Sede?.Nombre} - {u.Codigo}" }), "Id", "Codigo");
  return Page();
  }
@@ -72,7 +113,7 @@ namespace checkpoint_web.Pages.Bodega
  TempIngreso = TempIngreso,
  CantidadInicial = Cantidad,
  CantidadDisponible = Cantidad,
- Estado = EstadoLote.Cuarentena  // ? ESTADO INICIAL: Cuarentena (esperando revisión de Calidad)
+ Estado = EstadoLote.Cuarentena  // ESTADO INICIAL: Cuarentena (esperando revisión de Calidad)
  };
  _context.Lotes.Add(lote);
 
@@ -87,19 +128,74 @@ namespace checkpoint_web.Pages.Bodega
  };
  _context.Stocks.Add(stock);
 
+ try
+ {
  await _context.SaveChangesAsync();
+ }
+ catch (Exception ex)
+ {
+ // Log minimal info via audit (if possible) or set error for UI
+ var userIdForLog = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";
+ try {
+ await _auditService.LogAsync(userIdForLog, "ErrorRecepcion", ex.Message);
+ } catch {}
+ TempData["Error"] = "Error al registrar la recepción. Contacte al administrador.";
+ var productos = await _producto_service_fallback();
+ Productos = new SelectList(productos, "Id", "Nombre");
+ var ubicaciones = await _ubicacion_service_fallback();
+ Ubicaciones = new SelectList(ubicaciones.Select(u => new { u.Id, Codigo = $"{u.Sede?.Nombre} - {u.Codigo}" }), "Id", "Codigo");
+ return Page();
+ }
 
  // Use NameIdentifier claim for user id (consistent with other services)
  var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
  // Fallback to system if empty (AuditService ignores anonymous/system if configured)
  if (string.IsNullOrEmpty(userId)) userId = "system";
 
- await _auditService.LogAsync(userId,
+ await _audit_service_safe(userId,
  $"Recepcion: Lote={CodigoLote}, Cantidad={Cantidad}, Estado={EstadoLote.Cuarentena}",
  System.Text.Json.JsonSerializer.Serialize(new { lote, stock }));
 
  TempData["Message"] = $"Recepción registrada correctamente. Lote en CUARENTENA esperando revisión de Calidad.";
  return RedirectToPage();
+ }
+
+ // helper to load ubicaciones safely (in case service injection had casing issue earlier)
+ private async Task<IEnumerable<Ubicacion>> _ubicacion_service_fallback()
+ {
+ try
+ {
+ return await _ubicacionService.GetAllAsync();
+ }
+ catch
+ {
+ // fallback to context if service fails
+ return await Task.FromResult(_context.Ubicaciones.Include(u => u.Sede).AsNoTracking().ToList());
+ }
+ }
+
+ private async Task<IEnumerable<Producto>> _producto_service_fallback()
+ {
+ try
+ {
+ return await _productoService.GetAllAsync();
+ }
+ catch
+ {
+ return await Task.FromResult(_context.Productos.AsNoTracking().ToList());
+ }
+ }
+
+ private async Task _audit_service_safe(string userId, string action, string details)
+ {
+ try
+ {
+ await _auditService.LogAsync(userId, action, details);
+ }
+ catch
+ {
+ // swallow to avoid failing the request
+ }
  }
  }
 }
