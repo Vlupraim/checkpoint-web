@@ -169,6 +169,22 @@ background: var(--accent-blue);
     color: white;
 }
 
+/* Definición mínima para .btn-secondary (Bootstrap usa esta clase en el proyecto) */
+.btn-secondary {
+    background: #6c757d; /* gris estándar similar a Bootstrap */
+    color: #fff;
+}
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+/* Asegurar que los botones dentro de tablas respeten el tamaño de su contenido */
+.table td .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Botón pequeño: solo propiedades esenciales para ajustar al texto interior */
 .btn-sm {
     display: inline-flex;
