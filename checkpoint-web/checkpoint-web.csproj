@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Pages\Bodega\Movimientos\" />
     <Folder Include="ViewComponents\Notifications\" />
   </ItemGroup>
 
