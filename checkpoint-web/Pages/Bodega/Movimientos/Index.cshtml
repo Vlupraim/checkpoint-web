@@ -2,10 +2,10 @@
 @model checkpoint_web.Pages.Bodega.Movimientos.IndexModel
 @{
     ViewData["Title"] = "Movimientos de Inventario";
-    Layout = "/Pages/Shared/_Layout.cshtml";
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_BodegaLayout.cshtml";
 }
 
-<h2>?? Movimientos de Inventario</h2>
+<h2>Movimientos de Inventario</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -26,13 +26,13 @@
 <!-- Acciones Rápidas -->
 <div class="btn-group mb-4" role="group">
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#trasladoModal">
- ?? Nuevo Traslado
+ Nuevo Traslado
  </button>
     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#salidaModal">
-  ?? Nueva Salida
+  Nueva Salida
     </button>
     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#devolucionModal">
-?? Nueva Devolución
+ Nueva Devolución
     </button>
 </div>
 
@@ -108,7 +108,7 @@
       <div class="modal-content">
  <form method="post" asp-page-handler="Traslado">
 <div class="modal-header">
-<h5>?? Nuevo Traslado</h5>
+<h5>Nuevo Traslado</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
   </div>
 <div class="modal-body">
@@ -148,7 +148,7 @@
  <div class="modal-content">
   <form method="post" asp-page-handler="Salida">
 <div class="modal-header">
-<h5>?? Nueva Salida</h5>
+<h5>Nueva Salida</h5>
        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
  </div>
  <div class="modal-body">
@@ -190,7 +190,7 @@
    <div class="modal-content">
     <form method="post" asp-page-handler="Devolucion">
       <div class="modal-header">
-<h5>?? Nueva Devolución</h5>
+<h5>Nueva Devolución</h5>
  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
  </div>
       <div class="modal-body">

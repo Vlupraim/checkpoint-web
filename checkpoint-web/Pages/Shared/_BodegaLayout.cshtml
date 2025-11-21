@@ -99,24 +99,24 @@
          </a>
 
       <div class="sidebar-section-header">OPERACIONES</div>
-   <a class="nav-link" href="#" data-url="/Bodega/Recepcion" data-path="/Bodega/Recepcion">
-    <i class="bi bi-box-arrow-in-down"></i> Nueva Recepci&oacute;n
+   <a class="nav-link" href="#" data-url="/Bodega/Recepcion/Index" data-path="/Bodega/Recepcion">
+    <i class="bi bi-box-arrow-in-down"></i> Nueva Recepción
          </a>
-<a class="nav-link" href="#" data-url="/Bodega/Movimientos" data-path="/Bodega/Movimientos">
+<a class="nav-link" href="#" data-url="/Bodega/Movimientos/Index" data-path="/Bodega/Movimientos">
     <i class="bi bi-arrow-left-right"></i> Movimientos
    </a>
-       <a class="nav-link" href="#" data-url="/Bodega/Traslados" data-path="/Bodega/Traslados">
+       <a class="nav-link" href="#" data-url="/Bodega/Traslados/Index" data-path="/Bodega/Traslados">
      <i class="bi bi-truck"></i> Traslados
       </a>
-      <a class="nav-link" href="#" data-url="/Bodega/Ajustes" data-path="/Bodega/Ajustes">
+      <a class="nav-link" href="#" data-url="/Bodega/Ajustes/Index" data-path="/Bodega/Ajustes">
      <i class="bi bi-sliders"></i> Ajustes
     </a>
 
                <div class="sidebar-section-header">CONSULTAS</div>
-       <a class="nav-link" href="#" data-url="/Bodega/Stock" data-path="/Bodega/Stock">
+       <a class="nav-link" href="#" data-url="/Bodega/Stock/Index" data-path="/Bodega/Stock">
      <i class="bi bi-stack"></i> Stock Actual
   </a>
- <a class="nav-link" href="#" data-url="/Bodega/Lotes" data-path="/Bodega/Lotes">
+ <a class="nav-link" href="#" data-url="/Bodega/Lotes/Index" data-path="/Bodega/Lotes">
        <i class="bi bi-tags"></i> Lotes
  </a>
 
@@ -124,10 +124,10 @@
     <a class="nav-link" href="#" data-url="/Reportes/Index" data-path="/Reportes">
        <i class="bi bi-graph-up"></i> Dashboard Reportes
        </a>
-         <a class="nav-link" href="/Reportes/Movimientos" target="_blank">
+         <a class="nav-link" href="#" data-url="/Reportes/Movimientos" data-path="/Reportes/Movimientos">
   <i class="bi bi-list-check"></i> Historial Movimientos
        </a>
-   <a class="nav-link" href="/Reportes/Tareas" target="_blank">
+   <a class="nav-link" href="#" data-url="/Reportes/Tareas" data-path="/Reportes/Tareas">
   <i class="bi bi-clipboard-data"></i> Reporte Tareas
 </a>
  </div>
@@ -148,13 +148,15 @@
    (function () {
        const mapping = {
       '/Bodega/Dashboard': '/Bodega/Dashboard',
-  '/Bodega/Recepcion': '/Bodega/Recepcion',
-   '/Bodega/Movimientos': '/Bodega/Movimientos',
-       '/Bodega/Traslados': '/Bodega/Traslados',
-                '/Bodega/Ajustes': '/Bodega/Ajustes',
-          '/Bodega/Stock': '/Bodega/Stock',
-       '/Bodega/Lotes': '/Bodega/Lotes',
-     '/Reportes': '/Reportes/Index'
+  '/Bodega/Recepcion': '/Bodega/Recepcion/Index',
+   '/Bodega/Movimientos': '/Bodega/Movimientos/Index',
+       '/Bodega/Traslados': '/Bodega/Traslados/Index',
+                '/Bodega/Ajustes': '/Bodega/Ajustes/Index',
+          '/Bodega/Stock': '/Bodega/Stock/Index',
+       '/Bodega/Lotes': '/Bodega/Lotes/Index',
+     '/Reportes': '/Reportes/Index',
+     '/Reportes/Movimientos': '/Reportes/Movimientos',
+     '/Reportes/Tareas': '/Reportes/Tareas'
       };
 
   function loadUrl(url, replaceState) {
