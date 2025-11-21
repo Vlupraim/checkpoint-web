@@ -101,6 +101,14 @@ namespace checkpoint_web.Pages.Bodega
  return Page();
  }
 
+ // Convert dates to UTC (Postgres timestamptz requires UTC DateTime.Kind)
+ var fechaIngresoUtc = DateTime.SpecifyKind(FechaIngreso.Date, DateTimeKind.Utc);
+ DateTime? fechaVencimientoUtc = null;
+ if (FechaVencimiento.HasValue)
+ {
+ fechaVencimientoUtc = DateTime.SpecifyKind(FechaVencimiento.Value.Date, DateTimeKind.Utc);
+ }
+
  // CRÍTICO: Create Lote con estado inicial CUARENTENA
  // El lote NO puede usarse hasta que Calidad lo libere
  var lote = new Lote
@@ -108,8 +116,8 @@ namespace checkpoint_web.Pages.Bodega
  Id = Guid.NewGuid(),
  ProductoId = ProductoId,
  CodigoLote = CodigoLote,
- FechaIngreso = FechaIngreso,
- FechaVencimiento = FechaVencimiento,
+ FechaIngreso = fechaIngresoUtc,
+ FechaVencimiento = fechaVencimientoUtc,
  TempIngreso = TempIngreso,
  CantidadInicial = Cantidad,
  CantidadDisponible = Cantidad,
