@@ -29,7 +29,12 @@ namespace checkpoint_web.Services
      .Where(s => s.Cantidad > 0)
      .ToListAsync();
 
-       var stocksPorProducto = stocks
+            // Filter out stocks with null navigation properties before grouping
+            var validStocks = stocks
+                .Where(s => s.Lote != null && s.Lote.Producto != null)
+                .ToList();
+
+            var stocksPorProducto = validStocks
  .GroupBy(s => new { s.Lote!.Producto!.Id, s.Lote.Producto.Nombre })
   .Select(g => new StockProducto
         {
@@ -41,9 +46,13 @@ namespace checkpoint_web.Services
 })
    .ToList();
 
-var stocksPorUbicacion = stocks
-      .GroupBy(s => new { s.Ubicacion!.Id, s.Ubicacion.Codigo, s.Ubicacion.Sede!.Nombre })
-     .Select(g => new StockUbicacion
+var validStocksUbicacion = stocks
+                .Where(s => s.Ubicacion != null && s.Ubicacion.Sede != null)
+                .ToList();
+
+            var stocksPorUbicacion = validStocksUbicacion
+                .GroupBy(s => new { s.Ubicacion!.Id, s.Ubicacion.Codigo, s.Ubicacion.Sede!.Nombre })
+                .Select(g => new StockUbicacion
   {
  UbicacionId = g.Key.Id,
   UbicacionCodigo = g.Key.Codigo,

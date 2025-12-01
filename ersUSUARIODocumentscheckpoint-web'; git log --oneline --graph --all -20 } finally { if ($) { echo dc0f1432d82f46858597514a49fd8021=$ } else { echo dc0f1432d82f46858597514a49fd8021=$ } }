@@ -1,0 +1,6 @@
+  feature/cookies-sesion          [m 094c303 [[34morigin/feature/cookies-sesion[m] Configurar cookies de sesión para que expiren al cerrar navegador
+  feature/encoding-fixes          [m ed80fc1 [[34morigin/feature/encoding-fixes[m] Force production-style error handling: always use ExceptionHandler and status code pages (disable dev page by default)
+  fix/encoding-utf8               [m be4b33d [[34morigin/fix/encoding-utf8[m] Cleanup: remove duplicate Movimientos/Index and Ajustes/Index pages to avoid routing conflicts with SPA layout
+  hotfix/force-prod-error-handling[m f1a7d84 [[34morigin/hotfix/force-prod-error-handling[m] cambios de nuevo lolx2
+* [32mmain                            [m 2b78894 [[34morigin/main[m] cambios de nuevo lol
+  restaurado                      [m 7aaceec Corrección errores http500

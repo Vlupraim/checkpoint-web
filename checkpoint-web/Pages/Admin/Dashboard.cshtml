@@ -6,24 +6,24 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-<h2>Panel de AdministraciÃ³n</h2>
- <small class="text-muted">@DateTime.Now.ToString("dddd, dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-ES"))</small>
+    <h2>Panel de Administración</h2>
+    <small class="text-muted">@DateTime.Now.ToString("dddd, dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-ES"))</small>
 </div>
 
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
- <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>AtenciÃ³n:</strong> @Model.ErrorMessage
-     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Atención:</strong> @Model.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
     </div>
     
     <div class="card">
-  <div class="card-body text-center py-5">
-   <h3>Bienvenido al Sistema Checkpoint</h3>
-  <p class="lead">Login exitoso! EstÃ¡s autenticado como <strong>@User.Identity?.Name</strong></p>
- <hr class="my-4">
-  <p>El sistema estÃ¡ configurÃ¡ndose. Algunas funcionalidades estarÃ¡n disponibles pronto.</p>
-            <p class="text-muted">Utiliza el menÃº lateral para navegar por las diferentes secciones del sistema.</p>
+        <div class="card-body text-center py-5">
+            <h3>Bienvenido al Sistema Checkpoint</h3>
+            <p class="lead">Login exitoso! Estás autenticado como <strong>@User.Identity?.Name</strong></p>
+            <hr class="my-4">
+            <p>El sistema está configurándose. Algunas funcionalidades estarán disponibles pronto.</p>
+            <p class="text-muted">Utiliza el menú lateral para navegar por las diferentes secciones del sistema.</p>
         </div>
     </div>
 }
@@ -32,88 +32,87 @@
 {
     <!-- KPIs Principales -->
     <div class="row g-3 mb-4">
-    <div class="col-md-3">
-    <div class="kpi-card">
-        <div class="text-center">
-      <h6 class="text-muted mb-2">Movimientos Hoy</h6>
-  <h2 class="text-primary mb-0">@Model.Resumen.MovimientosDelDia</h2>
-    <small class="text-success">Ingresos: @Model.Resumen.Ingresos</small><br/>
-     <small class="text-danger">Salidas: @Model.Resumen.Salidas</small>
-     </div>
-            </div>
-        </div>
-   <div class="col-md-3">
-     <div class="kpi-card">
-<div class="text-center">
-  <h6 class="text-muted mb-2">Tareas Pendientes</h6>
-            <h2 class="text-warning mb-0">@Model.Resumen.TareasPendientes</h2>
-          <small>Completadas hoy: @Model.Resumen.TareasCompletadas</small>
-     </div>
-        </div>
-        </div>
-     <div class="col-md-3">
-   <div class="kpi-card">
-  <div class="text-center">
-         <h6 class="text-muted mb-2">Lotes en QC</h6>
- <h2 class="text-info mb-0">@Model.Resumen.LotesPendientesCalidad</h2>
-          <small>Pendientes de revisiÃ³n</small>
-     </div>
-        </div>
-    </div>
         <div class="col-md-3">
             <div class="kpi-card">
-        <div class="text-center">
-   <h6 class="text-muted mb-2">Ajustes Pendientes</h6>
-        <h2 class="text-danger mb-0">@Model.Resumen.AjustesPendientes</h2>
-        <small>Requieren aprobaciÃ³n</small>
-         </div>
-         </div>
-   </div>
+                <div class="text-center">
+                    <h6 class="text-muted mb-2">Movimientos Hoy</h6>
+                    <h2 class="text-primary mb-0">@Model.Resumen.MovimientosDelDia</h2>
+                    <small class="text-success">Ingresos: @Model.Resumen.Ingresos</small><br/>
+                    <small class="text-danger">Salidas: @Model.Resumen.Salidas</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="kpi-card">
+                <div class="text-center">
+                    <h6 class="text-muted mb-2">Tareas Pendientes</h6>
+                    <h2 class="text-warning mb-0">@Model.Resumen.TareasPendientes</h2>
+                    <small>Completadas hoy: @Model.Resumen.TareasCompletadas</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="kpi-card">
+                <div class="text-center">
+                    <h6 class="text-muted mb-2">Lotes en QC</h6>
+                    <h2 class="text-info mb-0">@Model.Resumen.LotesPendientesCalidad</h2>
+                    <small>Pendientes de revisión</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="kpi-card">
+                <div class="text-center">
+                    <h6 class="text-muted mb-2">Ajustes Pendientes</h6>
+                    <h2 class="text-danger mb-0">@Model.Resumen.AjustesPendientes</h2>
+                    <small>Requieren aprobación</small>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Acciones RÃ¡pidas -->
+    <!-- Acciones Rápidas -->
     <div class="row g-3 mb-4">
         <div class="col-md-12">
-         <div class="card">
-   <div class="card-header">
-     <h5 class="mb-0">Acciones RÃ¡pidas</h5>
-     </div>
-     <div class="card-body">
-          <div class="row g-2">
-          <div class="col-md-4">
-     <a href="/Admin/Tareas" class="btn btn-outline-primary w-100">
-   Gestionar Tareas
-     </a>
-      </div>
-
-      <div class="col-md-4">
-    <a href="/Reportes" class="btn btn-outline-success w-100">
-  Ver Reportes
-      </a>
-      </div>
-    <div class="col-md-4">
-  <a href="/Admin/AuditLogs" class="btn btn-outline-dark w-100">
- AuditorÃ­a
-   </a>
-       </div>
-</div>
-      </div>
-   </div>
- </div>
- </div>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Acciones Rápidas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <a href="/Admin/Tareas" class="btn btn-outline-primary w-100">
+                                Gestionar Tareas
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="/Reportes" class="btn btn-outline-success w-100">
+                                Ver Reportes
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="/Admin/AuditLogs" class="btn btn-outline-dark w-100">
+                                Auditoría
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 else
 {
     <div class="alert alert-warning">
-     <strong>Cargando datos...</strong> El sistema estÃ¡ generando las estadÃ­sticas.
+        <strong>Cargando datos...</strong> El sistema está generando las estadísticas.
     </div>
 }
 
 @section Scripts {
     <script>
         // Auto-refresh cada 5 minutos
-    setTimeout(function() {
-      location.reload();
+        setTimeout(function() {
+            location.reload();
         }, 300000);
     </script>
 }

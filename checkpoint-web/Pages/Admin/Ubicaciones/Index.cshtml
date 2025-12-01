@@ -6,31 +6,31 @@
 }
 <h1><i class="bi bi-geo-alt"></i> Ubicaciones</h1>
 <p><a class="btn btn-primary" asp-page="Create">
-    <i class="bi bi-plus-circle"></i> Crear nueva UbicaciÃ³n
+    <i class="bi bi-plus-circle"></i> Crear nueva Ubicación
 </a></p>
 <table class="table">
- <thead>
- <tr>
-     <th><i class="bi bi-building"></i> Sede</th>
-         <th><i class="bi bi-upc"></i> CÃ³digo</th>
-  <th><i class="bi bi-archive"></i> Tipo</th>
-   <th><i class="bi bi-rulers"></i> Capacidad</th>
-         <th>Acciones</th>
-    </tr>
- </thead>
- <tbody>
- @foreach (var u in Model.Ubicaciones)
- {
- <tr>
- <td>@u.Sede?.Nombre</td>
- <td>@u.Codigo</td>
- <td>@u.Tipo</td>
- <td>@u.Capacidad</td>
- <td>
- <a class="btn btn-sm btn-primary" asp-page="Edit" asp-route-id="@u.Id">Editar</a>
- <a class="btn btn-sm btn-danger" asp-page="Delete" asp-route-id="@u.Id">Eliminar</a>
- </td>
- </tr>
- }
- </tbody>
+    <thead>
+        <tr>
+            <th><i class="bi bi-building"></i> Sede</th>
+            <th><i class="bi bi-upc"></i> Código</th>
+            <th><i class="bi bi-archive"></i> Tipo</th>
+            <th><i class="bi bi-rulers"></i> Capacidad</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model.Ubicaciones)
+        {
+            <tr>
+                <td>@u.Sede?.Nombre</td>
+                <td>@u.Codigo</td>
+                <td>@u.Tipo</td>
+                <td>@u.Capacidad</td>
+                <td>
+                    <a class="btn btn-sm btn-primary" asp-page="Edit" asp-route-id="@u.Id">Editar</a>
+                    <a class="btn btn-sm btn-danger" asp-page="Delete" asp-route-id="@u.Id">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>
