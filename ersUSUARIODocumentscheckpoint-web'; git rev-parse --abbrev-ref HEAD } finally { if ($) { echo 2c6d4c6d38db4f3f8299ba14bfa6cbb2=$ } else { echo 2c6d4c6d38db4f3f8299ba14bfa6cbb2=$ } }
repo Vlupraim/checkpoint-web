@@ -1,0 +1,10 @@
+[33m2b78894[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m cambios de nuevo lol
+[33maf9296d[m correción recepcion
+[33mc1d3610[m correción utf otra vez
+[33med80fc1[m[33m ([m[1;31morigin/feature/encoding-fixes[m[33m, [m[1;32mfeature/encoding-fixes[m[33m)[m Force production-style error handling: always use ExceptionHandler and status code pages (disable dev page by default)
+[33mb7c6c2f[m Startup: restrict DeveloperExceptionPage by config flag; add status code pages and ensure utf-8 charset header
+[33m8b46d1a[m Bodega: usar entidades HTML en vista Recepción para asegurar títulos/pestañas correctamente codificados
+[33mad7a042[m Bodega: redirigir a lista de lotes tras crear recepción; Lotes page muestra registros y contadores
+[33m47b9a4c[m Bodega Lotes: cargar lotes desde BD y contar estados para dashboard
+[33mca59d58[m Bodega: convertir fechas a UTC antes de persistir para evitar error Npgsql timestamptz
+[33md591533[m Bodega: mostrar correctamente tildes y '°C' en Recepción; validar y manejar errores de guardado; mensajes al usuario
