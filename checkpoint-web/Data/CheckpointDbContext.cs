@@ -144,11 +144,11 @@ builder.Entity<Parametro>().HasIndex(p => p.Clave).IsUnique();
    builder.Entity<Movimiento>().Property(m => m.StockPosterior).HasPrecision(18,3);
 builder.Entity<Stock>().Property(s => s.Cantidad).HasPrecision(18,3);
 
-            // Map enum Estado de Lote a string para compatibilidad con esquema existente (varchar)
+            // Map enum Estado de Lote a integer (0,1,2,3,4) para compatibilidad con PostgreSQL
             builder.Entity<Lote>().Property(l => l.Estado)
-                   .HasConversion<string>()
-                   .HasColumnType("varchar(50)")
+                   .HasConversion<int>()
+                   .HasColumnType("integer")
                    .HasColumnName("Estado");
-   }
+        }
     }
 }
