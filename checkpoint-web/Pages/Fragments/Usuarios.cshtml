@@ -108,9 +108,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <form id="deleteForm" method="post" action="/Admin/Users/Delete" class="d-inline">
+                <form id="deleteForm" method="post" class="d-inline">
                     @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" id="userIdInput" value="" />
                     <button type="submit" class="btn btn-danger">
                         <i class="bi bi-trash"></i> Eliminar Usuario
                     </button>
@@ -131,7 +130,10 @@
             
             // Actualizar el contenido del modal
             document.getElementById('userEmailDisplay').textContent = userEmail;
-            document.getElementById('userIdInput').value = userId;
+            
+            // Actualizar la acción del formulario con el ID del usuario
+            var form = document.getElementById('deleteForm');
+            form.action = '/Admin/Users/Delete?id=' + encodeURIComponent(userId);
         });
     </script>
 }
