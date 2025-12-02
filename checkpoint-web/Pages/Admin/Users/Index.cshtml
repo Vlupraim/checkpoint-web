@@ -1,5 +1,5 @@
 ﻿@page
-@model checkpoint_web.Pages.Admin.Users.IndexModel
+@model checkpoint_web.Pages.Fragments.UsuariosModel
 @{
     ViewData["Title"] = "Usuarios";
     Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_DashboardLayout.cshtml";
@@ -37,7 +37,7 @@
 
 <div class="card">
     <div class="card-body">
-        @if (Model.Users.Any())
+        @if (Model.Usuarios.Any())
         {
             <div class="table-responsive">
                 <table class="table table-hover">
@@ -50,15 +50,15 @@
                         </tr>
                     </thead>
                     <tbody id="usersTableBody">
-                        @foreach (var user in Model.Users)
+                        @foreach (var usuario in Model.Usuarios)
                         {
-                            <tr id="user-row-@user.Id">
-                                <td>@user.Email</td>
-                                <td>@user.Nombre</td>
+                            <tr id="user-row-@usuario.Id">
+                                <td>@usuario.Email</td>
+                                <td>@usuario.Nombre</td>
                                 <td>
-                                    @if (Model.RolesForUser[user.Id].Any())
+                                    @if (usuario.Roles.Any())
                                     {
-                                        @foreach (var role in Model.RolesForUser[user.Id])
+                                        @foreach (var role in usuario.Roles)
                                         {
                                             <span class="badge bg-primary me-1">@role</span>
                                         }
@@ -70,14 +70,14 @@
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="/Admin/Users/EditRoles?id=@user.Id" class="btn btn-outline-primary">
+                                        <a href="/Admin/Users/EditRoles?id=@usuario.Id" class="btn btn-outline-primary">
                                             <i class="bi bi-pencil"></i> Editar Roles
                                         </a>
                                         <button type="button" class="btn btn-outline-danger btn-delete-user" 
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#deleteModal"
-                                                data-user-id="@user.Id"
-                                                data-user-email="@user.Email">
+                                                data-user-id="@usuario.Id"
+                                                data-user-email="@usuario.Email">
                                             <i class="bi bi-trash"></i> Eliminar
                                         </button>
                                     </div>
