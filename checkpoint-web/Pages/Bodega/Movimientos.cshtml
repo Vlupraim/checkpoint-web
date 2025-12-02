@@ -23,6 +23,19 @@
     </div>
 }
 
+@* DIAGNÓSTICO TEMPORAL *@
+@if (TempData["DiagnosticoLotes"] != null)
+{
+    <div class="alert alert-info alert-dismissible fade show">
+        <strong>@TempData["DiagnosticoLotes"]</strong>
+        @if (TempData["DiagnosticoLotesDetalle"] != null)
+        {
+            <br/>@TempData["DiagnosticoLotesDetalle"]
+        }
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <div class="row mb-3">
     <div class="col-md-12">
         <div class="card">

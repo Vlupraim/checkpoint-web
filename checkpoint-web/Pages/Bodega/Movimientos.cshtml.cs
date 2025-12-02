@@ -101,10 +101,13 @@ namespace checkpoint_web.Pages.Bodega
                     .ToListAsync();
 
                 _logger.LogInformation("[MOVIMIENTOS] Lotes encontrados: {Count}", lotesDisponibles.Count);
-                
-                foreach (var lote in lotesDisponibles)
+
+                // DIAGNÓSTICO: Mostrar en TempData para ver en la interfaz
+                TempData["DiagnosticoLotes"] = $"?? DEBUG: Se encontraron {lotesDisponibles.Count} lotes liberados en la base de datos";
+
+                foreach (var lote in lotesDisponibles.Take(3))
                 {
-                    _logger.LogDebug("[MOVIMIENTOS] Lote: {Codigo} - Estado: {Estado} - Cantidad: {Cantidad}", 
+                    _logger.LogDebug("[MOVIMIENTOS] Lote: {Codigo} - Estado: {Estado} - Cantidad: {Cantidad}",
                         lote.CodigoLote, lote.Estado, lote.CantidadDisponible);
                 }
 
@@ -113,12 +116,18 @@ namespace checkpoint_web.Pages.Bodega
                     _logger.LogWarning("[MOVIMIENTOS] No hay lotes liberados con stock disponible");
                     TempData["ErrorMessage"] = "?? No hay lotes liberados disponibles. Los lotes deben ser aprobados por Control de Calidad antes de poder usarlos.";
                 }
+                else
+                {
+                    // Mostrar primeros lotes en TempData para diagnóstico
+                    var primerosLotes = string.Join(", ", lotesDisponibles.Take(3).Select(l => $"{l.CodigoLote} ({l.Producto?.Nombre ?? "?"})"));
+                    TempData["DiagnosticoLotesDetalle"] = $"?? Primeros lotes: {primerosLotes}";
+                }
 
                 LotesDisponibles = new SelectList(
                     lotesDisponibles.Select(l => new
                     {
                         l.Id,
-                        Display = $"{l.CodigoLote} - {l.Producto?.Nombre} ({l.CantidadDisponible:N2} {l.Producto?.Unidad})"
+                        Display = $"{l.CodigoLote} - {l.Producto?.Nombre ?? "Sin nombre"} ({l.CantidadDisponible:N2} {l.Producto?.Unidad ?? "u"})"
                     }),
                     "Id",
                     "Display"
@@ -139,7 +148,7 @@ namespace checkpoint_web.Pages.Bodega
             catch (Exception ex)
             {
                 _logger.LogError(ex, "[MOVIMIENTOS] Error al cargar datos");
-                TempData["ErrorMessage"] = "Error al cargar datos: " + ex.Message;
+                TempData["ErrorMessage"] = $"? Error al cargar datos: {ex.Message}";
             }
         }
     }
