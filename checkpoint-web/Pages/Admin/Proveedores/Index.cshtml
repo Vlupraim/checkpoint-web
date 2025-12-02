@@ -1,162 +1,176 @@
 ﻿@page
 @model checkpoint_web.Pages.Admin.Proveedores.IndexModel
 @{
-    ViewData["Title"] = "GestiÃ³n de Proveedores";
+    ViewData["Title"] = "Gestión de Proveedores";
     Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_AdminLayout.cshtml";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
- <h2>GestiÃ³n de Proveedores</h2>
- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoProveedorModal">
- <i class="bi bi-plus-circle"></i> Nuevo Proveedor
- </button>
+    <h2>Gestión de Proveedores</h2>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoProveedorModal">
+        <i class="bi bi-plus-circle"></i> Nuevo Proveedor
+    </button>
 </div>
 
 @if (TempData["SuccessMessage"] != null)
 {
- <div class="alert alert-success alert-dismissible fade show">
- @TempData["SuccessMessage"]
- <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
- </div>
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
 }
 
 @if (TempData["ErrorMessage"] != null)
 {
- <div class="alert alert-danger alert-dismissible fade show">
- @TempData["ErrorMessage"]
- <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
- </div>
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
 }
 
-<!-- Estadisticas -->
+<!-- Estadísticas -->
 <div class="row g-3 mb-4">
- <div class="col-md-4">
- <div class="card bg-primary text-white">
- <div class="card-body"><h6>Total</h6><h3>@Model.Estadisticas.GetValueOrDefault("Total",0)</h3></div>
- </div>
- </div>
- <div class="col-md-4">
- <div class="card bg-success text-white">
- <div class="card-body"><h6>Activos</h6><h3>@Model.Estadisticas.GetValueOrDefault("Activos",0)</h3></div>
- </div>
- </div>
- <div class="col-md-4">
- <div class="card bg-info text-white">
- <div class="card-body"><h6>Homologados</h6><h3>@Model.Estadisticas.GetValueOrDefault("Homologados",0)</h3></div>
- </div>
- </div>
+    <div class="col-md-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body"><h6>Total</h6><h3>@Model.Estadisticas.GetValueOrDefault("Total",0)</h3></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body"><h6>Activos</h6><h3>@Model.Estadisticas.GetValueOrDefault("Activos",0)</h3></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-info text-white">
+            <div class="card-body"><h6>Homologados</h6><h3>@Model.Estadisticas.GetValueOrDefault("Homologados",0)</h3></div>
+        </div>
+    </div>
 </div>
 
 <div class="card">
- <div class="card-body">
- @if (Model.Proveedores.Any())
- {
- <div class="table-responsive">
- <table class="table table-hover">
- <thead>
- <tr>
- <th>Nombre</th>
- <th>CategorÃ­a</th>
- <th>Contacto</th>
- <th>CalificaciÃ³n</th>
- <th>Estado</th>
- <th>Acciones</th>
- </tr>
- </thead>
- <tbody>
-@foreach (var proveedor in Model.Proveedores)
- {
- <tr>
- <td><strong>@proveedor.Nombre</strong></td>
- <td>@(proveedor.Categoria ?? "-")</td>
- <td>
- @if (!string.IsNullOrEmpty(proveedor.PersonaContacto))
- {<div>@proveedor.PersonaContacto</div>}
- @if (!string.IsNullOrEmpty(proveedor.Email))
- {<small class="text-muted">@proveedor.Email</small>}
- </td>
- <td>
- @if (proveedor.Calificacion.HasValue)
- {
-@for (int i =1; i <=5; i++)
- {
- <i class="bi bi-star@(i <= proveedor.Calificacion.Value ? "-fill text-warning" : "")"></i>
- }
- }
- else
- {<span class="text-muted">Sin calificar</span>}
- </td>
- <td><span class="badge @(proveedor.Estado == "Activo" ? "bg-success" : "bg-secondary")">@proveedor.Estado</span></td>
- <td>
- <div class="btn-group btn-group-sm">
- <a asp-page="Edit" asp-route-id="@proveedor.Id" class="btn btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
- <form method="post" asp-page-handler="Delete" asp-route-id="@proveedor.Id" class="d-inline" onsubmit="return confirm('Â¿Eliminar?');">
- @Html.AntiForgeryToken()
- <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> Eliminar</button>
- </form>
- </div>
- </td>
- </tr>
- }
- </tbody>
- </table>
- </div>
- }
- else {<div class="alert alert-info">No hay proveedores registrados.</div>}
- </div>
+    <div class="card-body">
+        @if (Model.Proveedores.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>NOMBRE</th>
+                            <th>CATEGORÍA</th>
+                            <th>CONTACTO</th>
+                            <th>CALIFICACIÓN</th>
+                            <th>ESTADO</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var proveedor in Model.Proveedores)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@proveedor.Nombre</strong>
+                                    @if (!string.IsNullOrEmpty(proveedor.NombreComercial))
+                                    {
+                                        <br /><small class="text-muted">@proveedor.NombreComercial</small>
+                                    }
+                                </td>
+                                <td>@(proveedor.Categoria ?? "-")</td>
+                                <td>
+                                    @proveedor.PersonaContacto
+                                    @if (!string.IsNullOrEmpty(proveedor.Email))
+                                    {
+                                        <br /><small class="text-muted">@proveedor.Email</small>
+                                    }
+                                </td>
+                                <td>
+                                    @if (proveedor.Calificacion.HasValue)
+                                    {
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <i class="bi bi-star@(i <= proveedor.Calificacion.Value ? "-fill text-warning" : "")"></i>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Sin calificar</span>
+                                    }
+                                </td>
+                                <td><span class="badge @(proveedor.Estado == "Activo" ? "bg-success" : "bg-secondary")">@proveedor.Estado</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-page="Edit" asp-route-id="@proveedor.Id" class="btn btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
+                                        <form method="post" asp-page-handler="Delete" asp-route-id="@proveedor.Id" class="d-inline"
+                                              onsubmit="return confirm('¿Está seguro de eliminar este proveedor?\n\nEsta acción no se puede deshacer.');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> Eliminar</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">No hay proveedores registrados.</div>
+        }
+    </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal Nuevo Proveedor -->
 <div class="modal fade" id="nuevoProveedorModal" tabindex="-1">
- <div class="modal-dialog modal-lg">
- <div class="modal-content">
- <form method="post">
- @Html.AntiForgeryToken()
- <div class="modal-header">
- <h5 class="modal-title">Nuevo Proveedor</h5>
- <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
- </div>
- <div class="modal-body">
- <div class="row">
- <div class="col-md-6 mb-3">
- <label asp-for="NuevoProveedor.Nombre"></label>
- <input asp-for="NuevoProveedor.Nombre" class="form-control" required />
- </div>
- <div class="col-md-6 mb-3">
- <label asp-for="NuevoProveedor.Categoria"></label>
- <select asp-for="NuevoProveedor.Categoria" class="form-select">
- <option value="">-- Seleccione --</option>
- <option value="MaterialPrima">Materia Prima</option>
- <option value="Embalaje">Embalaje</option>
- <option value="Servicios">Servicios</option>
- <option value="Logistica">LogÃ­stica</option>
- </select>
- </div>
- </div>
- <div class="row">
- <div class="col-md-6 mb-3">
- <label asp-for="NuevoProveedor.IdentificadorFiscal"></label>
- <input asp-for="NuevoProveedor.IdentificadorFiscal" class="form-control" />
- </div>
- <div class="col-md-6 mb-3">
- <label asp-for="NuevoProveedor.Telefono"></label>
- <input asp-for="NuevoProveedor.Telefono" class="form-control" />
- </div>
- </div>
- <div class="mb-3">
-<label asp-for="NuevoProveedor.Email"></label>
- <input asp-for="NuevoProveedor.Email" type="email" class="form-control" />
- </div>
- <div class="mb-3">
- <label asp-for="NuevoProveedor.PersonaContacto"></label>
- <input asp-for="NuevoProveedor.PersonaContacto" class="form-control" />
- </div>
- </div>
- <div class="modal-footer">
- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
- <button type="submit" class="btn btn-primary">Guardar</button>
- </div>
-</form>
- </div>
- </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title">Nuevo Proveedor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="NuevoProveedor.Nombre">Nombre *</label>
+                            <input asp-for="NuevoProveedor.Nombre" class="form-control" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="NuevoProveedor.Categoria">Categoría</label>
+                            <select asp-for="NuevoProveedor.Categoria" class="form-select">
+                                <option value="">-- Seleccione --</option>
+                                <option value="MateriaPrima">Materia Prima</option>
+                                <option value="Perecibles">Perecibles</option>
+                                <option value="Embalaje">Embalaje</option>
+                                <option value="Servicios">Servicios</option>
+                                <option value="Logística">Logística</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="NuevoProveedor.IdentificadorFiscal">RUT/NIT</label>
+                            <input asp-for="NuevoProveedor.IdentificadorFiscal" class="form-control" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="NuevoProveedor.Telefono">Teléfono</label>
+                            <input asp-for="NuevoProveedor.Telefono" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NuevoProveedor.Email">Email</label>
+                        <input asp-for="NuevoProveedor.Email" type="email" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NuevoProveedor.PersonaContacto">Persona de Contacto</label>
+                        <input asp-for="NuevoProveedor.PersonaContacto" class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Proveedor</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>

@@ -13,17 +13,17 @@
 }
 
 <div class="alert alert-danger">
-    <h5>Â¿EstÃ¡ seguro que desea eliminar esta tarea?</h5>
-    <p>Esta acciÃ³n no se puede deshacer.</p>
+    <h5>¿Está seguro que desea eliminar esta tarea?</h5>
+    <p>Esta acción no se puede deshacer.</p>
 </div>
 
 <div class="card">
     <div class="card-body">
         <dl class="row">
-            <dt class="col-sm-3">TÃ­tulo</dt>
+            <dt class="col-sm-3">Título</dt>
             <dd class="col-sm-9">@Model.Tarea.Titulo</dd>
 
-            <dt class="col-sm-3">DescripciÃ³n</dt>
+            <dt class="col-sm-3">Descripción</dt>
             <dd class="col-sm-9">@Model.Tarea.Descripcion</dd>
 
             <dt class="col-sm-3">Estado</dt>
@@ -38,7 +38,7 @@
             <input type="hidden" asp-for="Tarea.Id" />
             <div class="d-flex justify-content-between">
                 <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
-                <button type="submit" class="btn btn-danger">Confirmar EliminaciÃ³n</button>
+                <button type="submit" class="btn btn-danger">Confirmar Eliminación</button>
             </div>
         </form>
     </div>

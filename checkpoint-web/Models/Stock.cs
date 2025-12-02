@@ -33,8 +33,12 @@ namespace checkpoint_web.Models
 
  public void Decrementar(decimal cantidad)
  {
+ // CRÍTICO: Validar que hay suficiente stock ANTES de decrementar
+ if (cantidad > Cantidad)
+ throw new InvalidOperationException(
+ $"Stock insuficiente en ubicación. Disponible: {Cantidad:N2} {Unidad}, Solicitado: {cantidad:N2} {Unidad}");
+
  Cantidad -= cantidad;
- if (Cantidad <0) Cantidad =0;
  ActualizadoEn = DateTime.UtcNow;
  }
  }

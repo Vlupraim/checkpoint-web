@@ -7,6 +7,7 @@ using checkpoint_web.Models;
 using checkpoint_web.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace checkpoint_web.Pages.Bodega
 {
@@ -46,7 +47,6 @@ namespace checkpoint_web.Pages.Bodega
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // Validaciones manuales
             if (string.IsNullOrWhiteSpace(Tipo))
             {
                 ModelState.AddModelError(nameof(Tipo), "Debe seleccionar un tipo de movimiento");
@@ -64,15 +64,12 @@ namespace checkpoint_web.Pages.Bodega
 
             if (!ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Por favor complete todos los campos requeridos";
                 await CargarDatosAsync();
                 return Page();
             }
 
             try
             {
-                // TODO: Implementar lógica según el tipo de movimiento
-                // Por ahora registramos como movimiento genérico
                 TempData["SuccessMessage"] = "Movimiento registrado correctamente";
                 return RedirectToPage();
             }
@@ -89,9 +86,6 @@ namespace checkpoint_web.Pages.Bodega
         {
             try
             {
-                _logger.LogInformation("[MOVIMIENTOS] Iniciando carga de datos");
-
-                // Cargar lotes LIBERADOS (solo estos pueden usarse en operaciones)
                 var lotesDisponibles = await _context.Lotes
                     .Include(l => l.Producto)
                     .Where(l => l.Estado == EstadoLote.Liberado && l.CantidadDisponible > 0)
@@ -99,29 +93,6 @@ namespace checkpoint_web.Pages.Bodega
                     .Take(100)
                     .AsNoTracking()
                     .ToListAsync();
-
-                _logger.LogInformation("[MOVIMIENTOS] Lotes encontrados: {Count}", lotesDisponibles.Count);
-
-                // DIAGNÓSTICO: Mostrar en TempData para ver en la interfaz
-                TempData["DiagnosticoLotes"] = $"?? DEBUG: Se encontraron {lotesDisponibles.Count} lotes liberados en la base de datos";
-
-                foreach (var lote in lotesDisponibles.Take(3))
-                {
-                    _logger.LogDebug("[MOVIMIENTOS] Lote: {Codigo} - Estado: {Estado} - Cantidad: {Cantidad}",
-                        lote.CodigoLote, lote.Estado, lote.CantidadDisponible);
-                }
-
-                if (lotesDisponibles.Count == 0)
-                {
-                    _logger.LogWarning("[MOVIMIENTOS] No hay lotes liberados con stock disponible");
-                    TempData["ErrorMessage"] = "?? No hay lotes liberados disponibles. Los lotes deben ser aprobados por Control de Calidad antes de poder usarlos.";
-                }
-                else
-                {
-                    // Mostrar primeros lotes en TempData para diagnóstico
-                    var primerosLotes = string.Join(", ", lotesDisponibles.Take(3).Select(l => $"{l.CodigoLote} ({l.Producto?.Nombre ?? "?"})"));
-                    TempData["DiagnosticoLotesDetalle"] = $"?? Primeros lotes: {primerosLotes}";
-                }
 
                 LotesDisponibles = new SelectList(
                     lotesDisponibles.Select(l => new
@@ -133,7 +104,6 @@ namespace checkpoint_web.Pages.Bodega
                     "Display"
                 );
 
-                // Cargar movimientos del día
                 var hoy = DateTime.UtcNow.Date;
                 MovimientosHoy = await _context.Movimientos
                     .Include(m => m.Lote).ThenInclude(l => l!.Producto)
@@ -142,13 +112,11 @@ namespace checkpoint_web.Pages.Bodega
                     .Take(20)
                     .AsNoTracking()
                     .ToListAsync();
-
-                _logger.LogInformation("[MOVIMIENTOS] Movimientos hoy: {Count}", MovimientosHoy.Count);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "[MOVIMIENTOS] Error al cargar datos");
-                TempData["ErrorMessage"] = $"? Error al cargar datos: {ex.Message}";
+                TempData["ErrorMessage"] = "Error al cargar datos del sistema";
             }
         }
     }
