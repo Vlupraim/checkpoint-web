@@ -6,6 +6,7 @@ using checkpoint_web.Data;
 using checkpoint_web.Models;
 using checkpoint_web.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace checkpoint_web.Pages.Bodega
 {
@@ -14,11 +15,13 @@ namespace checkpoint_web.Pages.Bodega
     {
         private readonly CheckpointDbContext _context;
         private readonly IMovimientoService _movimientoService;
+        private readonly ILogger<MovimientosModel> _logger;
 
-        public MovimientosModel(CheckpointDbContext context, IMovimientoService movimientoService)
+        public MovimientosModel(CheckpointDbContext context, IMovimientoService movimientoService, ILogger<MovimientosModel> logger)
         {
             _context = context;
             _movimientoService = movimientoService;
+            _logger = logger;
         }
 
         public SelectList LotesDisponibles { get; set; } = new SelectList(new List<Lote>(), "Id", "CodigoLote");
@@ -75,6 +78,7 @@ namespace checkpoint_web.Pages.Bodega
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "[MOVIMIENTOS] Error al crear movimiento");
                 TempData["ErrorMessage"] = $"Error: {ex.Message}";
                 await CargarDatosAsync();
                 return Page();
@@ -83,34 +87,60 @@ namespace checkpoint_web.Pages.Bodega
 
         private async Task CargarDatosAsync()
         {
-            // Cargar lotes LIBERADOS (solo estos pueden usarse en operaciones)
-            var lotesDisponibles = await _context.Lotes
-                .Include(l => l.Producto)
-                .Where(l => l.Estado == EstadoLote.Liberado && l.CantidadDisponible > 0)
-                .OrderByDescending(l => l.FechaIngreso)
-                .Take(100)
-                .AsNoTracking()
-                .ToListAsync();
+            try
+            {
+                _logger.LogInformation("[MOVIMIENTOS] Iniciando carga de datos");
 
-            LotesDisponibles = new SelectList(
-                lotesDisponibles.Select(l => new
+                // Cargar lotes LIBERADOS (solo estos pueden usarse en operaciones)
+                var lotesDisponibles = await _context.Lotes
+                    .Include(l => l.Producto)
+                    .Where(l => l.Estado == EstadoLote.Liberado && l.CantidadDisponible > 0)
+                    .OrderByDescending(l => l.FechaIngreso)
+                    .Take(100)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                _logger.LogInformation("[MOVIMIENTOS] Lotes encontrados: {Count}", lotesDisponibles.Count);
+                
+                foreach (var lote in lotesDisponibles)
                 {
-                    l.Id,
-                    Display = $"{l.CodigoLote} - {l.Producto?.Nombre} ({l.CantidadDisponible:N2} {l.Producto?.Unidad})"
-                }),
-                "Id",
-                "Display"
-            );
+                    _logger.LogDebug("[MOVIMIENTOS] Lote: {Codigo} - Estado: {Estado} - Cantidad: {Cantidad}", 
+                        lote.CodigoLote, lote.Estado, lote.CantidadDisponible);
+                }
 
-            // Cargar movimientos del día
-            var hoy = DateTime.UtcNow.Date;
-            MovimientosHoy = await _context.Movimientos
-                .Include(m => m.Lote).ThenInclude(l => l!.Producto)
-                .Where(m => m.Fecha >= hoy && m.Fecha < hoy.AddDays(1))
-                .OrderByDescending(m => m.Fecha)
-                .Take(20)
-                .AsNoTracking()
-                .ToListAsync();
+                if (lotesDisponibles.Count == 0)
+                {
+                    _logger.LogWarning("[MOVIMIENTOS] No hay lotes liberados con stock disponible");
+                    TempData["ErrorMessage"] = "?? No hay lotes liberados disponibles. Los lotes deben ser aprobados por Control de Calidad antes de poder usarlos.";
+                }
+
+                LotesDisponibles = new SelectList(
+                    lotesDisponibles.Select(l => new
+                    {
+                        l.Id,
+                        Display = $"{l.CodigoLote} - {l.Producto?.Nombre} ({l.CantidadDisponible:N2} {l.Producto?.Unidad})"
+                    }),
+                    "Id",
+                    "Display"
+                );
+
+                // Cargar movimientos del día
+                var hoy = DateTime.UtcNow.Date;
+                MovimientosHoy = await _context.Movimientos
+                    .Include(m => m.Lote).ThenInclude(l => l!.Producto)
+                    .Where(m => m.Fecha >= hoy && m.Fecha < hoy.AddDays(1))
+                    .OrderByDescending(m => m.Fecha)
+                    .Take(20)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                _logger.LogInformation("[MOVIMIENTOS] Movimientos hoy: {Count}", MovimientosHoy.Count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[MOVIMIENTOS] Error al cargar datos");
+                TempData["ErrorMessage"] = "Error al cargar datos: " + ex.Message;
+            }
         }
     }
 }

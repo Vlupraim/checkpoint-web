@@ -6,6 +6,7 @@ using checkpoint_web.Data;
 using checkpoint_web.Models;
 using checkpoint_web.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace checkpoint_web.Pages.Bodega
 {
@@ -14,11 +15,13 @@ namespace checkpoint_web.Pages.Bodega
     {
         private readonly CheckpointDbContext _context;
         private readonly IMovimientoService _movimientoService;
+        private readonly ILogger<TrasladosModel> _logger;
 
-        public TrasladosModel(CheckpointDbContext context, IMovimientoService movimientoService)
+        public TrasladosModel(CheckpointDbContext context, IMovimientoService movimientoService, ILogger<TrasladosModel> logger)
         {
             _context = context;
             _movimientoService = movimientoService;
+            _logger = logger;
         }
 
         public SelectList LotesDisponibles { get; set; } = new SelectList(new List<Lote>(), "Id", "CodigoLote");
@@ -95,6 +98,7 @@ namespace checkpoint_web.Pages.Bodega
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "[TRASLADOS] Error al crear traslado");
                 TempData["ErrorMessage"] = $"Error: {ex.Message}";
                 await CargarDatosAsync();
                 return Page();
@@ -103,51 +107,73 @@ namespace checkpoint_web.Pages.Bodega
 
         private async Task CargarDatosAsync()
         {
-            // Cargar lotes LIBERADOS
-            var lotesDisponibles = await _context.Lotes
-                .Include(l => l.Producto)
-                .Where(l => l.Estado == EstadoLote.Liberado && l.CantidadDisponible > 0)
-                .OrderByDescending(l => l.FechaIngreso)
-                .AsNoTracking()
-                .ToListAsync();
-
-            LotesDisponibles = new SelectList(
-                lotesDisponibles.Select(l => new
-                {
-                    l.Id,
-                    Display = $"{l.CodigoLote} - {l.Producto?.Nombre}"
-                }),
-                "Id",
-                "Display"
-            );
-
-            // Cargar ubicaciones
-            var ubicaciones = await _context.Ubicaciones
-                .Include(u => u.Sede)
-                .OrderBy(u => u.Sede!.Nombre)
-                .ThenBy(u => u.Codigo)
-                .AsNoTracking()
-                .ToListAsync();
-
-            var ubicacionesItems = ubicaciones.Select(u => new
+            try
             {
-                u.Id,
-                Display = $"{u.Sede?.Nombre} - {u.Codigo}"
-            }).ToList();
+                _logger.LogInformation("[TRASLADOS] Iniciando carga de datos");
 
-            UbicacionesOrigen = new SelectList(ubicacionesItems, "Id", "Display");
-            UbicacionesDestino = new SelectList(ubicacionesItems, "Id", "Display");
+                // Cargar lotes LIBERADOS
+                var lotesDisponibles = await _context.Lotes
+                    .Include(l => l.Producto)
+                    .Where(l => l.Estado == EstadoLote.Liberado && l.CantidadDisponible > 0)
+                    .OrderByDescending(l => l.FechaIngreso)
+                    .AsNoTracking()
+                    .ToListAsync();
 
-            // Cargar traslados recientes
-            TrasladosRecientes = await _context.Movimientos
-                .Include(m => m.Lote).ThenInclude(l => l!.Producto)
-                .Include(m => m.OrigenUbicacion).ThenInclude(u => u!.Sede)
-                .Include(m => m.DestinoUbicacion).ThenInclude(u => u!.Sede)
-                .Where(m => m.Tipo == "Traslado")
-                .OrderByDescending(m => m.Fecha)
-                .Take(20)
-                .AsNoTracking()
-                .ToListAsync();
+                _logger.LogInformation("[TRASLADOS] Lotes encontrados: {Count}", lotesDisponibles.Count);
+
+                if (lotesDisponibles.Count == 0)
+                {
+                    _logger.LogWarning("[TRASLADOS] No hay lotes liberados con stock disponible");
+                    TempData["ErrorMessage"] = "?? No hay lotes liberados disponibles. Los lotes deben ser aprobados por Control de Calidad antes de poder usarlos.";
+                }
+
+                LotesDisponibles = new SelectList(
+                    lotesDisponibles.Select(l => new
+                    {
+                        l.Id,
+                        Display = $"{l.CodigoLote} - {l.Producto?.Nombre} ({l.CantidadDisponible:N2})"
+                    }),
+                    "Id",
+                    "Display"
+                );
+
+                // Cargar ubicaciones
+                var ubicaciones = await _context.Ubicaciones
+                    .Include(u => u.Sede)
+                    .OrderBy(u => u.Sede!.Nombre)
+                    .ThenBy(u => u.Codigo)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                _logger.LogInformation("[TRASLADOS] Ubicaciones encontradas: {Count}", ubicaciones.Count);
+
+                var ubicacionesItems = ubicaciones.Select(u => new
+                {
+                    u.Id,
+                    Display = $"{u.Sede?.Nombre} - {u.Codigo}"
+                }).ToList();
+
+                UbicacionesOrigen = new SelectList(ubicacionesItems, "Id", "Display");
+                UbicacionesDestino = new SelectList(ubicacionesItems, "Id", "Display");
+
+                // Cargar traslados recientes
+                TrasladosRecientes = await _context.Movimientos
+                    .Include(m => m.Lote).ThenInclude(l => l!.Producto)
+                    .Include(m => m.OrigenUbicacion).ThenInclude(u => u!.Sede)
+                    .Include(m => m.DestinoUbicacion).ThenInclude(u => u!.Sede)
+                    .Where(m => m.Tipo == "Traslado")
+                    .OrderByDescending(m => m.Fecha)
+                    .Take(20)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                _logger.LogInformation("[TRASLADOS] Traslados recientes: {Count}", TrasladosRecientes.Count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[TRASLADOS] Error al cargar datos");
+                TempData["ErrorMessage"] = "Error al cargar datos: " + ex.Message;
+            }
         }
     }
 }
