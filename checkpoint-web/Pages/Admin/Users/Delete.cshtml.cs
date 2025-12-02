@@ -20,10 +20,10 @@ namespace checkpoint_web.Pages.Admin.Users
             _auditService = auditService;
         }
 
-        // GET request redirects to Usuarios page
+        // GET request redirects to Index page
         public IActionResult OnGet(string? id)
         {
-            return RedirectToPage("/Fragments/Usuarios");
+            return RedirectToPage("Index");
         }
 
         // POST request to delete user
@@ -38,14 +38,14 @@ namespace checkpoint_web.Pages.Admin.Users
             if (string.IsNullOrEmpty(id))
             {
                 TempData["ErrorMessage"] = "ID de usuario no válido";
-                return RedirectToPage("/Fragments/Usuarios");
+                return RedirectToPage("Index");
             }
 
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
                 TempData["ErrorMessage"] = "Usuario no encontrado";
-                return RedirectToPage("/Fragments/Usuarios");
+                return RedirectToPage("Index");
             }
 
             // No permitir eliminarse a sí mismo
@@ -53,7 +53,7 @@ namespace checkpoint_web.Pages.Admin.Users
             if (currentUserId == id)
             {
                 TempData["ErrorMessage"] = "No puedes eliminar tu propio usuario";
-                return RedirectToPage("/Fragments/Usuarios");
+                return RedirectToPage("Index");
             }
 
             var result = await _userManager.DeleteAsync(user);
@@ -75,7 +75,7 @@ namespace checkpoint_web.Pages.Admin.Users
                 TempData["ErrorMessage"] = $"Error al eliminar usuario: {string.Join(", ", result.Errors.Select(e => e.Description))}";
             }
 
-            return RedirectToPage("/Fragments/Usuarios");
+            return RedirectToPage("Index");
         }
     }
 }
