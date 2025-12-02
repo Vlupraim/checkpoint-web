@@ -40,7 +40,7 @@ namespace checkpoint_web.Models
         [StringLength(20)]
     public string Estado { get; set; } = "Borrador";
 
-   public DateTime FechaCreacion { get; set; } = DateTime.Now;
+   public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;  // CORREGIDO: Usar UTC
 
         public DateTime? FechaAprobacion { get; set; }
 

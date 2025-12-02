@@ -202,7 +202,7 @@ var movimiento = await _context.Movimientos.FindAsync(movimientoId);
 
  movimiento.Estado = "Aprobado";
 movimiento.AprobadoPor = aprobadoPor;
-movimiento.FechaAprobacion = DateTime.Now;
+movimiento.FechaAprobacion = DateTime.UtcNow;
 
 // Aplicar cambio en stock
        var ubicacionId = movimiento.DestinoUbicacionId ?? movimiento.OrigenUbicacionId!.Value;
@@ -216,7 +216,7 @@ await ActualizarStockAsync(movimiento.LoteId, ubicacionId, movimiento.Cantidad, 
 
    public async Task<Dictionary<string, object>> GetEstadisticasAsync()
  {
-       var hoy = DateTime.Today;
+       var hoy = DateTime.UtcNow.Date;  // CORREGIDO: Usar UTC
   return new Dictionary<string, object>
     {
   ["TotalMovimientos"] = await _context.Movimientos.CountAsync(),
@@ -261,7 +261,7 @@ await ActualizarStockAsync(movimiento.LoteId, ubicacionId, movimiento.Cantidad, 
     stock.Decrementar(cantidad);
    }
 
-      stock.ActualizadoEn = DateTime.Now;
+      stock.ActualizadoEn = DateTime.UtcNow;  // CORREGIDO: Usar UTC
  }
     }
 }

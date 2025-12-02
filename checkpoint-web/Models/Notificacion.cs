@@ -57,7 +57,7 @@ namespace checkpoint_web.Models
         [StringLength(50)]
       public string? ReferenciaId { get; set; }
 
-        public DateTime FechaCreacion { get; set; } = DateTime.Now;
+        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;  // CORREGIDO: Usar UTC
 
         public DateTime? FechaLeida { get; set; }
 

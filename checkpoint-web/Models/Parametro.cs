@@ -55,7 +55,7 @@ namespace checkpoint_web.Models
   /// </summary>
  public bool EsEditable { get; set; } = true;
 
- public DateTime FechaCreacion { get; set; } = DateTime.Now;
+ public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;  // CORREGIDO: Usar UTC
 
     public DateTime? UltimaModificacion { get; set; }
 
