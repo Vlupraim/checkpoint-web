@@ -11,8 +11,6 @@
     </a>
 </div>
 
-@Html.AntiForgeryToken()
-
 @if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show">
@@ -67,9 +65,13 @@
                                         <a href="/Admin/Users/EditRoles?id=@usuario.Id" class="btn btn-outline-primary">
                                             <i class="bi bi-pencil"></i> Editar Roles
                                         </a>
-                                        <button type="button" class="btn btn-outline-danger user-delete" data-id="@usuario.Id" data-email="@usuario.Email">
-                                            <i class="bi bi-trash"></i> Eliminar
-                                        </button>
+                                        <form method="post" action="/Admin/Users/Delete?id=@usuario.Id" class="d-inline" 
+                                              onsubmit="return confirm('¿Está seguro de eliminar el usuario @usuario.Email?\n\nEsta acción no se puede deshacer.');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                <i class="bi bi-trash"></i> Eliminar
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
@@ -86,37 +88,3 @@
         }
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        document.addEventListener('click', function(e) {
-            var btn = e.target.closest('.user-delete');
-            if (!btn) return;
-            
-            var id = btn.getAttribute('data-id');
-            var email = btn.getAttribute('data-email');
-            
-            if (!confirm('¿Está seguro de eliminar el usuario ' + email + '?\n\nEsta acción no se puede deshacer.')) return;
-
-            var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-            
-            fetch('/Admin/Users/Delete?id=' + encodeURIComponent(id), {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'RequestVerificationToken': token || ''
-                }
-            })
-            .then(function(resp) {
-                if (resp.ok) {
-                    location.reload();
-                } else {
-                    alert('Error al eliminar usuario');
-                }
-            })
-            .catch(function() {
-                alert('Error al eliminar usuario');
-            });
-        });
-    </script>
-}
