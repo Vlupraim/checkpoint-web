@@ -30,30 +30,35 @@
                 <h5 class="mb-0">Registrar Nuevo Movimiento</h5>
             </div>
             <div class="card-body">
+                <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+                
                 <form method="post">
                     <div class="row">
                         <div class="col-md-3">
-                            <label class="form-label">Tipo de Movimiento</label>
+                            <label class="form-label text-white">Tipo de Movimiento</label>
                             <select asp-for="Tipo" class="form-select" required>
                                 <option value="">Seleccionar...</option>
                                 <option value="Entrada">Entrada</option>
                                 <option value="Salida">Salida</option>
                                 <option value="Ajuste">Ajuste</option>
                             </select>
+                            <span asp-validation-for="Tipo" class="text-danger"></span>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Lote</label>
+                            <label class="form-label text-white">Lote</label>
                             <select asp-for="LoteId" asp-items="Model.LotesDisponibles" class="form-select" required>
                                 <option value="">Seleccionar Lote...</option>
                             </select>
                             <small class="text-muted">Solo lotes liberados con stock disponible</small>
+                            <span asp-validation-for="LoteId" class="text-danger"></span>
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Cantidad</label>
+                            <label class="form-label text-white">Cantidad</label>
                             <input asp-for="Cantidad" type="number" class="form-control" step="0.01" required />
+                            <span asp-validation-for="Cantidad" class="text-danger"></span>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Observaciones</label>
+                            <label class="form-label text-white">Observaciones</label>
                             <input asp-for="Observaciones" type="text" class="form-control" placeholder="Opcional" />
                         </div>
                     </div>
@@ -107,3 +112,7 @@
         </table>
     </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

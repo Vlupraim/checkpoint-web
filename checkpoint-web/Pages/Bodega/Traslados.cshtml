@@ -30,29 +30,35 @@
                 <h5 class="mb-0">Registrar Traslado</h5>
             </div>
             <div class="card-body">
+                <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+                
                 <form method="post">
                     <div class="row">
                         <div class="col-md-3">
-                            <label class="form-label">Lote</label>
+                            <label class="form-label text-white">Lote</label>
                             <select asp-for="LoteId" asp-items="Model.LotesDisponibles" class="form-select" required>
                                 <option value="">Seleccionar Lote...</option>
                             </select>
+                            <span asp-validation-for="LoteId" class="text-danger"></span>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Ubicación Origen</label>
+                            <label class="form-label text-white">Ubicación Origen</label>
                             <select asp-for="OrigenId" asp-items="Model.UbicacionesOrigen" class="form-select" required>
                                 <option value="">Seleccionar...</option>
                             </select>
+                            <span asp-validation-for="OrigenId" class="text-danger"></span>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Ubicación Destino</label>
+                            <label class="form-label text-white">Ubicación Destino</label>
                             <select asp-for="DestinoId" asp-items="Model.UbicacionesDestino" class="form-select" required>
                                 <option value="">Seleccionar...</option>
                             </select>
+                            <span asp-validation-for="DestinoId" class="text-danger"></span>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Cantidad</label>
+                            <label class="form-label text-white">Cantidad</label>
                             <input asp-for="Cantidad" type="number" class="form-control" step="0.01" required />
+                            <span asp-validation-for="Cantidad" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="mt-3">
@@ -105,3 +111,7 @@
         </table>
     </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

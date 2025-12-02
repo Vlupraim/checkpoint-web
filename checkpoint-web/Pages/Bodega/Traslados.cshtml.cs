@@ -45,8 +45,35 @@ namespace checkpoint_web.Pages.Bodega
 
         public async Task<IActionResult> OnPostAsync()
         {
+            // Validaciones manuales
+            if (LoteId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(LoteId), "Debe seleccionar un lote");
+            }
+
+            if (OrigenId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(OrigenId), "Debe seleccionar una ubicación de origen");
+            }
+
+            if (DestinoId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(DestinoId), "Debe seleccionar una ubicación de destino");
+            }
+
+            if (OrigenId != Guid.Empty && DestinoId != Guid.Empty && OrigenId == DestinoId)
+            {
+                ModelState.AddModelError(string.Empty, "La ubicación de origen y destino no pueden ser la misma");
+            }
+
+            if (Cantidad <= 0)
+            {
+                ModelState.AddModelError(nameof(Cantidad), "La cantidad debe ser mayor a 0");
+            }
+
             if (!ModelState.IsValid)
             {
+                TempData["ErrorMessage"] = "Por favor complete todos los campos requeridos";
                 await CargarDatosAsync();
                 return Page();
             }

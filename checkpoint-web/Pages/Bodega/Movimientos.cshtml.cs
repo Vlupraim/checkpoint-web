@@ -43,8 +43,25 @@ namespace checkpoint_web.Pages.Bodega
 
         public async Task<IActionResult> OnPostAsync()
         {
+            // Validaciones manuales
+            if (string.IsNullOrWhiteSpace(Tipo))
+            {
+                ModelState.AddModelError(nameof(Tipo), "Debe seleccionar un tipo de movimiento");
+            }
+
+            if (LoteId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(LoteId), "Debe seleccionar un lote");
+            }
+
+            if (Cantidad <= 0)
+            {
+                ModelState.AddModelError(nameof(Cantidad), "La cantidad debe ser mayor a 0");
+            }
+
             if (!ModelState.IsValid)
             {
+                TempData["ErrorMessage"] = "Por favor complete todos los campos requeridos";
                 await CargarDatosAsync();
                 return Page();
             }
