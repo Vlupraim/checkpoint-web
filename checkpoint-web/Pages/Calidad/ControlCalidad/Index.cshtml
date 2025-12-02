@@ -60,10 +60,10 @@
     </div>
 </div>
 
-<!-- Lotes Pendientes de Revision -->
+<!-- Lotes Pendientes de Revisión -->
 <div class="card mb-4">
     <div class="card-header bg-warning text-dark">
-  <h5 class="mb-0">Lotes Pendientes de RevisiÃ³n</h5>
+  <h5 class="mb-0">Lotes Pendientes de Revisión</h5>
     </div>
     <div class="card-body">
  @if (Model.LotesPendientes.Any())
@@ -72,7 +72,7 @@
  <table class="table table-hover">
  <thead>
    <tr>
-        <th>CÃ³digo Lote</th>
+        <th>Código Lote</th>
 <th>Producto</th>
   <th>Proveedor</th>
   <th>Fecha Ingreso</th>
@@ -104,7 +104,7 @@
         }
 else
         {
- <div class="alert alert-info">No hay lotes pendientes de revisiÃ³n</div>
+ <div class="alert alert-info">No hay lotes pendientes de revisión</div>
   }
  </div>
 </div>
@@ -112,7 +112,7 @@ else
 <!-- Historial Reciente -->
 <div class="card">
     <div class="card-header">
-     <h5 class="mb-0">Historial de Revisiones (Ãšltimos 30)</h5>
+     <h5 class="mb-0">Historial de Revisiones (Últimos 30)</h5>
  </div>
     <div class="card-body">
     @if (Model.Historial.Any())
@@ -159,13 +159,13 @@ else
   </div>
 </div>
 
-<!-- Modal de Revision -->
+<!-- Modal de Revisión -->
 <div class="modal fade" id="revisionModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
  <div class="modal-content">
  <form method="post">
   <div class="modal-header bg-primary text-white">
-      <h5 class="modal-title">RevisiÃ³n de Calidad</h5>
+      <h5 class="modal-title">Revisión de Calidad</h5>
     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
   </div>
   <div class="modal-body">
@@ -189,13 +189,13 @@ else
   <div class="modal-footer">
       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
  <button type="submit" class="btn btn-success" onclick="document.getElementById('accionInput').value='Aprobar'; return true;">
-   ? Liberar Lote
+   ✅ Liberar Lote
  </button>
  <button type="submit" class="btn btn-danger" onclick="document.getElementById('accionInput').value='Rechazar'; return true;">
-  ? Rechazar
+  ❌ Rechazar
 </button>
  <button type="submit" class="btn btn-dark" onclick="document.getElementById('accionInput').value='Bloquear'; return true;">
- ?? Bloquear
+ 🔒 Bloquear
    </button>
  </div>
  </form>
