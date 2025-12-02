@@ -31,9 +31,10 @@ namespace checkpoint_web.Pages.Bodega
         {
             try
             {
-                // Load recent lotes with related Producto
+                // Load recent lotes with FULL navigation: Producto AND Proveedor
                 Lotes = await _context.Lotes
-                    .Include(l => l.Producto)
+                    .Include(l => l.Producto)      // ? Include Product
+                    .Include(l => l.Proveedor)     // ? Include Supplier
                     .OrderByDescending(l => l.FechaIngreso)
                     .Take(100)
                     .AsNoTracking()
@@ -43,6 +44,8 @@ namespace checkpoint_web.Pages.Bodega
                 CountLiberado = await _context.Lotes.CountAsync(l => l.Estado == EstadoLote.Liberado);
                 CountRechazado = await _context.Lotes.CountAsync(l => l.Estado == EstadoLote.Rechazado);
                 CountBloqueado = await _context.Lotes.CountAsync(l => l.Estado == EstadoLote.Bloqueado);
+                
+                _logger.LogInformation("[LOTES] Loaded {count} lotes with navigation", Lotes.Count);
             }
             catch (System.Exception ex)
             {

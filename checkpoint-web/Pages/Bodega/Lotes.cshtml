@@ -233,29 +233,39 @@
             detalleModal.addEventListener('show.bs.modal', function (event) {
                 var button = event.relatedTarget;
                 
-                document.getElementById('detalleLoteCodigo').textContent = button.getAttribute('data-lote-codigo');
-                document.getElementById('detalleProducto').textContent = button.getAttribute('data-producto');
-                document.getElementById('detalleSku').textContent = button.getAttribute('data-sku');
-                document.getElementById('detalleProveedor').textContent = button.getAttribute('data-proveedor');
-                document.getElementById('detalleFechaIngreso').textContent = button.getAttribute('data-fecha-ingreso');
-                document.getElementById('detalleFechaVencimiento').textContent = button.getAttribute('data-fecha-vencimiento');
-                document.getElementById('detalleCantidadInicial').textContent = button.getAttribute('data-cantidad-inicial');
-                document.getElementById('detalleCantidadDisponible').textContent = button.getAttribute('data-cantidad-disponible');
-                document.getElementById('detalleTempIngreso').textContent = button.getAttribute('data-temp-ingreso') + '°C';
-                document.getElementById('detalleOrdenCompra').textContent = button.getAttribute('data-orden-compra');
-                document.getElementById('detalleGuiaRecepcion').textContent = button.getAttribute('data-guia-recepcion');
+                // Populate modal fields with null-safe fallback
+                document.getElementById('detalleLoteCodigo').textContent = button.getAttribute('data-lote-codigo') || 'N/A';
+                document.getElementById('detalleProducto').textContent = button.getAttribute('data-producto') || 'N/A';
+                document.getElementById('detalleSku').textContent = button.getAttribute('data-sku') || 'N/A';
+                document.getElementById('detalleProveedor').textContent = button.getAttribute('data-proveedor') || 'N/A';
+                document.getElementById('detalleFechaIngreso').textContent = button.getAttribute('data-fecha-ingreso') || 'N/A';
+                document.getElementById('detalleFechaVencimiento').textContent = button.getAttribute('data-fecha-vencimiento') || 'Sin vencimiento';
+                document.getElementById('detalleCantidadInicial').textContent = button.getAttribute('data-cantidad-inicial') || '0';
+                document.getElementById('detalleCantidadDisponible').textContent = button.getAttribute('data-cantidad-disponible') || '0';
+                document.getElementById('detalleTempIngreso').textContent = (button.getAttribute('data-temp-ingreso') || '0') + '°C';
+                document.getElementById('detalleOrdenCompra').textContent = button.getAttribute('data-orden-compra') || 'N/A';
+                document.getElementById('detalleGuiaRecepcion').textContent = button.getAttribute('data-guia-recepcion') || 'N/A';
                 
-                var estado = button.getAttribute('data-estado');
+                var estado = button.getAttribute('data-estado') || 'Desconocido';
                 var estadoBadge = document.getElementById('detalleEstado');
                 estadoBadge.textContent = estado;
                 estadoBadge.className = 'badge ';
                 
-                if (estado === 'Liberado') estadoBadge.className += 'bg-success';
-                else if (estado === 'Cuarentena') estadoBadge.className += 'bg-warning text-dark';
+                // Fix contrast for Cuarentena badge
+                if (estado === 'Cuarentena') estadoBadge.className += 'bg-warning text-dark';
+                else if (estado === 'Liberado') estadoBadge.className += 'bg-success';
                 else if (estado === 'Rechazado') estadoBadge.className += 'bg-danger';
                 else if (estado === 'Bloqueado') estadoBadge.className += 'bg-dark';
                 else estadoBadge.className += 'bg-secondary';
+                
+                console.log('Modal populated:', {
+                    codigo: button.getAttribute('data-lote-codigo'),
+                    producto: button.getAttribute('data-producto'),
+                    estado: estado
+                });
             });
+        } else {
+            console.error('Modal detalleModal not found!');
         }
     </script>
 }
