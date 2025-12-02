@@ -40,7 +40,8 @@ namespace checkpoint_web.Services
             proveedor.FechaRegistro = DateTime.UtcNow;
             _context.Proveedores.Add(proveedor);
             await _context.SaveChangesAsync();
-            await _auditService.LogAsync("admin", $"Creó proveedor: {proveedor.Nombre} (ID: {proveedor.Id})", string.Empty);
+            // CORREGIDO: Usar "system" en lugar de "admin" (se ignora en AuditService)
+            await _auditService.LogAsync("system", $"Creó proveedor: {proveedor.Nombre} (ID: {proveedor.Id})", string.Empty);
             return proveedor;
         }
 
@@ -49,7 +50,7 @@ namespace checkpoint_web.Services
             proveedor.UltimaActualizacion = DateTime.UtcNow;
             _context.Entry(proveedor).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            await _auditService.LogAsync("admin", $"Actualizó proveedor: {proveedor.Nombre} (ID: {proveedor.Id})", string.Empty);
+            await _auditService.LogAsync("system", $"Actualizó proveedor: {proveedor.Nombre} (ID: {proveedor.Id})", string.Empty);
             return proveedor;
         }
 
@@ -70,7 +71,7 @@ namespace checkpoint_web.Services
             // Si no hay lotes, se puede eliminar
             _context.Proveedores.Remove(proveedor);
             await _context.SaveChangesAsync();
-            await _auditService.LogAsync("admin", $"Eliminó proveedor: {proveedor.Nombre} (ID: {id})", string.Empty);
+            await _auditService.LogAsync("system", $"Eliminó proveedor: {proveedor.Nombre} (ID: {id})", string.Empty);
             return true;
         }
 

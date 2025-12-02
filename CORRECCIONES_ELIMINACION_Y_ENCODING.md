@@ -5,6 +5,8 @@
 ### 1. **Encoding UTF-8 Corregido**
 - ? `Delete.cshtml` de Tareas: Caracteres especiales corregidos
 - ? `Index.cshtml` de Proveedores: Títulos y labels arreglados
+- ? `Fragments/Usuarios.cshtml`: Gestión de usuarios corregida
+- ? `Admin/Users/Create.cshtml`: Contraseña corregida
 
 **Caracteres corregidos:**
 - `Â¿EstÃ¡` ? `¿Está`
@@ -16,6 +18,8 @@
 - `CalificaciÃ³n` ? `Calificación`
 - `CategorÃ­a` ? `Categoría`
 - `LogÃ­stica` ? `Logística`
+- `ContraseÃ±a` ? `Contraseña`
+- `MÃ­nimo` ? `Mínimo`
 
 ---
 
@@ -43,6 +47,14 @@
 // Mensaje informativo
 ```
 
+#### **Users/Delete.cshtml.cs** ?
+```csharp
+// Validaciones implementadas:
+- No puede eliminarse a sí mismo
+- Auditoría de eliminación
+- Mensajes de éxito/error
+```
+
 ---
 
 ### 3. **Mensajes de Error Mejorados**
@@ -58,6 +70,13 @@ No se puede eliminar el producto 'Materia Prima B' porque tiene 3 lote(s) asocia
 Los productos con historial de lotes no pueden eliminarse por razones de trazabilidad.
 ```
 
+**Usuarios:**
+```
+¿Está seguro de eliminar el usuario admin@example.com?
+
+Esta acción no se puede deshacer.
+```
+
 ---
 
 ## ?? **Entidades que NO pueden eliminarse (por diseño)**
@@ -67,7 +86,7 @@ Los productos con historial de lotes no pueden eliminarse por razones de trazabi
 | **Producto** | Si tiene lotes | Trazabilidad |
 | **Proveedor** | Si tiene lotes | Historial de compras |
 | **Cliente** | Si tiene movimientos | Historial de ventas |
-| **Usuario** | Si tiene registros | Auditoría |
+| **Usuario** | Si es él mismo | Seguridad |
 
 ---
 
@@ -86,6 +105,11 @@ Los productos con historial de lotes no pueden eliminarse por razones de trazabi
 1. Verificar que no tenga movimientos ?
 2. Eliminar ?
 
+### **Usuarios:** ?
+1. Verificar que no sea el usuario actual ?
+2. Eliminar de AspNetUsers (CASCADE elimina roles) ?
+3. Registrar auditoría ?
+
 ---
 
 ## ?? **Alternativa: Soft Delete**
@@ -102,14 +126,41 @@ proveedor.Estado = "Inactivo";
 
 ---
 
+## ?? **Archivos Corregidos**
+
+### **Encoding UTF-8:**
+1. `Pages/Admin/Tareas/Delete.cshtml`
+2. `Pages/Admin/Proveedores/Index.cshtml`
+3. `Pages/Fragments/Usuarios.cshtml` ?
+4. `Pages/Admin/Users/Create.cshtml` ?
+
+### **Lógica de Eliminación:**
+1. `Services/ProductoService.cs`
+2. `Services/ProveedorService.cs`
+3. `Services/ClienteService.cs`
+4. `Pages/Admin/Users/Delete.cshtml.cs` ?
+
+---
+
 ## ?? **Commit y Deploy**
 
 ```sh
 git add .
-git commit -m "Fix: UTF-8 encoding and FK constraint validation on delete"
+git commit -m "Fix: UTF-8 encoding and FK constraint validation on delete (including users)"
 git push origin main
 ```
 
 ---
 
+## ?? **Mejoras Visuales Aplicadas**
+
+### **Gestión de Usuarios:**
+- ? Confirmación de eliminación con mensaje claro
+- ? Validación para evitar auto-eliminación
+- ? Mensajes de éxito/error en TempData
+- ? Auditoría de todas las operaciones
+
+---
+
 Generado: 2025-12-02
+Actualizado: 2025-12-02 (con correcciones de usuarios)

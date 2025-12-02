@@ -40,7 +40,8 @@ namespace checkpoint_web.Services
             cliente.FechaRegistro = DateTime.UtcNow;
             _context.Clientes.Add(cliente);
             await _context.SaveChangesAsync();
-            await _auditService.LogAsync("admin", $"Creó cliente: {cliente.Nombre} (ID: {cliente.Id})", string.Empty);
+            // CORREGIDO: Usar "system" en lugar de "admin"
+            await _auditService.LogAsync("system", $"Creó cliente: {cliente.Nombre} (ID: {cliente.Id})", string.Empty);
             return cliente;
         }
 
@@ -49,7 +50,7 @@ namespace checkpoint_web.Services
             cliente.UltimaActualizacion = DateTime.UtcNow;
             _context.Entry(cliente).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            await _auditService.LogAsync("admin", $"Actualizó cliente: {cliente.Nombre} (ID: {cliente.Id})", string.Empty);
+            await _auditService.LogAsync("system", $"Actualizó cliente: {cliente.Nombre} (ID: {cliente.Id})", string.Empty);
             return cliente;
         }
 
@@ -70,7 +71,7 @@ namespace checkpoint_web.Services
             // Si no hay movimientos, se puede eliminar
             _context.Clientes.Remove(cliente);
             await _context.SaveChangesAsync();
-            await _auditService.LogAsync("admin", $"Eliminó cliente: {cliente.Nombre} (ID: {id})", string.Empty);
+            await _auditService.LogAsync("system", $"Eliminó cliente: {cliente.Nombre} (ID: {id})", string.Empty);
             return true;
         }
 
