@@ -8,9 +8,9 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h2>Historial Completo de Revisiones</h2>
     <div>
-  <span class="badge bg-success me-2">Aprobados: 0</span>
-        <span class="badge bg-danger me-2">Rechazados: 0</span>
-  <span class="badge bg-dark">Bloqueados: 0</span>
+  <span class="badge bg-success me-2">Aprobados: @Model.Estadisticas.GetValueOrDefault("LotesAprobados", 0)</span>
+        <span class="badge bg-danger me-2">Rechazados: @Model.Estadisticas.GetValueOrDefault("LotesRechazados", 0)</span>
+  <span class="badge bg-dark">Bloqueados: @Model.Estadisticas.GetValueOrDefault("LotesBloqueados", 0)</span>
     </div>
 </div>
 
@@ -18,55 +18,25 @@
 <ul class="nav nav-tabs mb-3" id="historialTabs" role="tablist">
     <li class="nav-item" role="presentation">
      <button class="nav-link active" id="tab-todos" data-bs-toggle="tab" data-bs-target="#todos" type="button">
-   Todos
+   Todos (@Model.Historial.Count())
         </button>
     </li>
  <li class="nav-item" role="presentation">
 <button class="nav-link" id="tab-aprobados" data-bs-toggle="tab" data-bs-target="#aprobados" type="button">
-     ✅ Aprobados
+     ✅ Aprobados (@Model.Historial.Count(h => h.Estado == "Aprobado"))
  </button>
     </li>
     <li class="nav-item" role="presentation">
   <button class="nav-link" id="tab-rechazados" data-bs-toggle="tab" data-bs-target="#rechazados" type="button">
- ❌ Rechazados
+ ❌ Rechazados (@Model.Historial.Count(h => h.Estado == "Rechazado"))
  </button>
     </li>
     <li class="nav-item" role="presentation">
      <button class="nav-link" id="tab-bloqueados" data-bs-toggle="tab" data-bs-target="#bloqueados" type="button">
-   🔒 Bloqueados
+   🔒 Bloqueados (@Model.Historial.Count(h => h.Estado == "Bloqueado"))
  </button>
     </li>
 </ul>
-
-<!-- Filtros Avanzados -->
-<div class="card mb-3">
-    <div class="card-body">
-   <form method="get" class="row g-2">
- <div class="col-md-3">
-     <label class="form-label">Rango de Fechas</label>
-  <input type="date" class="form-control form-control-sm" name="fechaDesde" />
-      </div>
-   <div class="col-md-3">
-    <label class="form-label">&nbsp;</label>
-    <input type="date" class="form-control form-control-sm" name="fechaHasta" />
-        </div>
-      <div class="col-md-2">
-  <label class="form-label">Producto</label>
-   <input type="text" class="form-control form-control-sm" name="producto" placeholder="Buscar..." />
-    </div>
-   <div class="col-md-2">
-  <label class="form-label">Revisado Por</label>
-  <select class="form-select form-select-sm" name="usuario">
-  <option value="">Todos</option>
-  </select>
-    </div>
-   <div class="col-md-2">
-   <label class="form-label">&nbsp;</label>
-     <button type="submit" class="btn btn-primary btn-sm w-100">Filtrar</button>
-  </div>
-    </form>
-    </div>
-</div>
 
 <!-- Contenido de Tabs -->
 <div class="tab-content" id="historialTabsContent">
@@ -77,6 +47,8 @@
      <h5 class="mb-0">Todas las Revisiones</h5>
    </div>
       <div class="card-body">
+          @if (Model.Historial.Any())
+          {
    <div class="table-responsive">
   <table class="table table-striped table-hover">
        <thead>
@@ -85,21 +57,42 @@
    <th>Código Lote</th>
      <th>Producto</th>
        <th>Decisión</th>
-     <th>Revisado Por</th>
   <th>Observaciones</th>
-    <th>Acciones</th>
+     <th>Revisado Por</th>
        </tr>
      </thead>
   <tbody>
+            @foreach (var rev in Model.Historial)
+            {
+                var estadoClass = rev.Estado switch
+                {
+                    "Aprobado" => "badge bg-success",
+                    "Rechazado" => "badge bg-danger",
+                    "Bloqueado" => "badge bg-dark",
+                    _ => "badge bg-secondary"
+                };
         <tr>
-     <td colspan="7" class="text-center text-muted py-4">
+            <td>@rev.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+            <td><strong>@(rev.Lote?.CodigoLote ?? "N/A")</strong></td>
+            <td>@(rev.Lote?.Producto?.Nombre ?? "N/A")</td>
+            <td><span class="@estadoClass">@rev.Estado</span></td>
+            <td><small>@(rev.Observacion ?? "-")</small></td>
+            <td><small>@(rev.UsuarioId ?? "Sistema")</small></td>
+        </tr>
+            }
+     </tbody>
+ </table>
+    </div>
+          }
+          else
+          {
+        <tr>
+     <td colspan="6" class="text-center text-muted py-4">
     <p>No hay revisiones registradas</p>
  <small>Las decisiones de calidad aparecerán aquí</small>
   </td>
       </tr>
-     </tbody>
- </table>
-    </div>
+          }
     </div>
   </div>
     </div>
@@ -111,6 +104,11 @@
   <h5 class="mb-0">Lotes Aprobados (Liberados)</h5>
     </div>
         <div class="card-body">
+            @{
+                var aprobados = Model.Historial.Where(h => h.Estado == "Aprobado").ToList();
+            }
+            @if (aprobados.Any())
+            {
      <div class="table-responsive">
       <table class="table table-sm">
         <thead>
@@ -123,12 +121,26 @@
        </tr>
     </thead>
   <tbody>
+                @foreach (var rev in aprobados)
+                {
         <tr>
-       <td colspan="5" class="text-center text-muted">No hay lotes aprobados</td>
-     </tr>
+            <td>@rev.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+            <td><strong>@(rev.Lote?.CodigoLote ?? "N/A")</strong></td>
+            <td>@(rev.Lote?.Producto?.Nombre ?? "N/A")</td>
+            <td>@(rev.Lote?.CantidadInicial ?? 0)</td>
+            <td><small>@(rev.UsuarioId ?? "Sistema")</small></td>
+        </tr>
+                }
     </tbody>
    </table>
       </div>
+            }
+            else
+            {
+        <tr>
+       <td colspan="5" class="text-center text-muted">No hay lotes aprobados</td>
+     </tr>
+            }
       </div>
  </div>
     </div>
@@ -140,6 +152,11 @@
  <h5 class="mb-0">Lotes Rechazados</h5>
       </div>
  <div class="card-body">
+            @{
+                var rechazados = Model.Historial.Where(h => h.Estado == "Rechazado").ToList();
+            }
+            @if (rechazados.Any())
+            {
     <div class="table-responsive">
         <table class="table table-sm">
       <thead>
@@ -149,16 +166,29 @@
      <th>Producto</th>
    <th>Motivo</th>
       <th>Revisado Por</th>
-     <th>Acción Tomada</th>
      </tr>
   </thead>
    <tbody>
+                @foreach (var rev in rechazados)
+                {
    <tr>
-    <td colspan="6" class="text-center text-muted">No hay lotes rechazados</td>
+        <td>@rev.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+        <td><strong>@(rev.Lote?.CodigoLote ?? "N/A")</strong></td>
+        <td>@(rev.Lote?.Producto?.Nombre ?? "N/A")</td>
+        <td><small>@(rev.Observacion ?? "-")</small></td>
+        <td><small>@(rev.UsuarioId ?? "Sistema")</small></td>
     </tr>
+                }
       </tbody>
    </table>
   </div>
+            }
+            else
+            {
+   <tr>
+    <td colspan="5" class="text-center text-muted">No hay lotes rechazados</td>
+    </tr>
+            }
    </div>
   </div>
     </div>
@@ -173,6 +203,11 @@
   <div class="alert alert-warning">
       <strong>Atención:</strong> Los lotes bloqueados requieren investigación antes de tomar una decisión final.
      </div>
+            @{
+                var bloqueados = Model.Historial.Where(h => h.Estado == "Bloqueado").ToList();
+            }
+            @if (bloqueados.Any())
+            {
       <div class="table-responsive">
    <table class="table table-sm">
     <thead>
@@ -182,16 +217,30 @@
      <th>Producto</th>
     <th>Motivo</th>
       <th>Días Bloqueado</th>
-      <th>Acciones</th>
   </tr>
     </thead>
      <tbody>
+                @foreach (var rev in bloqueados)
+                {
+                    var diasBloqueado = (DateTime.UtcNow - rev.Fecha).Days;
  <tr>
-      <td colspan="6" class="text-center text-muted">No hay lotes bloqueados</td>
+        <td>@rev.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+        <td><strong>@(rev.Lote?.CodigoLote ?? "N/A")</strong></td>
+        <td>@(rev.Lote?.Producto?.Nombre ?? "N/A")</td>
+        <td><small>@(rev.Observacion ?? "-")</small></td>
+        <td><span class="badge bg-danger">@diasBloqueado día(s)</span></td>
       </tr>
+                }
     </tbody>
       </table>
    </div>
+            }
+            else
+            {
+ <tr>
+      <td colspan="5" class="text-center text-muted">No hay lotes bloqueados</td>
+      </tr>
+            }
    </div>
   </div>
     </div>

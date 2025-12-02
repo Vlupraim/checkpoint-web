@@ -1,4 +1,5 @@
 ﻿@page
+@using checkpoint_web.Models
 @model checkpoint_web.Pages.Bodega.StockModel
 @{
     ViewData["Title"] = "Consulta de Stock";
@@ -51,30 +52,58 @@
      </button>
     </div>
     <div class="card-body">
+        @if (Model.Stocks.Any())
+        {
  <div class="table-responsive">
      <table class="table table-striped table-hover">
      <thead>
     <tr>
    <th>Producto</th>
         <th>SKU</th>
-      <th>Sede</th>
+      <th>Lote</th>
+  <th>Sede</th>
   <th>Ubicación</th>
       <th>Cantidad</th>
        <th>Unidad</th>
-    <th>Estado</th>
+    <th>Estado Lote</th>
    <th>Última Actualización</th>
      </tr>
        </thead>
     <tbody>
+            @foreach (var stock in Model.Stocks)
+            {
+                var estadoClass = stock.Lote?.Estado switch
+                {
+                    EstadoLote.Liberado => "badge bg-success",
+                    EstadoLote.Cuarentena => "badge bg-warning text-dark",
+                    EstadoLote.Rechazado => "badge bg-danger",
+                    EstadoLote.Bloqueado => "badge bg-dark",
+                    _ => "badge bg-secondary"
+                };
        <tr>
-       <td colspan="8" class="text-center text-muted">
-   <p class="my-4">No hay stock registrado o no coincide con los filtros aplicados</p>
-      <small>Utiliza los filtros para buscar productos específicos</small>
-       </td>
-</tr>
+           <td><strong>@(stock.Lote?.Producto?.Nombre ?? "N/A")</strong></td>
+           <td>@(stock.Lote?.Producto?.Sku ?? "-")</td>
+           <td><small>@(stock.Lote?.CodigoLote ?? "-")</small></td>
+           <td>@(stock.Ubicacion?.Sede?.Nombre ?? "N/A")</td>
+           <td>@(stock.Ubicacion?.Codigo ?? "N/A")</td>
+           <td><strong>@stock.Cantidad.ToString("N3")</strong></td>
+           <td>@stock.Unidad</td>
+           <td><span class="@estadoClass">@(stock.Lote?.Estado.ToString() ?? "N/A")</span></td>
+           <td><small>@stock.ActualizadoEn.ToString("dd/MM/yyyy HH:mm")</small></td>
+       </tr>
+            }
         </tbody>
      </table>
 </div>
+        }
+        else
+        {
+       <div class="alert alert-info text-center">
+   <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+      <p class="mt-2 mb-0"><strong>No hay stock registrado</strong></p>
+      <small>Los stocks aparecerán aquí después de registrar recepciones</small>
+       </div>
+        }
     </div>
 </div>
 

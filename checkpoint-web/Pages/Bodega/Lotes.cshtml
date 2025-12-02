@@ -1,4 +1,5 @@
 ﻿@page
+@using checkpoint_web.Models
 @model checkpoint_web.Pages.Bodega.LotesModel
 @{
  ViewData["Title"] = "Consulta de Lotes";
@@ -62,10 +63,10 @@
     <div class="card-header d-flex justify-content-between align-items-center">
  <h5 class="mb-0">Lotes Registrados</h5>
   <div>
-         <span class="badge bg-warning me-2">Cuarentena: @Model.CountCuarentena</span>
+         <span class="badge bg-warning text-dark me-2">Cuarentena: @Model.CountCuarentena</span>
        <span class="badge bg-success me-2">Liberado: @Model.CountLiberado</span>
    <span class="badge bg-danger me-2">Rechazado: @Model.CountRechazado</span>
-      <span class="badge bg-dark">Bloqueado: @Model.CountBloqueado</span>
+      <span class="badge bg-dark me-2">Bloqueado: @Model.CountBloqueado</span>
        </div>
     </div>
     <div class="card-body">
@@ -88,16 +89,40 @@
    {
        foreach (var lote in Model.Lotes)
        {
+           var estadoClass = lote.Estado switch
+           {
+               EstadoLote.Liberado => "badge bg-success",
+               EstadoLote.Cuarentena => "badge bg-warning text-dark",
+               EstadoLote.Rechazado => "badge bg-danger",
+               EstadoLote.Bloqueado => "badge bg-dark",
+               _ => "badge bg-secondary"
+           };
            <tr>
-               <td>@(string.IsNullOrEmpty(lote.CodigoLote) ? "-" : lote.CodigoLote)</td>
+               <td><strong>@(string.IsNullOrEmpty(lote.CodigoLote) ? "-" : lote.CodigoLote)</strong></td>
                <td>@(lote.Producto?.Nombre ?? "-")</td>
-               <td>@(lote.FechaIngreso.ToString("yyyy-MM-dd"))</td>
-               <td>@(lote.FechaVencimiento.HasValue ? lote.FechaVencimiento.Value.ToString("yyyy-MM-dd") : "-")</td>
-               <td>@lote.CantidadDisponible</td>
-               <td>@lote.Estado</td>
-               <td>@lote.TempIngreso</td>
+               <td>@(lote.FechaIngreso.ToString("dd/MM/yyyy"))</td>
+               <td>@(lote.FechaVencimiento.HasValue ? lote.FechaVencimiento.Value.ToString("dd/MM/yyyy") : "-")</td>
+               <td><strong>@lote.CantidadDisponible.ToString("N3")</strong></td>
+               <td><span class="@estadoClass">@lote.Estado</span></td>
+               <td>@lote.TempIngreso.ToString("N1")°C</td>
                <td>
-                   <a class="btn btn-sm btn-outline-primary" href="@Url.Page("/Bodega/Lotes/Details", new { id = lote.Id })">Ver</a>
+                   <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" 
+                           data-bs-target="#detalleModal" 
+                           data-lote-id="@lote.Id" 
+                           data-lote-codigo="@lote.CodigoLote"
+                           data-producto="@lote.Producto?.Nombre"
+                           data-sku="@lote.Producto?.Sku"
+                           data-proveedor="@(lote.Proveedor?.Nombre ?? "N/A")"
+                           data-fecha-ingreso="@lote.FechaIngreso.ToString("dd/MM/yyyy")"
+                           data-fecha-vencimiento="@(lote.FechaVencimiento?.ToString("dd/MM/yyyy") ?? "Sin vencimiento")"
+                           data-cantidad-inicial="@lote.CantidadInicial"
+                           data-cantidad-disponible="@lote.CantidadDisponible"
+                           data-temp-ingreso="@lote.TempIngreso"
+                           data-estado="@lote.Estado"
+                           data-orden-compra="@(lote.OrdenCompra ?? "N/A")"
+                           data-guia-recepcion="@(lote.GuiaRecepcion ?? "N/A")">
+                       Ver
+                   </button>
                </td>
            </tr>
        }
@@ -117,11 +142,120 @@
     </div>
 </div>
 
+<!-- Modal de Detalles del Lote -->
+<div class="modal fade" id="detalleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Detalles del Lote</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Información General</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th width="40%">Código Lote:</th>
+                                <td><strong id="detalleLoteCodigo">-</strong></td>
+                            </tr>
+                            <tr>
+                                <th>Producto:</th>
+                                <td id="detalleProducto">-</td>
+                            </tr>
+                            <tr>
+                                <th>SKU:</th>
+                                <td id="detalleSku">-</td>
+                            </tr>
+                            <tr>
+                                <th>Proveedor:</th>
+                                <td id="detalleProveedor">-</td>
+                            </tr>
+                            <tr>
+                                <th>Estado:</th>
+                                <td><span id="detalleEstado" class="badge">-</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Fechas y Cantidades</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th width="50%">Fecha Ingreso:</th>
+                                <td id="detalleFechaIngreso">-</td>
+                            </tr>
+                            <tr>
+                                <th>Fecha Vencimiento:</th>
+                                <td id="detalleFechaVencimiento">-</td>
+                            </tr>
+                            <tr>
+                                <th>Cantidad Inicial:</th>
+                                <td id="detalleCantidadInicial">-</td>
+                            </tr>
+                            <tr>
+                                <th>Cantidad Disponible:</th>
+                                <td><strong id="detalleCantidadDisponible">-</strong></td>
+                            </tr>
+                            <tr>
+                                <th>Temp. Ingreso:</th>
+                                <td id="detalleTempIngreso">-</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <h6 class="text-muted">Documentación</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th width="30%">Orden de Compra:</th>
+                                <td id="detalleOrdenCompra">-</td>
+                            </tr>
+                            <tr>
+                                <th>Guía de Recepción:</th>
+                                <td id="detalleGuiaRecepcion">-</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-     // Resaltar lotes próximos a vencer
-        document.addEventListener('DOMContentLoaded', function() {
-   // Lógica para resaltar visualmente lotes con vencimiento próximo
-        });
-  </script>
+        var detalleModal = document.getElementById('detalleModal');
+        if (detalleModal) {
+            detalleModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                
+                document.getElementById('detalleLoteCodigo').textContent = button.getAttribute('data-lote-codigo');
+                document.getElementById('detalleProducto').textContent = button.getAttribute('data-producto');
+                document.getElementById('detalleSku').textContent = button.getAttribute('data-sku');
+                document.getElementById('detalleProveedor').textContent = button.getAttribute('data-proveedor');
+                document.getElementById('detalleFechaIngreso').textContent = button.getAttribute('data-fecha-ingreso');
+                document.getElementById('detalleFechaVencimiento').textContent = button.getAttribute('data-fecha-vencimiento');
+                document.getElementById('detalleCantidadInicial').textContent = button.getAttribute('data-cantidad-inicial');
+                document.getElementById('detalleCantidadDisponible').textContent = button.getAttribute('data-cantidad-disponible');
+                document.getElementById('detalleTempIngreso').textContent = button.getAttribute('data-temp-ingreso') + '°C';
+                document.getElementById('detalleOrdenCompra').textContent = button.getAttribute('data-orden-compra');
+                document.getElementById('detalleGuiaRecepcion').textContent = button.getAttribute('data-guia-recepcion');
+                
+                var estado = button.getAttribute('data-estado');
+                var estadoBadge = document.getElementById('detalleEstado');
+                estadoBadge.textContent = estado;
+                estadoBadge.className = 'badge ';
+                
+                if (estado === 'Liberado') estadoBadge.className += 'bg-success';
+                else if (estado === 'Cuarentena') estadoBadge.className += 'bg-warning text-dark';
+                else if (estado === 'Rechazado') estadoBadge.className += 'bg-danger';
+                else if (estado === 'Bloqueado') estadoBadge.className += 'bg-dark';
+                else estadoBadge.className += 'bg-secondary';
+            });
+        }
+    </script>
 }
