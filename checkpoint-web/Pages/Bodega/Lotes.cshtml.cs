@@ -51,18 +51,18 @@ namespace checkpoint_web.Pages.Bodega
                     .Include(l => l.Proveedor)
                     .AsQueryable();
 
-                // Aplicar filtro de código de lote
+                // Aplicar filtro de código de lote - CASE INSENSITIVE
                 if (!string.IsNullOrWhiteSpace(CodigoLote))
                 {
-                    query = query.Where(l => l.CodigoLote.Contains(CodigoLote));
+                    query = query.Where(l => EF.Functions.ILike(l.CodigoLote, $"%{CodigoLote}%"));
                 }
 
-                // Aplicar filtro de producto (nombre o SKU)
+                // Aplicar filtro de producto (nombre o SKU) - CASE INSENSITIVE
                 if (!string.IsNullOrWhiteSpace(Producto))
                 {
                     query = query.Where(l => 
-                        l.Producto!.Nombre.Contains(Producto) ||
-                        l.Producto!.Sku.Contains(Producto)
+                        EF.Functions.ILike(l.Producto!.Nombre, $"%{Producto}%") ||
+                        EF.Functions.ILike(l.Producto!.Sku, $"%{Producto}%")
                     );
                 }
 

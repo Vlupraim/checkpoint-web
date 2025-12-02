@@ -66,12 +66,13 @@ namespace checkpoint_web.Pages.Bodega
                 .Where(s => s.Cantidad > 0)
                 .AsQueryable();
 
-            // Aplicar filtro de producto (nombre o SKU)
+            // Aplicar filtro de producto (nombre o SKU) - CASE INSENSITIVE para PostgreSQL
             if (!string.IsNullOrWhiteSpace(Producto))
             {
+                var productoLower = Producto.ToLower();
                 query = query.Where(s => 
-                    s.Lote!.Producto!.Nombre.Contains(Producto) ||
-                    s.Lote!.Producto!.Sku.Contains(Producto)
+                    EF.Functions.ILike(s.Lote!.Producto!.Nombre, $"%{Producto}%") ||
+                    EF.Functions.ILike(s.Lote!.Producto!.Sku, $"%{Producto}%")
                 );
             }
 
