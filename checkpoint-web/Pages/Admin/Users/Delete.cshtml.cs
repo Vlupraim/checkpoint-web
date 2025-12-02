@@ -9,7 +9,6 @@ using System.Security.Claims;
 namespace checkpoint_web.Pages.Admin.Users
 {
     [Authorize(Roles = "Administrador")]
-    [IgnoreAntiforgeryToken] // Solo para DELETE endpoint
     public class DeleteModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -22,14 +21,20 @@ namespace checkpoint_web.Pages.Admin.Users
         }
 
         // GET request redirects to Usuarios page
-        public IActionResult OnGet()
+        public IActionResult OnGet(string? id)
         {
             return RedirectToPage("/Fragments/Usuarios");
         }
 
         // POST request to delete user
-        public async Task<IActionResult> OnPostAsync(string id)
+        public async Task<IActionResult> OnPostAsync(string? id)
         {
+            // Accept id from either route parameter or query string
+            if (string.IsNullOrEmpty(id))
+            {
+                id = Request.Query["id"].ToString();
+            }
+
             if (string.IsNullOrEmpty(id))
             {
                 TempData["ErrorMessage"] = "ID de usuario no válido";
