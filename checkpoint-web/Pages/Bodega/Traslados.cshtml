@@ -7,6 +7,22 @@
 
 <h2>Traslados entre Ubicaciones</h2>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <div class="row mb-3">
     <div class="col-md-12">
         <div class="card">
@@ -18,25 +34,25 @@
                     <div class="row">
                         <div class="col-md-3">
                             <label class="form-label">Lote</label>
-                            <select class="form-select" name="loteId" required>
+                            <select asp-for="LoteId" asp-items="Model.LotesDisponibles" class="form-select" required>
                                 <option value="">Seleccionar Lote...</option>
                             </select>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Ubicación Origen</label>
-                            <select class="form-select" name="origenId" required>
+                            <select asp-for="OrigenId" asp-items="Model.UbicacionesOrigen" class="form-select" required>
                                 <option value="">Seleccionar...</option>
                             </select>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Ubicación Destino</label>
-                            <select class="form-select" name="destinoId" required>
+                            <select asp-for="DestinoId" asp-items="Model.UbicacionesDestino" class="form-select" required>
                                 <option value="">Seleccionar...</option>
                             </select>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Cantidad</label>
-                            <input type="number" class="form-control" name="cantidad" step="0.01" required />
+                            <input asp-for="Cantidad" type="number" class="form-control" step="0.01" required />
                         </div>
                     </div>
                     <div class="mt-3">
@@ -65,9 +81,26 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td colspan="6" class="text-center text-muted">No hay traslados registrados</td>
-                </tr>
+                @if (Model.TrasladosRecientes.Any())
+                {
+                    @foreach (var tras in Model.TrasladosRecientes)
+                    {
+                        <tr>
+                            <td>@tras.Fecha.ToString("dd/MM HH:mm")</td>
+                            <td><small>@tras.Lote?.CodigoLote</small></td>
+                            <td>@tras.OrigenUbicacion?.Codigo</td>
+                            <td>@tras.DestinoUbicacion?.Codigo</td>
+                            <td><strong>@tras.Cantidad.ToString("N2")</strong></td>
+                            <td>@(tras.UsuarioId ?? "-")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">No hay traslados registrados</td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>

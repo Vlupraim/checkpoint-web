@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc;
 using checkpoint_web.Data;
 using checkpoint_web.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace checkpoint_web.Pages.Bodega
 {
@@ -21,11 +23,23 @@ namespace checkpoint_web.Pages.Bodega
         public SelectList Sedes { get; set; } = new SelectList(new List<Sede>(), "Id", "Nombre");
         public SelectList Ubicaciones { get; set; } = new SelectList(new List<Ubicacion>(), "Id", "Codigo");
 
+        [BindProperty(SupportsGet = true)]
+        public string? Producto { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public Guid? SedeId { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public Guid? UbicacionId { get; set; }
+
         public async Task OnGetAsync()
         {
             // Cargar Sedes y Ubicaciones para los filtros
-            var sedes = await _context.Sedes.AsNoTracking().ToListAsync();
-            Sedes = new SelectList(sedes, "Id", "Nombre");
+            var sedes = await _context.Sedes
+                .Where(s => s.Activa)
+                .AsNoTracking()
+                .ToListAsync();
+            Sedes = new SelectList(sedes, "Id", "Nombre", SedeId);
             
             var ubicaciones = await _context.Ubicaciones
                 .Include(u => u.Sede)
@@ -37,18 +51,43 @@ namespace checkpoint_web.Pages.Bodega
                     Codigo = $"{u.Sede?.Nombre} - {u.Codigo}" 
                 }), 
                 "Id", 
-                "Codigo"
+                "Codigo",
+                UbicacionId
             );
 
-            // Consultar todos los stocks con navegación completa
-            Stocks = await _context.Stocks
+            // Consultar stocks con filtros aplicados
+            var query = _context.Stocks
                 .Include(s => s.Lote)
                     .ThenInclude(l => l!.Producto)
                 .Include(s => s.Lote)
                     .ThenInclude(l => l!.Proveedor)
                 .Include(s => s.Ubicacion)
                     .ThenInclude(u => u!.Sede)
-                .Where(s => s.Cantidad > 0) // Solo stocks con cantidad > 0
+                .Where(s => s.Cantidad > 0)
+                .AsQueryable();
+
+            // Aplicar filtro de producto (nombre o SKU)
+            if (!string.IsNullOrWhiteSpace(Producto))
+            {
+                query = query.Where(s => 
+                    s.Lote!.Producto!.Nombre.Contains(Producto) ||
+                    s.Lote!.Producto!.Sku.Contains(Producto)
+                );
+            }
+
+            // Aplicar filtro de sede
+            if (SedeId.HasValue)
+            {
+                query = query.Where(s => s.Ubicacion!.SedeId == SedeId.Value);
+            }
+
+            // Aplicar filtro de ubicación
+            if (UbicacionId.HasValue)
+            {
+                query = query.Where(s => s.UbicacionId == UbicacionId.Value);
+            }
+
+            Stocks = await query
                 .OrderBy(s => s.Lote!.Producto!.Nombre)
                 .ThenBy(s => s.Ubicacion!.Codigo)
                 .AsNoTracking()
