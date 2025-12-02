@@ -27,6 +27,8 @@
     </div>
 }
 
+<div id="alertContainer"></div>
+
 <div class="card">
     <div class="card-body">
         @if (Model.Usuarios.Any())
@@ -44,7 +46,7 @@
                     <tbody>
                         @foreach (var usuario in Model.Usuarios)
                         {
-                            <tr>
+                            <tr id="user-row-@usuario.Id">
                                 <td>@usuario.Email</td>
                                 <td>@usuario.Nombre</td>
                                 <td>
@@ -108,12 +110,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <form id="deleteForm" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-danger">
-                        <i class="bi bi-trash"></i> Eliminar Usuario
-                    </button>
-                </form>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="bi bi-trash"></i> Eliminar Usuario
+                </button>
             </div>
         </div>
     </div>
@@ -121,19 +120,106 @@
 
 @section Scripts {
     <script>
-        // Capturar el evento de apertura del modal
+        var currentUserId = null;
+        var currentUserEmail = null;
         var deleteModal = document.getElementById('deleteModal');
+        var modalInstance = null;
+
+        // Cuando se abre el modal
         deleteModal.addEventListener('show.bs.modal', function (event) {
             var button = event.relatedTarget;
-            var userId = button.getAttribute('data-user-id');
-            var userEmail = button.getAttribute('data-user-email');
+            currentUserId = button.getAttribute('data-user-id');
+            currentUserEmail = button.getAttribute('data-user-email');
             
-            // Actualizar el contenido del modal
-            document.getElementById('userEmailDisplay').textContent = userEmail;
-            
-            // Actualizar la acción del formulario con el ID del usuario
-            var form = document.getElementById('deleteForm');
-            form.action = '/Admin/Users/Delete?id=' + encodeURIComponent(userId);
+            document.getElementById('userEmailDisplay').textContent = currentUserEmail;
+            modalInstance = bootstrap.Modal.getInstance(deleteModal);
+        });
+
+        // Cuando se confirma la eliminación
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+            if (!currentUserId) return;
+
+            // Deshabilitar el botón para evitar doble clic
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Eliminando...';
+
+            // Obtener el token antiforgery
+            var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+            // Hacer POST con AJAX
+            fetch('/Admin/Users/Delete?id=' + encodeURIComponent(currentUserId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': token || ''
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (response.redirected) {
+                    // Si hay redirect, parsear la URL para obtener TempData
+                    return fetch(response.url, { 
+                        method: 'GET',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    }).then(r => r.text());
+                }
+                return response.text();
+            })
+            .then(html => {
+                // Cerrar el modal
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+
+                // Eliminar la fila de la tabla (efecto visual inmediato)
+                var row = document.getElementById('user-row-' + currentUserId);
+                if (row) {
+                    row.remove();
+                }
+
+                // Mostrar mensaje de éxito
+                var alertHtml = `
+                    <div class="alert alert-success alert-dismissible fade show">
+                        Usuario ${currentUserEmail} eliminado exitosamente
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                document.getElementById('alertContainer').innerHTML = alertHtml;
+
+                // Auto-cerrar el alert después de 5 segundos
+                setTimeout(() => {
+                    var alert = document.querySelector('#alertContainer .alert');
+                    if (alert) {
+                        var bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }
+                }, 5000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+                // Cerrar el modal
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+
+                // Mostrar error
+                var alertHtml = `
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        Error al eliminar el usuario. Por favor, intente nuevamente.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                document.getElementById('alertContainer').innerHTML = alertHtml;
+            })
+            .finally(() => {
+                // Restaurar el botón
+                var btn = document.getElementById('confirmDeleteBtn');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-trash"></i> Eliminar Usuario';
+                currentUserId = null;
+                currentUserEmail = null;
+            });
         });
     </script>
 }
