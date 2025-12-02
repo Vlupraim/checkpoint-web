@@ -176,7 +176,7 @@ namespace checkpoint_web.Pages.Bodega
 
             await _audit_service_safe(userId,
                 $"Recepcion: Lote={CodigoLote}, Cantidad={Cantidad}, Estado={EstadoLote.Cuarentena}",
-                System.Text.Json.JsonSerializer.Serialize(new { lote, stock }));
+                $"LoteId={lote.Id}, ProductoId={lote.ProductoId}, StockId={stock.Id}, UbicacionId={stock.UbicacionId}, Cantidad={Cantidad}");
 
             TempData["Message"] = $"Recepción registrada correctamente. Lote en CUARENTENA esperando revisión de Calidad.";
             // Redirect to Lotes list so the user sees the created lote immediately
