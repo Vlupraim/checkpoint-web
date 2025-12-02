@@ -14,7 +14,7 @@
     </div>
 </div>
 
-<!-- Filtros RÃ¡pidos con Tabs -->
+<!-- Filtros Rápidos con Tabs -->
 <ul class="nav nav-tabs mb-3" id="historialTabs" role="tablist">
     <li class="nav-item" role="presentation">
      <button class="nav-link active" id="tab-todos" data-bs-toggle="tab" data-bs-target="#todos" type="button">
@@ -23,17 +23,17 @@
     </li>
  <li class="nav-item" role="presentation">
 <button class="nav-link" id="tab-aprobados" data-bs-toggle="tab" data-bs-target="#aprobados" type="button">
-     ? Aprobados
+     ✅ Aprobados
  </button>
     </li>
     <li class="nav-item" role="presentation">
   <button class="nav-link" id="tab-rechazados" data-bs-toggle="tab" data-bs-target="#rechazados" type="button">
- ? Rechazados
+ ❌ Rechazados
  </button>
     </li>
     <li class="nav-item" role="presentation">
      <button class="nav-link" id="tab-bloqueados" data-bs-toggle="tab" data-bs-target="#bloqueados" type="button">
-   ?? Bloqueados
+   🔒 Bloqueados
  </button>
     </li>
 </ul>
@@ -81,10 +81,10 @@
   <table class="table table-striped table-hover">
        <thead>
         <tr>
-     <th>Fecha RevisiÃ³n</th>
-   <th>CÃ³digo Lote</th>
+     <th>Fecha Revisión</th>
+   <th>Código Lote</th>
      <th>Producto</th>
-       <th>DecisiÃ³n</th>
+       <th>Decisión</th>
      <th>Revisado Por</th>
   <th>Observaciones</th>
     <th>Acciones</th>
@@ -94,7 +94,7 @@
         <tr>
      <td colspan="7" class="text-center text-muted py-4">
     <p>No hay revisiones registradas</p>
- <small>Las decisiones de calidad aparecerÃ¡n aquÃ­</small>
+ <small>Las decisiones de calidad aparecerán aquí</small>
   </td>
       </tr>
      </tbody>
@@ -115,7 +115,7 @@
       <table class="table table-sm">
         <thead>
      <tr>
-   <th>Fecha LiberaciÃ³n</th>
+   <th>Fecha Liberación</th>
        <th>Lote</th>
    <th>Producto</th>
     <th>Cantidad</th>
@@ -149,7 +149,7 @@
      <th>Producto</th>
    <th>Motivo</th>
       <th>Revisado Por</th>
-     <th>AcciÃ³n Tomada</th>
+     <th>Acción Tomada</th>
      </tr>
   </thead>
    <tbody>
@@ -167,11 +167,11 @@
     <div class="tab-pane fade" id="bloqueados" role="tabpanel">
   <div class="card border-dark">
      <div class="card-header bg-dark text-white">
-    <h5 class="mb-0">Lotes Bloqueados (En InvestigaciÃ³n)</h5>
+    <h5 class="mb-0">Lotes Bloqueados (En Investigación)</h5>
   </div>
     <div class="card-body">
   <div class="alert alert-warning">
-      <strong>AtenciÃ³n:</strong> Los lotes bloqueados requieren investigaciÃ³n antes de tomar una decisiÃ³n final.
+      <strong>Atención:</strong> Los lotes bloqueados requieren investigación antes de tomar una decisión final.
      </div>
       <div class="table-responsive">
    <table class="table table-sm">
@@ -181,7 +181,7 @@
      <th>Lote</th>
      <th>Producto</th>
     <th>Motivo</th>
-      <th>DÃ­as Bloqueado</th>
+      <th>Días Bloqueado</th>
       <th>Acciones</th>
   </tr>
     </thead>
@@ -199,7 +199,7 @@
 
 @section Scripts {
     <script>
-  // Mantener tab activo despuÃ©s de filtrar
+  // Mantener tab activo después de filtrar
         document.addEventListener('DOMContentLoaded', function() {
    var activeTab = localStorage.getItem('historialActiveTab');
    if (activeTab) {

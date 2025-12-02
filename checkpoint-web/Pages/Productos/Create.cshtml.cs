@@ -34,7 +34,10 @@ namespace checkpoint_web.Pages.Productos
  }
 
  await _productoService.CreateAsync(Producto);
- var details = JsonSerializer.Serialize(Producto);
+ 
+ // CORREGIDO: Solo IDs y valores primitivos, sin navegación
+ var details = $"ProductoId={Producto.Id}, Sku={Producto.Sku}, Nombre={Producto.Nombre}, Unidad={Producto.Unidad}, VidaUtilDias={Producto.VidaUtilDias}";
+ 
  // CORREGIDO: Usar UserId (ClaimTypes.NameIdentifier) en lugar de User.Identity?.Name (email)
  var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous";
  await _auditService.LogAsync(userId, $"CreateProducto:{Producto.Sku}", details);

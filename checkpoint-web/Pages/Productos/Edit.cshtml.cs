@@ -30,10 +30,12 @@ namespace checkpoint_web.Pages.Productos
  public async Task<IActionResult> OnPostAsync()
  {
  if (!ModelState.IsValid) return Page();
- var before = await _productoService.GetByIdAsync(Producto.Id);
+ 
  await _productoService.UpdateAsync(Producto);
- var after = await _productoService.GetByIdAsync(Producto.Id);
- var details = JsonSerializer.Serialize(new { Before = before, After = after });
+ 
+ // CORREGIDO: Solo IDs y valores primitivos, sin navegación
+ var details = $"ProductoId={Producto.Id}, Sku={Producto.Sku}, Nombre={Producto.Nombre}, StockMinimo={Producto.StockMinimo}";
+ 
  // CORREGIDO: Usar UserId (ClaimTypes.NameIdentifier) en lugar de User.Identity?.Name (email)
  var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous";
  await _auditService.LogAsync(userId, $"UpdateProducto:{Producto.Id}", details);

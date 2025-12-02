@@ -10,62 +10,56 @@ namespace checkpoint_web.Middleware
     public class AuditMiddleware
     {
         private readonly RequestDelegate _next;
-      private readonly ILogger<AuditMiddleware> _logger;
+        private readonly ILogger<AuditMiddleware> _logger;
         
-  public AuditMiddleware(RequestDelegate next, ILogger<AuditMiddleware> logger)
+        public AuditMiddleware(RequestDelegate next, ILogger<AuditMiddleware> logger)
         {
             _next = next;
-   _logger = logger;
- }
+            _logger = logger;
+        }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, IAuditService auditService)
         {
             // Capturar información ANTES de ejecutar el request
             var path = context.Request.Path.Value ?? string.Empty;
-      var method = context.Request.Method;
+            var method = context.Request.Method;
             string? userId = null;
             
             // Solo auditar si el usuario está autenticado
             if (context.User?.Identity?.IsAuthenticated == true)
-     {
-            userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            {
+                userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
             }
   
-// CRÍTICO: Capturar el IServiceProvider ANTES de que el context se cierre
-      var serviceProvider = context.RequestServices;
-  
             // Ejecutar el request
-        await _next(context);
+            await _next(context);
 
-      // DESPUÉS intentar auditar (async, sin bloquear)
-    // Solo audit non-static and non-GET requests
+            // DESPUÉS intentar auditar (fire and forget)
+            // Solo audit non-static and non-GET requests
             if (method != HttpMethods.Get &&
-          !path.StartsWith("/lib") &&
-       !path.StartsWith("/css") &&
-         !path.StartsWith("/js") &&
-       !path.StartsWith("/debug") &&
-           !path.StartsWith("/health") &&
-       !path.StartsWith("/api/session") && // NO auditar /api/session/end
-         !string.IsNullOrEmpty(userId))
-   {
-      var action = $"{method} {path}";
-           
- // Fire and forget con el serviceProvider capturado
-  _ = Task.Run(async () =>
-          {
-  try
-     {
-             // Crear un nuevo scope con el serviceProvider CAPTURADO (no del HttpContext)
-               using var scope = serviceProvider.CreateScope();
-    var auditService = scope.ServiceProvider.GetRequiredService<IAuditService>();
-     await auditService.LogAsync(userId, action);
-          }
-          catch (Exception ex)
+                !path.StartsWith("/lib") &&
+                !path.StartsWith("/css") &&
+                !path.StartsWith("/js") &&
+                !path.StartsWith("/debug") &&
+                !path.StartsWith("/health") &&
+                !path.StartsWith("/api/session") &&
+                !string.IsNullOrEmpty(userId))
             {
-  _logger.LogWarning(ex, "Error al escribir el registro de auditoria para el usuario {userId} {action}", userId, action);
-   }
-       });
-   }
-  }
-  }
+                var action = $"{method} {path}";
+           
+                // Fire and forget - NO crear scope aquí, usar el auditService inyectado
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await auditService.LogAsync(userId, action);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Error al escribir el registro de auditoría para el usuario {userId} {action}", userId, action);
+                    }
+                });
+            }
+        }
+    }
 }

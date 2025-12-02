@@ -52,7 +52,7 @@ namespace checkpoint_web.Models
    [StringLength(1000)]
         public string? Observaciones { get; set; }
 
-public DateTime FechaRegistro { get; set; } = DateTime.Now;
+public DateTime FechaRegistro { get; set; } = DateTime.UtcNow;  // CORREGIDO: Usar UTC
 
    public DateTime? UltimaActualizacion { get; set; }
 
