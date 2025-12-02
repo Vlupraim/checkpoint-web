@@ -7,6 +7,7 @@ using checkpoint_web.Models;
 using checkpoint_web.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace checkpoint_web.Pages.Bodega
 {
@@ -83,7 +84,11 @@ namespace checkpoint_web.Pages.Bodega
 
             try
             {
-                var usuarioId = User.Identity?.Name ?? "unknown";
+                // CORREGIDO: Usar UserId (GUID) en lugar de Name (email)
+                var usuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";
+                
+                _logger.LogInformation("[TRASLADOS] Creando traslado - Usuario: {UserId}, Lote: {LoteId}, Cantidad: {Cantidad}", 
+                    usuarioId, LoteId, Cantidad);
                 
                 await _movimientoService.CrearTrasladoAsync(
                     LoteId,

@@ -30,7 +30,11 @@
                 <h5 class="mb-0">Registrar Traslado</h5>
             </div>
             <div class="card-body">
-                <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+                @* Solo mostrar ValidationSummary si hay errores *@
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+                }
                 
                 <form method="post">
                     <div class="row">
