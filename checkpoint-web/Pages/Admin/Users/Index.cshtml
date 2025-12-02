@@ -124,149 +124,164 @@
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        (function() {
-            var currentUserId = null;
-            var currentUserEmail = null;
-            var deleteModal = document.getElementById('deleteModal');
-            var modalInstance = null;
+<!-- Script inline para garantizar ejecución -->
+<script>
+(function() {
+    console.log('=== User Delete Script Initializing ===');
+    
+    var currentUserId = null;
+    var currentUserEmail = null;
+    var deleteModal = document.getElementById('deleteModal');
+    var confirmBtn = document.getElementById('confirmDeleteBtn');
+    
+    console.log('deleteModal found:', !!deleteModal);
+    console.log('confirmDeleteBtn found:', !!confirmBtn);
+    
+    if (!deleteModal || !confirmBtn) {
+        console.error('CRITICAL: Modal or button not found!');
+        return;
+    }
+    
+    var modalInstance = null;
 
-            // Cuando se abre el modal
-            deleteModal.addEventListener('show.bs.modal', function (event) {
-                var button = event.relatedTarget;
-                currentUserId = button.getAttribute('data-user-id');
-                currentUserEmail = button.getAttribute('data-user-email');
-                
-                console.log('Modal opened for user:', currentUserId, currentUserEmail);
-                
-                document.getElementById('userEmailDisplay').textContent = currentUserEmail;
-                modalInstance = bootstrap.Modal.getInstance(deleteModal) || new bootstrap.Modal(deleteModal);
-            });
+    // Cuando se abre el modal
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        currentUserId = button.getAttribute('data-user-id');
+        currentUserEmail = button.getAttribute('data-user-email');
+        
+        console.log('✓ Modal opened for user:', currentUserId, currentUserEmail);
+        
+        document.getElementById('userEmailDisplay').textContent = currentUserEmail;
+        modalInstance = bootstrap.Modal.getInstance(deleteModal) || new bootstrap.Modal(deleteModal);
+    });
 
-            // Cuando se confirma la eliminación
-            document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-                console.log('Delete button clicked for user:', currentUserId);
-                
-                if (!currentUserId) {
-                    console.error('No user ID found');
-                    showAlert('danger', 'Error: No se pudo identificar el usuario a eliminar');
-                    return;
-                }
+    // Cuando se confirma la eliminación
+    confirmBtn.addEventListener('click', function(e) {
+        console.log('✓ Delete button clicked!');
+        console.log('  User ID:', currentUserId);
+        console.log('  User Email:', currentUserEmail);
+        
+        if (!currentUserId) {
+            console.error('✗ No user ID found');
+            showAlert('danger', 'Error: No se pudo identificar el usuario a eliminar');
+            return;
+        }
 
-                // Deshabilitar el botón para evitar doble clic
-                var btn = this;
-                btn.disabled = true;
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Eliminando...';
+        // Deshabilitar el botón para evitar doble clic
+        var btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Eliminando...';
+        console.log('✓ Button disabled');
 
-                // Obtener el token antiforgery
-                var token = document.querySelector('#ajaxTokenForm input[name="__RequestVerificationToken"]')?.value;
-                console.log('Token found:', !!token);
+        // Obtener el token antiforgery
+        var token = document.querySelector('#ajaxTokenForm input[name="__RequestVerificationToken"]')?.value;
+        console.log('✓ Token found:', !!token);
 
-                if (!token) {
-                    console.error('Antiforgery token not found');
-                    showAlert('danger', 'Error de seguridad: Token no encontrado');
-                    resetButton(btn);
-                    return;
-                }
+        if (!token) {
+            console.error('✗ Antiforgery token not found');
+            showAlert('danger', 'Error de seguridad: Token no encontrado');
+            resetButton(btn);
+            return;
+        }
 
-                // Crear FormData con el token y el id
-                var formData = new FormData();
-                formData.append('__RequestVerificationToken', token);
-                formData.append('id', currentUserId);
+        // Crear FormData con el token y el id
+        var formData = new FormData();
+        formData.append('__RequestVerificationToken', token);
+        formData.append('id', currentUserId);
 
-                // Hacer POST con AJAX
-                fetch('/Admin/Users/Delete', {
-                    method: 'POST',
-                    body: formData,
-                    credentials: 'same-origin',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => {
-                    console.log('Response status:', response.status, response.statusText);
-                    
-                    // Check if response is OK (200-299)
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                    }
-                    
-                    // For redirects, follow them
-                    if (response.redirected) {
-                        console.log('Redirected to:', response.url);
-                    }
-                    
-                    return response.text();
-                })
-                .then(html => {
-                    console.log('User deleted successfully');
-                    
-                    // Cerrar el modal
-                    if (modalInstance) {
-                        modalInstance.hide();
-                    }
+        console.log('✓ Sending POST request to /Admin/Users/Delete');
 
-                    // Eliminar la fila de la tabla (efecto visual inmediato)
-                    var row = document.getElementById('user-row-' + currentUserId);
-                    if (row) {
-                        row.style.transition = 'opacity 0.3s';
-                        row.style.opacity = '0';
-                        setTimeout(() => row.remove(), 300);
-                    }
-
-                    // Mostrar mensaje de éxito
-                    showAlert('success', `Usuario <strong>${escapeHtml(currentUserEmail)}</strong> eliminado exitosamente`);
-                })
-                .catch(error => {
-                    console.error('Error deleting user:', error);
-                    
-                    // Cerrar el modal
-                    if (modalInstance) {
-                        modalInstance.hide();
-                    }
-
-                    // Mostrar error
-                    showAlert('danger', `Error al eliminar el usuario: ${error.message}`);
-                })
-                .finally(() => {
-                    // Restaurar el botón
-                    resetButton(btn);
-                    currentUserId = null;
-                    currentUserEmail = null;
-                });
-            });
-
-            function showAlert(type, message) {
-                var iconClass = type === 'success' ? 'bi-check-circle' : 'bi-exclamation-triangle';
-                var alertHtml = `
-                    <div class="alert alert-${type} alert-dismissible fade show">
-                        <i class="bi ${iconClass}"></i> ${message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                `;
-                document.getElementById('alertContainer').innerHTML = alertHtml;
-
-                // Auto-cerrar el alert después de 5 segundos
-                setTimeout(() => {
-                    var alert = document.querySelector('#alertContainer .alert');
-                    if (alert) {
-                        var bsAlert = new bootstrap.Alert(alert);
-                        bsAlert.close();
-                    }
-                }, 5000);
+        // Hacer POST con AJAX
+        fetch('/Admin/Users/Delete', {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            console.log('✓ Response received:', response.status, response.statusText);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            if (response.redirected) {
+                console.log('  Redirected to:', response.url);
+            }
+            
+            return response.text();
+        })
+        .then(html => {
+            console.log('✓ User deleted successfully');
+            
+            // Cerrar el modal
+            if (modalInstance) {
+                modalInstance.hide();
             }
 
-            function resetButton(btn) {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="bi bi-trash"></i> Eliminar Usuario';
+            // Eliminar la fila de la tabla
+            var row = document.getElementById('user-row-' + currentUserId);
+            if (row) {
+                row.style.transition = 'opacity 0.3s';
+                row.style.opacity = '0';
+                setTimeout(() => row.remove(), 300);
             }
 
-            function escapeHtml(text) {
-                var div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
+            // Mostrar mensaje de éxito
+            showAlert('success', `Usuario <strong>${escapeHtml(currentUserEmail)}</strong> eliminado exitosamente`);
+        })
+        .catch(error => {
+            console.error('✗ Error deleting user:', error);
+            
+            // Cerrar el modal
+            if (modalInstance) {
+                modalInstance.hide();
             }
-        })();
-    </script>
-}
+
+            // Mostrar error
+            showAlert('danger', `Error al eliminar el usuario: ${error.message}`);
+        })
+        .finally(() => {
+            console.log('✓ Request completed, resetting button');
+            resetButton(btn);
+            currentUserId = null;
+            currentUserEmail = null;
+        });
+    });
+
+    function showAlert(type, message) {
+        var iconClass = type === 'success' ? 'bi-check-circle' : 'bi-exclamation-triangle';
+        var alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show">
+                <i class="bi ${iconClass}"></i> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        document.getElementById('alertContainer').innerHTML = alertHtml;
+
+        setTimeout(() => {
+            var alert = document.querySelector('#alertContainer .alert');
+            if (alert) {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }
+        }, 5000);
+    }
+
+    function resetButton(btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-trash"></i> Eliminar Usuario';
+    }
+
+    function escapeHtml(text) {
+        var div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    console.log('=== User Delete Script Initialized Successfully ===');
+})();
+</script>
