@@ -41,6 +41,7 @@ namespace checkpoint_web.Services
  if (existing == null) throw new InvalidOperationException("Ubicación no encontrada");
  existing.SedeId = ubicacion.SedeId;
  existing.Codigo = ubicacion.Codigo;
+ existing.Nombre = ubicacion.Nombre;
  existing.Tipo = ubicacion.Tipo;
  existing.Capacidad = ubicacion.Capacidad;
  await _context.SaveChangesAsync();

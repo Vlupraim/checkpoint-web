@@ -38,6 +38,12 @@
                         </div>
 
                         <div class="mb-3">
+                            <label asp-for="Ubicacion.Nombre" class="form-label">Nombre *</label>
+                            <input asp-for="Ubicacion.Nombre" class="form-control" placeholder="Ej: Estante A-01, Cámara Fría 1" />
+                            <span asp-validation-for="Ubicacion.Nombre" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
                             <label asp-for="Ubicacion.Tipo" class="form-label">Tipo</label>
                             <input asp-for="Ubicacion.Tipo" class="form-control" placeholder="Ej: Refrigerado, Seco, Cuarentena" />
                         </div>
