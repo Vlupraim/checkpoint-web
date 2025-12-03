@@ -9,7 +9,7 @@ namespace checkpoint_web.Models
  public Guid Id { get; set; }
 
  [MaxLength(256)]
- public string UserId { get; set; } = string.Empty;
+ public string? UserId { get; set; } = string.Empty; // ? NULLABLE ahora
 
  [MaxLength(200)]
  public string Action { get; set; } = string.Empty;
