@@ -147,14 +147,28 @@ namespace checkpoint_web.Pages.Bodega
                 // OBTENER CANTIDAD AUTOMÁTICAMENTE desde el stock de origen
                 var cantidadDisponible = await _movimientoService.GetStockDisponibleEnUbicacionAsync(LoteId, OrigenId);
                 
-                _logger.LogInformation("[TRASLADOS] Cantidad disponible: {Cantidad}", cantidadDisponible);
+                _logger.LogInformation("[TRASLADOS] Cantidad disponible obtenida: {Cantidad}", cantidadDisponible);
                 
                 if (cantidadDisponible <= 0)
                 {
-                    _logger.LogWarning("[TRASLADOS] No hay stock disponible en origen");
-                    var ubicacion = await _context.Ubicaciones.FindAsync(OrigenId);
-                    TempData["ErrorMessage"] = $"? No hay stock disponible en {ubicacion?.Codigo ?? "la ubicación de origen"}. " +
-                        $"Seleccione una ubicación que contenga stock de este lote.";
+                    _logger.LogWarning("[TRASLADOS] Stock insuficiente o inexistente. Cantidad: {Cantidad}", cantidadDisponible);
+                    
+                    var ubicacion = await _context.Ubicaciones
+                        .Include(u => u.Sede)
+                        .FirstOrDefaultAsync(u => u.Id == OrigenId);
+                    
+                    var loteInfo = await _context.Lotes
+                        .Include(l => l.Producto)
+                        .FirstOrDefaultAsync(l => l.Id == LoteId);
+                    
+                    var mensajeError = $"? No hay stock disponible en {ubicacion?.Codigo ?? "la ubicación de origen"} " +
+                        $"({ubicacion?.Sede?.Nombre ?? "sede desconocida"}). " +
+                        $"El lote {loteInfo?.CodigoLote ?? "seleccionado"} no tiene unidades en esta ubicación. " +
+                        $"Por favor, seleccione una ubicación diferente que contenga stock de este lote.";
+                    
+                    _logger.LogWarning("[TRASLADOS] Error mostrado al usuario: {Mensaje}", mensajeError);
+                    
+                    TempData["ErrorMessage"] = mensajeError;
                     await CargarDatosAsync();
                     return Page();
                 }
