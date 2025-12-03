@@ -49,6 +49,36 @@ namespace checkpoint_web.Pages.Bodega
             await CargarDatosAsync();
         }
 
+        // API endpoint para obtener stock por lote
+        public async Task<IActionResult> OnGetStockPorLoteAsync(Guid loteId)
+        {
+            try
+            {
+                var stocks = await _context.Stocks
+                    .Include(s => s.Ubicacion).ThenInclude(u => u!.Sede)
+                    .Include(s => s.Lote).ThenInclude(l => l!.Producto)
+                    .Where(s => s.LoteId == loteId && s.Cantidad > 0)
+                    .Select(s => new
+                    {
+                        ubicacionId = s.UbicacionId,
+                        ubicacionCodigo = s.Ubicacion!.Codigo,
+                        ubicacionNombre = s.Ubicacion.Nombre,
+                        sedeNombre = s.Ubicacion.Sede!.Nombre,
+                        cantidad = s.Cantidad,
+                        unidad = s.Unidad,
+                        productoNombre = s.Lote!.Producto!.Nombre
+                    })
+                    .ToListAsync();
+
+                return new JsonResult(new { success = true, stocks });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[MOVIMIENTOS] Error al obtener stock por lote {LoteId}", loteId);
+                return new JsonResult(new { success = false, error = ex.Message });
+            }
+        }
+
         public async Task<IActionResult> OnPostAsync()
         {
             // Validaciones
@@ -88,12 +118,24 @@ namespace checkpoint_web.Pages.Bodega
                     case "entrada":
                     case "ingreso":
                         await _movimientoService.CrearIngresoAsync(LoteId, UbicacionId, Cantidad, usuarioId);
-                        TempData["SuccessMessage"] = $"Entrada registrada correctamente: {Cantidad} unidades";
+                        TempData["SuccessMessage"] = $"? Entrada registrada correctamente: {Cantidad:N2} unidades";
                         break;
 
                     case "salida":
+                        // Validar stock antes de intentar
+                        var stockDisponible = await _movimientoService.GetStockDisponibleEnUbicacionAsync(LoteId, UbicacionId);
+                        if (stockDisponible < Cantidad)
+                        {
+                            var ubicacion = await _context.Ubicaciones.FindAsync(UbicacionId);
+                            TempData["ErrorMessage"] = $"? Stock insuficiente en {ubicacion?.Codigo ?? "ubicación seleccionada"}. " +
+                                $"Disponible: {stockDisponible:N2}, Solicitado: {Cantidad:N2}. " +
+                                $"?? Debe seleccionar una ubicación donde previamente se haya registrado un INGRESO de este lote.";
+                            await CargarDatosAsync();
+                            return Page();
+                        }
+                        
                         await _movimientoService.CrearSalidaAsync(LoteId, UbicacionId, Cantidad, null, usuarioId, Observaciones);
-                        TempData["SuccessMessage"] = $"Salida registrada correctamente: {Cantidad} unidades";
+                        TempData["SuccessMessage"] = $"?? Salida registrada correctamente: {Cantidad:N2} unidades";
                         break;
 
                     case "ajuste":
@@ -104,7 +146,7 @@ namespace checkpoint_web.Pages.Bodega
                             return Page();
                         }
                         await _movimientoService.CrearAjusteAsync(LoteId, UbicacionId, Cantidad, usuarioId, Observaciones);
-                        TempData["SuccessMessage"] = "Ajuste registrado correctamente (pendiente aprobación)";
+                        TempData["SuccessMessage"] = "?? Ajuste registrado correctamente (pendiente aprobación)";
                         break;
 
                     default:
@@ -121,14 +163,14 @@ namespace checkpoint_web.Pages.Bodega
             catch (InvalidOperationException ex)
             {
                 _logger.LogWarning(ex, "[MOVIMIENTOS] Operación inválida al crear movimiento {Tipo}", Tipo);
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = $"? {ex.Message}";
                 await CargarDatosAsync();
                 return Page();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "[MOVIMIENTOS] Error al crear movimiento {Tipo}", Tipo);
-                TempData["ErrorMessage"] = $"Error al registrar el movimiento: {ex.Message}";
+                TempData["ErrorMessage"] = $"? Error al registrar el movimiento: {ex.Message}";
                 await CargarDatosAsync();
                 return Page();
             }
@@ -151,7 +193,7 @@ namespace checkpoint_web.Pages.Bodega
                     lotesDisponibles.Select(l => new
                     {
                         l.Id,
-                        Display = $"{l.CodigoLote} - {l.Producto?.Nombre ?? "Sin nombre"} ({l.CantidadDisponible:N2} {l.Producto?.Unidad ?? "u"})"
+                        Display = $"{l.CodigoLote} - {l.Producto?.Nombre ?? "Sin nombre"} ({l.CantidadDisponible:N2} {l.Producto?.Unidad ?? "u"} disponibles)"
                     }),
                     "Id",
                     "Display"
@@ -168,7 +210,7 @@ namespace checkpoint_web.Pages.Bodega
                     ubicaciones.Select(u => new
                     {
                         u.Id,
-                        Display = $"{u.Sede?.Nombre ?? "Sin sede"} - {u.Codigo} ({u.Tipo})"
+                        Display = $"{u.Sede?.Nombre ?? "Sin sede"} - {u.Codigo} - {u.Nombre} ({u.Tipo})"
                     }),
                     "Id",
                     "Display"
