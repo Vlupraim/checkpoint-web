@@ -119,7 +119,10 @@
                             <tr>
                                 <td><small>@mov.Fecha.ToString("HH:mm:ss")</small></td>
                                 <td>
-                                    @switch (mov.Tipo.ToLower())
+                                    @{
+                                        var tipoLower = (mov.Tipo ?? "").ToLower();
+                                    }
+                                    @switch (tipoLower)
                                     {
                                         case "ingreso":
                                         case "entrada":
@@ -133,6 +136,10 @@
                                             break;
                                         case "ajuste":
                                             <span class="badge bg-warning text-dark">⚖️ @mov.Tipo</span>
+                                            break;
+                                        case "devolucion":
+                                        case "devolución":
+                                            <span class="badge bg-primary">↩️ @mov.Tipo</span>
                                             break;
                                         default:
                                             <span class="badge bg-secondary">@mov.Tipo</span>
