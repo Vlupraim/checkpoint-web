@@ -75,15 +75,16 @@
                             <span asp-validation-for="OrigenId" class="text-danger"></span>
                             
                             <div id="stockOrigenInfo" class="mt-2" style="display:none;">
-                                <div class="alert alert-warning mb-0">
+                                <div class="alert alert-info mb-0">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <i class="bi bi-box"></i> <strong>Stock en esta ubicación:</strong>
+                                            <i class="bi bi-box"></i> <strong>Stock que se trasladará:</strong>
                                         </div>
                                         <div class="text-end">
-                                            <strong class="fs-5" id="stockOrigenCantidad">0</strong> <span id="stockOrigenUnidad">u</span>
+                                            <strong class="fs-5 text-primary" id="stockOrigenCantidad">0</strong> <span id="stockOrigenUnidad">u</span>
                                         </div>
                                     </div>
+                                    <small class="text-muted mt-1 d-block">Se moverá TODO el stock de esta ubicación</small>
                                 </div>
                             </div>
                         </div>
@@ -103,46 +104,9 @@
                         </div>
                     </div>
 
-                    <!-- Paso 4: Cantidad y Motivo -->
+                    <!-- Motivo (Opcional) -->
                     <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <label asp-for="Cantidad" class="form-label fw-bold">4️⃣ Cantidad a Trasladar *</label>
-                            <div class="input-group input-group-lg">
-                                <input asp-for="Cantidad" type="number" class="form-control" id="cantidadInput" step="0.01" min="0.01" placeholder="0.00" required />
-                                <span class="input-group-text" id="unidadText">u</span>
-                            </div>
-                            <span asp-validation-for="Cantidad" class="text-danger"></span>
-                            
-                            <!-- Información de stock en tiempo real -->
-                            <div id="stockDisponibleInfo" class="mt-2" style="display:none;">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="bi bi-box-seam text-info"></i>
-                                    <small class="text-muted">
-                                        <strong>Stock disponible en <span id="ubicacionNombreInfo">-</span>:</strong>
-                                    </small>
-                                    <strong class="text-info" id="stockCantidadInfo">0</strong>
-                                    <small class="text-muted" id="stockUnidadInfo">u</small>
-                                </div>
-                            </div>
-                            
-                            <!-- Alerta si no hay stock -->
-                            <div id="sinStockAlert" class="mt-2" style="display:none;">
-                                <div class="alert alert-danger mb-0 py-2">
-                                    <i class="bi bi-exclamation-triangle"></i>
-                                    <small><strong>Sin stock en esta ubicación.</strong> Seleccione otra ubicación de origen.</small>
-                                </div>
-                            </div>
-                            
-                            <!-- Alerta si cantidad excede stock -->
-                            <div id="excedeStockAlert" class="mt-2" style="display:none;">
-                                <div class="alert alert-warning mb-0 py-2">
-                                    <i class="bi bi-exclamation-circle"></i>
-                                    <small><strong>Cantidad supera el stock disponible.</strong></small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-8">
+                        <div class="col-md-12">
                             <label asp-for="Motivo" class="form-label">Motivo del Traslado (Opcional)</label>
                             <input asp-for="Motivo" type="text" class="form-control form-control-lg" placeholder="Ej: Reorganización de bodega, reubicación..." />
                         </div>
@@ -257,20 +221,11 @@
         const loteSelect = $('#loteSelect');
         const origenSelect = $('#origenSelect');
         const destinoSelect = $('#destinoSelect');
-        const cantidadInput = $('#cantidadInput');
         const stockInfoContainer = $('#stockInfoContainer');
         const stockCards = $('#stockCards');
         const stockOrigenInfo = $('#stockOrigenInfo');
         const trasladoVisualizacion = $('#trasladoVisualizacion');
         const unidadText = $('#unidadText');
-        
-        // Elementos nuevos para stock en tiempo real
-        const stockDisponibleInfo = $('#stockDisponibleInfo');
-        const sinStockAlert = $('#sinStockAlert');
-        const excedeStockAlert = $('#excedeStockAlert');
-        const stockCantidadInfo = $('#stockCantidadInfo');
-        const stockUnidadInfo = $('#stockUnidadInfo');
-        const ubicacionNombreInfo = $('#ubicacionNombreInfo');
         
         let stocksDisponibles = {};
         let unidadProducto = 'u';
@@ -284,7 +239,6 @@
                 stockInfoContainer.hide();
                 stockOrigenInfo.hide();
                 trasladoVisualizacion.hide();
-                resetStockInfo();
                 return;
             }
             
@@ -294,7 +248,6 @@
             if (unidadMatch) {
                 unidadProducto = unidadMatch[2];
                 unidadText.text(unidadProducto);
-                stockUnidadInfo.text(unidadProducto);
             }
             
             // Cargar stock disponible por ubicación
@@ -328,16 +281,9 @@
                     });
                     
                     stockInfoContainer.show();
-                    
-                    // Si ya hay ubicación seleccionada, actualizar info
-                    const origenId = origenSelect.val();
-                    if (origenId) {
-                        actualizarStockInfo(origenId);
-                    }
                 } else {
                     stockCards.html('<div class="col-12"><div class="alert alert-warning mb-0">No hay stock disponible</div></div>');
                     stockInfoContainer.show();
-                    resetStockInfo();
                 }
             } catch (error) {
                 console.error('Error al cargar stock:', error);
@@ -351,7 +297,6 @@
             
             if (!origenId || !loteId) {
                 stockOrigenInfo.hide();
-                resetStockInfo();
                 return;
             }
             
@@ -360,35 +305,15 @@
                 const response = await fetch(`?handler=StockPorLoteYUbicacion&loteId=${loteId}&ubicacionId=${origenId}`);
                 const data = await response.json();
                 
-                if (data.success) {
+                if (data.success && data.cantidad > 0) {
                     stockActualUbicacion = data.cantidad;
                     
                     $('#stockOrigenCantidad').text(data.cantidad.toFixed(2));
                     $('#stockOrigenUnidad').text(data.unidad);
                     $('#origenNombre').text($(this).find('option:selected').text());
-                    $('#origenStock').text(`Stock: ${data.cantidad.toFixed(2)} ${data.unidad}`);
-                    stockOrigenInfo.removeClass('alert-danger').addClass('alert-warning').show();
-                    
-                    // Mostrar info en tiempo real debajo de cantidad
-                    ubicacionNombreInfo.text($(this).find('option:selected').text().split(' - ')[1] || 'ubicación seleccionada');
-                    stockCantidadInfo.text(data.cantidad.toFixed(2));
-                    stockUnidadInfo.text(data.unidad);
-                    stockDisponibleInfo.show();
-                    sinStockAlert.hide();
-                    
-                    // Validar cantidad actual
-                    validarCantidad();
+                    stockOrigenInfo.show();
                 } else {
-                    // Sin stock en esta ubicación
-                    stockActualUbicacion = 0;
-                    stockOrigenInfo.removeClass('alert-warning').addClass('alert-danger').show();
-                    $('#stockOrigenCantidad').html('<span class="text-danger">0 (Sin stock)</span>');
-                    $('#stockOrigenUnidad').text(unidadProducto);
-                    
-                    // Mostrar alerta de sin stock
-                    stockDisponibleInfo.hide();
-                    sinStockAlert.show();
-                    excedeStockAlert.hide();
+                    stockOrigenInfo.hide();
                 }
                 
                 actualizarVisualizacion();
@@ -397,73 +322,16 @@
             }
         });
         
-        // Validar cantidad en tiempo real
-        cantidadInput.on('input', function() {
-            validarCantidad();
-            actualizarVisualizacion();
-        });
-        
-        function validarCantidad() {
-            const cantidadSolicitada = parseFloat(cantidadInput.val() || 0);
-            
-            if (stockActualUbicacion === 0) {
-                // Sin stock
-                cantidadInput.addClass('is-invalid');
-                sinStockAlert.show();
-                excedeStockAlert.hide();
-                stockDisponibleInfo.hide();
-                return false;
-            }
-            
-            if (cantidadSolicitada > stockActualUbicacion) {
-                // Excede stock
-                cantidadInput.addClass('is-invalid');
-                stockOrigenInfo.removeClass('alert-warning').addClass('alert-danger');
-                excedeStockAlert.show();
-                stockDisponibleInfo.show();
-                sinStockAlert.hide();
-                return false;
-            }
-            
-            // Cantidad válida
-            cantidadInput.removeClass('is-invalid');
-            stockOrigenInfo.removeClass('alert-danger').addClass('alert-warning');
-            excedeStockAlert.hide();
-            sinStockAlert.hide();
-            stockDisponibleInfo.show();
-            return true;
-        }
-        
-        function resetStockInfo() {
-            stockDisponibleInfo.hide();
-            sinStockAlert.hide();
-            excedeStockAlert.hide();
-            stockActualUbicacion = 0;
-        }
-        
-        function actualizarStockInfo(origenId) {
-            if (stocksDisponibles[origenId]) {
-                const stock = stocksDisponibles[origenId];
-                stockActualUbicacion = stock.cantidad;
-                ubicacionNombreInfo.text(stock.ubicacionCodigo);
-                stockCantidadInfo.text(stock.cantidad.toFixed(2));
-                stockUnidadInfo.text(stock.unidad);
-                stockDisponibleInfo.show();
-                validarCantidad();
-            }
-        }
-        
         // Actualizar visualización
         destinoSelect.on('change', actualizarVisualizacion);
         
         function actualizarVisualizacion() {
             const origenId = origenSelect.val();
             const destinoId = destinoSelect.val();
-            const cantidad = cantidadInput.val();
             
-            if (origenId && destinoId && cantidad > 0) {
+            if (origenId && destinoId && stockActualUbicacion > 0) {
                 $('#destinoNombre').text(destinoSelect.find('option:selected').text());
-                $('#cantidadTraslado').text(`${parseFloat(cantidad).toFixed(2)} ${unidadText.text()}`);
+                $('#cantidadTraslado').text(`${stockActualUbicacion.toFixed(2)} ${unidadProducto}`);
                 trasladoVisualizacion.show();
             } else {
                 trasladoVisualizacion.hide();

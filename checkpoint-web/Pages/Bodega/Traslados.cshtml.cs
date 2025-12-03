@@ -40,9 +40,6 @@ namespace checkpoint_web.Pages.Bodega
         public Guid DestinoId { get; set; }
 
         [BindProperty]
-        public decimal Cantidad { get; set; }
-
-        [BindProperty]
         public string? Motivo { get; set; }
 
         public async Task OnGetAsync()
@@ -104,11 +101,6 @@ namespace checkpoint_web.Pages.Bodega
                 ModelState.AddModelError(string.Empty, "La ubicación de origen y destino no pueden ser la misma");
             }
 
-            if (Cantidad <= 0)
-            {
-                ModelState.AddModelError(nameof(Cantidad), "La cantidad debe ser mayor a 0");
-            }
-
             if (!ModelState.IsValid)
             {
                 TempData["ErrorMessage"] = "Por favor complete todos los campos requeridos";
@@ -136,20 +128,33 @@ namespace checkpoint_web.Pages.Bodega
                     await CargarDatosAsync();
                     return Page();
                 }
+
+                // OBTENER CANTIDAD AUTOMÁTICAMENTE desde el stock de origen
+                var cantidadDisponible = await _movimientoService.GetStockDisponibleEnUbicacionAsync(LoteId, OrigenId);
                 
-                _logger.LogInformation("[TRASLADOS] Creando traslado - Usuario: {UserId}, Lote: {LoteId}, Cantidad: {Cantidad}", 
-                    usuarioId, LoteId, Cantidad);
+                if (cantidadDisponible <= 0)
+                {
+                    var ubicacion = await _context.Ubicaciones.FindAsync(OrigenId);
+                    TempData["ErrorMessage"] = $"? No hay stock disponible en {ubicacion?.Codigo ?? "la ubicación de origen"}. " +
+                        $"Seleccione una ubicación que contenga stock de este lote.";
+                    await CargarDatosAsync();
+                    return Page();
+                }
+                
+                _logger.LogInformation("[TRASLADOS] Trasladando TODO el stock - Usuario: {UserId}, Lote: {LoteId}, Cantidad: {Cantidad}", 
+                    usuarioId, LoteId, cantidadDisponible);
                 
                 await _movimientoService.CrearTrasladoAsync(
                     LoteId,
                     OrigenId,
                     DestinoId,
-                    Cantidad,
+                    cantidadDisponible, // Usar toda la cantidad disponible
                     usuarioId,
                     Motivo
                 );
 
-                TempData["SuccessMessage"] = $"? Traslado ejecutado correctamente: {Cantidad:N2} unidades";
+                var lote = await _context.Lotes.Include(l => l.Producto).FirstOrDefaultAsync(l => l.Id == LoteId);
+                TempData["SuccessMessage"] = $"? Traslado ejecutado correctamente: {cantidadDisponible:N2} {lote?.Producto?.Unidad ?? "u"}";
                 return RedirectToPage();
             }
             catch (InvalidOperationException ex)
@@ -159,15 +164,11 @@ namespace checkpoint_web.Pages.Bodega
                 // Mejorar mensaje si es error de stock
                 if (ex.Message.Contains("Stock insuficiente"))
                 {
-                    // Obtener stock actual para mostrar
-                    var stockActual = await _movimientoService.GetStockDisponibleEnUbicacionAsync(LoteId, OrigenId);
                     var ubicacion = await _context.Ubicaciones.FindAsync(OrigenId);
                     var lote = await _context.Lotes.Include(l => l.Producto).FirstOrDefaultAsync(l => l.Id == LoteId);
                     
-                    TempData["ErrorMessage"] = $"? Stock insuficiente en {ubicacion?.Codigo ?? "ubicación de origen"}. " +
-                        $"Disponible: {stockActual:N2} {lote?.Producto?.Unidad ?? "u"}, " +
-                        $"Solicitado: {Cantidad:N2} {lote?.Producto?.Unidad ?? "u"}. " +
-                        $"?? Verifique el stock disponible antes de realizar el traslado.";
+                    TempData["ErrorMessage"] = $"? No hay stock disponible en {ubicacion?.Codigo ?? "ubicación de origen"}. " +
+                        $"Seleccione una ubicación que contenga stock de este lote.";
                 }
                 else
                 {
