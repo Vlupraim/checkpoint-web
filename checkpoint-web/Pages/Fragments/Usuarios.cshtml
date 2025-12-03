@@ -72,7 +72,7 @@
                                         <a href="/Admin/Users/EditRoles?id=@usuario.Id" class="btn btn-outline-primary">
                                             <i class="bi bi-pencil"></i> Editar Roles
                                         </a>
-                                        <button type="button" class="btn btn-outline-danger" 
+                                        <button type="button" class="btn btn-outline-danger btn-delete-user" 
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#deleteModal"
                                                 data-user-id="@usuario.Id"
@@ -123,58 +123,78 @@
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        (function() {
-            var currentUserId = null;
-            var currentUserEmail = null;
+<script>
+(function() {
+    console.log('🔧 [UserDelete] Script loading...');
+    
+    function initDeleteScript() {
+        console.log('🔧 [UserDelete] Initializing...');
+        
+        var currentUserId = null;
+        var currentUserEmail = null;
+        
+        setTimeout(function() {
             var deleteModal = document.getElementById('deleteModal');
+            var confirmBtn = document.getElementById('confirmDeleteBtn');
+            
+            console.log('🔍 [UserDelete] deleteModal found:', !!deleteModal);
+            console.log('🔍 [UserDelete] confirmDeleteBtn found:', !!confirmBtn);
+            
+            if (!deleteModal || !confirmBtn) {
+                console.error('❌ [UserDelete] Modal or button not found! Retrying in 500ms...');
+                setTimeout(initDeleteScript, 500);
+                return;
+            }
+            
             var modalInstance = null;
 
-            // Cuando se abre el modal
             deleteModal.addEventListener('show.bs.modal', function (event) {
                 var button = event.relatedTarget;
                 currentUserId = button.getAttribute('data-user-id');
                 currentUserEmail = button.getAttribute('data-user-email');
                 
-                console.log('Modal opened for user:', currentUserId, currentUserEmail);
+                console.log('✅ [UserDelete] Modal opened for:', currentUserId, currentUserEmail);
                 
-                document.getElementById('userEmailDisplay').textContent = currentUserEmail;
+                var emailDisplay = document.getElementById('userEmailDisplay');
+                if (emailDisplay) {
+                    emailDisplay.textContent = currentUserEmail;
+                }
+                
                 modalInstance = bootstrap.Modal.getInstance(deleteModal) || new bootstrap.Modal(deleteModal);
             });
 
-            // Cuando se confirma la eliminación
-            document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-                console.log('Delete button clicked for user:', currentUserId);
+            confirmBtn.addEventListener('click', function(e) {
+                console.log('🗑️ [UserDelete] Delete button clicked!');
+                console.log('   User ID:', currentUserId);
+                console.log('   User Email:', currentUserEmail);
                 
                 if (!currentUserId) {
-                    console.error('No user ID found');
+                    console.error('❌ [UserDelete] No user ID found');
                     showAlert('danger', 'Error: No se pudo identificar el usuario a eliminar');
                     return;
                 }
 
-                // Deshabilitar el botón para evitar doble clic
                 var btn = this;
                 btn.disabled = true;
                 btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Eliminando...';
+                console.log('⏳ [UserDelete] Button disabled, sending request...');
 
-                // Obtener el token antiforgery
                 var token = document.querySelector('#ajaxTokenForm input[name="__RequestVerificationToken"]')?.value;
-                console.log('Token found:', !!token);
+                console.log('🔑 [UserDelete] Token found:', !!token);
 
                 if (!token) {
-                    console.error('Antiforgery token not found');
+                    console.error('❌ [UserDelete] Antiforgery token not found');
                     showAlert('danger', 'Error de seguridad: Token no encontrado');
                     resetButton(btn);
                     return;
                 }
 
-                // Crear FormData con el token y el id
                 var formData = new FormData();
                 formData.append('__RequestVerificationToken', token);
                 formData.append('id', currentUserId);
 
-                // Hacer POST con AJAX
+                console.log('📤 [UserDelete] Sending POST to /Admin/Users/Delete');
+
                 fetch('/Admin/Users/Delete', {
                     method: 'POST',
                     body: formData,
@@ -184,29 +204,25 @@
                     }
                 })
                 .then(response => {
-                    console.log('Response status:', response.status, response.statusText);
+                    console.log('📥 [UserDelete] Response received:', response.status, response.statusText);
                     
-                    // Check if response is OK (200-299)
                     if (!response.ok) {
                         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }
                     
-                    // For redirects, follow them
                     if (response.redirected) {
-                        console.log('Redirected to:', response.url);
+                        console.log('🔀 [UserDelete] Redirected to:', response.url);
                     }
                     
                     return response.text();
                 })
                 .then(html => {
-                    console.log('User deleted successfully');
+                    console.log('✅ [UserDelete] User deleted successfully!');
                     
-                    // Cerrar el modal
                     if (modalInstance) {
                         modalInstance.hide();
                     }
 
-                    // Eliminar la fila de la tabla (efecto visual inmediato)
                     var row = document.getElementById('user-row-' + currentUserId);
                     if (row) {
                         row.style.transition = 'opacity 0.3s';
@@ -214,22 +230,19 @@
                         setTimeout(() => row.remove(), 300);
                     }
 
-                    // Mostrar mensaje de éxito
                     showAlert('success', `Usuario <strong>${escapeHtml(currentUserEmail)}</strong> eliminado exitosamente`);
                 })
                 .catch(error => {
-                    console.error('Error deleting user:', error);
+                    console.error('❌ [UserDelete] Error:', error);
                     
-                    // Cerrar el modal
                     if (modalInstance) {
                         modalInstance.hide();
                     }
 
-                    // Mostrar error
                     showAlert('danger', `Error al eliminar el usuario: ${error.message}`);
                 })
                 .finally(() => {
-                    // Restaurar el botón
+                    console.log('🔄 [UserDelete] Request completed, resetting button');
                     resetButton(btn);
                     currentUserId = null;
                     currentUserEmail = null;
@@ -244,12 +257,14 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 `;
-                document.getElementById('alertContainer').innerHTML = alertHtml;
+                var container = document.getElementById('alertContainer');
+                if (container) {
+                    container.innerHTML = alertHtml;
+                }
 
-                // Auto-cerrar el alert después de 5 segundos
                 setTimeout(() => {
                     var alert = document.querySelector('#alertContainer .alert');
-                    if (alert) {
+                    if (alert && bootstrap.Alert) {
                         var bsAlert = new bootstrap.Alert(alert);
                         bsAlert.close();
                     }
@@ -266,6 +281,15 @@
                 div.textContent = text;
                 return div.innerHTML;
             }
-        })();
-    </script>
-}
+            
+            console.log('✅ [UserDelete] Script initialized successfully!');
+        }, 100);
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDeleteScript);
+    } else {
+        initDeleteScript();
+    }
+})();
+</script>
