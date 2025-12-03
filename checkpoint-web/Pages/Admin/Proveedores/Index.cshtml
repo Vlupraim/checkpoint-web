@@ -100,7 +100,7 @@
                                 <td>
                                     <div class="btn-group btn-group-sm">
                                         <a asp-page="Edit" asp-route-id="@proveedor.Id" class="btn btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
-                                        <form method="post" asp-page-handler="Delete" asp-route-id="@proveedor.Id" class="d-inline delete-form"
+                                        <form method="post" asp-page-handler="Delete" asp-route-id="@proveedor.Id" class="d-inline delete-form-proveedor"
                                               data-proveedor-nombre="@proveedor.Nombre" data-lotes-count="@lotesCount">
                                             @Html.AntiForgeryToken()
                                             <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> Eliminar</button>
@@ -177,28 +177,25 @@
 </div>
 
 <script>
-(function() {
-    // Manejar confirmación de eliminación
-    const deleteForms = document.querySelectorAll('.delete-form');
-    
-    deleteForms.forEach(form => {
-        form.addEventListener('submit', function(e) {
-            const proveedorNombre = this.dataset.proveedorNombre;
-            const lotesCount = parseInt(this.dataset.lotesCount) || 0;
-            
-            let mensaje = `¿Está seguro de eliminar el proveedor "${proveedorNombre}"?\n\n`;
-            mensaje += '⚠️ Esta acción no se puede deshacer.\n\n';
-            
-            if (lotesCount > 0) {
-                mensaje += `ℹ️ Este proveedor tiene ${lotesCount} lote(s) asociado(s).\n`;
-                mensaje += 'Los lotes serán desvinculados (el proveedor quedará sin asignar).';
-            }
-            
-            if (!confirm(mensaje)) {
-                e.preventDefault();
-                return false;
-            }
-        });
-    });
-})();
+// Usar delegación de eventos para que funcione con contenido cargado por AJAX
+document.addEventListener('submit', function(e) {
+    if (e.target.classList.contains('delete-form-proveedor')) {
+        const proveedorNombre = e.target.dataset.proveedorNombre;
+        const lotesCount = parseInt(e.target.dataset.lotesCount) || 0;
+        
+        let mensaje = `¿Está seguro de eliminar el proveedor "${proveedorNombre}"?\n\n`;
+        mensaje += '⚠️ Esta acción no se puede deshacer.\n\n';
+        
+        if (lotesCount > 0) {
+            mensaje += `ℹ️ Este proveedor tiene ${lotesCount} lote(s) asociado(s).\n`;
+            mensaje += 'Los lotes serán desvinculados (el proveedor quedará sin asignar).';
+        }
+        
+        if (!confirm(mensaje)) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    }
+}, true);
 </script>

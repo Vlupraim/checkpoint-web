@@ -192,22 +192,20 @@ else
 </div>
 
 <script>
-(function() {
-    const deleteForms = document.querySelectorAll('.delete-form');
-    
-    deleteForms.forEach(form => {
-        form.addEventListener('submit', function(e) {
-            const clienteNombre = this.dataset.clienteNombre;
-            
-            let mensaje = `¿Está seguro de eliminar el cliente "${clienteNombre}"?\n\n`;
-            mensaje += '⚠️ Esta acción no se puede deshacer.\n\n';
-            mensaje += 'Nota: Si el cliente tiene movimientos asociados, no podrá ser eliminado por razones de trazabilidad.';
-            
-            if (!confirm(mensaje)) {
-                e.preventDefault();
-                return false;
-            }
-        });
-    });
-})();
+// Usar delegación de eventos para que funcione con contenido cargado por AJAX
+document.addEventListener('submit', function(e) {
+    if (e.target.classList.contains('delete-form')) {
+        const clienteNombre = e.target.dataset.clienteNombre;
+        
+        let mensaje = `¿Está seguro de eliminar el cliente "${clienteNombre}"?\n\n`;
+        mensaje += '⚠️ Esta acción no se puede deshacer.\n\n';
+        mensaje += 'Nota: Si el cliente tiene movimientos asociados, no podrá ser eliminado por razones de trazabilidad.';
+        
+        if (!confirm(mensaje)) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    }
+}, true);
 </script>
