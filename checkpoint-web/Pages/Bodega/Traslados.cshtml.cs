@@ -161,14 +161,19 @@ namespace checkpoint_web.Pages.Bodega
                         .Include(l => l.Producto)
                         .FirstOrDefaultAsync(l => l.Id == LoteId);
                     
-                    var mensajeError = $"? No hay stock disponible en {ubicacion?.Codigo ?? "la ubicación de origen"} " +
-                        $"({ubicacion?.Sede?.Nombre ?? "sede desconocida"}). " +
-                        $"El lote {loteInfo?.CodigoLote ?? "seleccionado"} no tiene unidades en esta ubicación. " +
-                        $"Por favor, seleccione una ubicación diferente que contenga stock de este lote.";
+                    var mensajeError = $"? <strong>NO HAY STOCK DISPONIBLE</strong><br/><br/>" +
+                        $"?? <strong>Lote:</strong> {loteInfo?.CodigoLote ?? "desconocido"} - {loteInfo?.Producto?.Nombre ?? "producto desconocido"}<br/>" +
+                        $"?? <strong>Ubicación de origen seleccionada:</strong> {ubicacion?.Codigo ?? "desconocida"} ({ubicacion?.Sede?.Nombre ?? "sede desconocida"})<br/>" +
+                        $"?? <strong>Stock en esta ubicación:</strong> <span class='text-danger fw-bold'>0 {loteInfo?.Producto?.Unidad ?? "unidades"}</span><br/><br/>" +
+                        $"?? <strong>Solución:</strong> Por favor, seleccione una ubicación diferente que contenga stock de este lote. " +
+                        $"Puede ver las ubicaciones con stock disponible en las tarjetas azules de arriba.";
                     
-                    _logger.LogWarning("[TRASLADOS] Error mostrado al usuario: {Mensaje}", mensajeError);
+                    _logger.LogWarning("[TRASLADOS] Mensaje de error completo: {Mensaje}", mensajeError);
                     
-                    TempData["ErrorMessage"] = mensajeError;
+                    // Usar ViewData en lugar de TempData para que persista en la misma página
+                    ViewData["ErrorMessage"] = mensajeError;
+                    ViewData["ErrorPersistente"] = true;
+                    
                     await CargarDatosAsync();
                     return Page();
                 }

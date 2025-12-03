@@ -18,8 +18,26 @@
 @if (TempData["ErrorMessage"] != null)
 {
     <div class="alert alert-danger alert-dismissible fade show">
-        <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+        <i class="bi bi-exclamation-triangle"></i> @Html.Raw(TempData["ErrorMessage"])
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (ViewData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger border-danger border-3 shadow-sm" role="alert" style="animation: shake 0.5s;">
+        <h5 class="alert-heading">
+            <i class="bi bi-exclamation-triangle-fill"></i> Error al Procesar Traslado
+        </h5>
+        <hr />
+        @Html.Raw(ViewData["ErrorMessage"])
+        @if (ViewData["ErrorPersistente"] != null && (bool)ViewData["ErrorPersistente"])
+        {
+            <hr />
+            <p class="mb-0">
+                <small><i class="bi bi-info-circle"></i> Este mensaje permanecerá visible hasta que corrija el problema.</small>
+            </p>
+        }
     </div>
 }
 
@@ -361,3 +379,11 @@
     });
     </script>
 }
+
+<style>
+    @@keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+</style>
