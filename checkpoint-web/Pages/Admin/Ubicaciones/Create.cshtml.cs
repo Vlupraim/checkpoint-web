@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using checkpoint_web.Models;
 using checkpoint_web.Services;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace checkpoint_web.Pages.Admin.Ubicaciones
 {
@@ -50,9 +51,35 @@ namespace checkpoint_web.Pages.Admin.Ubicaciones
  TempData["SuccessMessage"] = "Ubicación creada correctamente";
  return RedirectToPage("Index");
  }
+ catch (DbUpdateException dbEx)
+ {
+ // Capturar el error específico de la base de datos
+ var innerMessage = dbEx.InnerException?.Message ?? dbEx.Message;
+ 
+ // Detectar errores comunes de PostgreSQL
+ if (innerMessage.Contains("duplicate key") || innerMessage.Contains("23505"))
+ {
+ TempData["ErrorMessage"] = $"Ya existe una ubicación con el código '{Ubicacion.Codigo}' en esta sede.";
+ }
+ else if (innerMessage.Contains("foreign key") || innerMessage.Contains("23503"))
+ {
+ TempData["ErrorMessage"] = "Error de integridad referencial. Verifique que la sede seleccionada existe.";
+ }
+ else
+ {
+ TempData["ErrorMessage"] = $"Error de base de datos: {innerMessage}";
+ }
+ 
+ var sedes = await _sedeService.GetAllAsync();
+ Sedes = new SelectList(sedes, "Id", "Nombre");
+ return Page();
+ }
  catch (Exception ex)
  {
- TempData["ErrorMessage"] = "Error al crear la ubicación: " + ex.Message;
+ // Capturar cualquier otro error
+ var detailedMessage = ex.InnerException?.Message ?? ex.Message;
+ TempData["ErrorMessage"] = $"Error al crear la ubicación: {detailedMessage}";
+ 
  var sedes = await _sedeService.GetAllAsync();
  Sedes = new SelectList(sedes, "Id", "Nombre");
  return Page();
