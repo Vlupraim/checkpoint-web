@@ -1,4 +1,4 @@
-@page "{id?}"
+﻿@page "{id?}"
 @model checkpoint_web.Pages.Admin.Proveedores.DeleteModel
 @{
     ViewData["Title"] = "Eliminar Proveedor";
@@ -9,16 +9,16 @@
 
 <div class="alert alert-warning">
     <i class="bi bi-exclamation-triangle"></i>
-    <strong>�Est� seguro de que desea eliminar este proveedor?</strong>
-    <p class="mb-0">Esta acci�n no se puede deshacer.</p>
+    <strong>¿Está seguro de que desea eliminar este proveedor?</strong>
+    <p class="mb-0">Esta acción no se puede deshacer.</p>
 </div>
 
 @if (Model.LotesAsociados > 0)
 {
     <div class="alert alert-info">
         <i class="bi bi-info-circle"></i>
-        <strong>Informaci�n:</strong> Este proveedor tiene <strong>@Model.LotesAsociados lote(s)</strong> asociado(s).
-        <br />Al eliminar el proveedor, los lotes ser�n desvinculados (el proveedor quedar� sin asignar en esos lotes).
+        <strong>Información:</strong> Este proveedor tiene <strong>@Model.LotesAsociados lote(s)</strong> asociado(s).
+        <br />Al eliminar el proveedor, los lotes serán desvinculados (el proveedor quedará sin asignar en esos lotes).
     </div>
 }
 
@@ -39,7 +39,7 @@
             
             @if (!string.IsNullOrEmpty(Model.Proveedor.Categoria))
             {
-                <dt class="col-sm-3">Categor�a:</dt>
+                <dt class="col-sm-3">Categoría:</dt>
                 <dd class="col-sm-9">@Model.Proveedor.Categoria</dd>
             }
             
@@ -57,13 +57,13 @@
             
             @if (!string.IsNullOrEmpty(Model.Proveedor.Telefono))
             {
-                <dt class="col-sm-3">Tel�fono:</dt>
+                <dt class="col-sm-3">Teléfono:</dt>
                 <dd class="col-sm-9">@Model.Proveedor.Telefono</dd>
             }
             
             @if (Model.Proveedor.Calificacion.HasValue)
             {
-                <dt class="col-sm-3">Calificaci�n:</dt>
+                <dt class="col-sm-3">Calificación:</dt>
                 <dd class="col-sm-9">
                     @for (int i = 1; i <= 5; i++)
                     {
@@ -90,7 +90,7 @@
     </div>
 </div>
 
-<form method="post" class="mt-3">
+<form method="post" class="mt-3" id="deleteForm">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Proveedor.Id" />
     
@@ -99,7 +99,32 @@
             <i class="bi bi-arrow-left"></i> Cancelar
         </a>
         <button type="submit" class="btn btn-danger">
-            <i class="bi bi-trash"></i> Confirmar Eliminaci�n
+            <i class="bi bi-trash"></i> Confirmar Eliminación
         </button>
     </div>
 </form>
+
+<script>
+(function() {
+    const form = document.getElementById('deleteForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const proveedorNombre = '@Model.Proveedor.Nombre';
+            const lotesCount = @Model.LotesAsociados;
+            
+            let mensaje = `¿Está seguro de eliminar el proveedor "${proveedorNombre}"?\n\n`;
+            mensaje += '⚠️ Esta acción no se puede deshacer.\n\n';
+            
+            if (lotesCount > 0) {
+                mensaje += `ℹ️ Este proveedor tiene ${lotesCount} lote(s) asociado(s).\n`;
+                mensaje += 'Los lotes serán desvinculados (el proveedor quedará sin asignar).';
+            }
+            
+            if (!confirm(mensaje)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    }
+})();
+</script>
