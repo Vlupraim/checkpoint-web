@@ -189,6 +189,14 @@ namespace checkpoint_web.Services
         {
             var stockAntes = await GetStockDisponibleEnUbicacionAsync(loteId, ubicacionId);
 
+            // IMPORTANTE: Cambiar estado del lote a Cuarentena cuando se solicita ajuste
+            var lote = await _context.Lotes.FindAsync(loteId);
+            if (lote == null)
+                throw new KeyNotFoundException($"Lote {loteId} no encontrado");
+            
+            var estadoAnterior = lote.Estado;
+            lote.Estado = EstadoLote.Cuarentena;
+            
             var movimiento = new Movimiento
             {
                 Id = Guid.NewGuid(),
@@ -198,7 +206,7 @@ namespace checkpoint_web.Services
                 Tipo = "Ajuste",
                 Cantidad = Math.Abs(cantidad),
                 UsuarioId = usuarioId,
-                Motivo = motivo,
+                Motivo = $"[Lote pasó de {estadoAnterior} a Cuarentena] {motivo}",
                 Estado = "Pendiente", // Requiere aprobación
                 StockAnterior = stockAntes,
                 StockPosterior = stockAntes + cantidad
@@ -207,15 +215,31 @@ namespace checkpoint_web.Services
             _context.Movimientos.Add(movimiento);
             await _context.SaveChangesAsync();
 
-            await _auditService.LogAsync(usuarioId, $"Ajuste creado: {cantidad} unidades de lote {loteId}", "Pendiente aprobación");
+            await _auditService.LogAsync(usuarioId, 
+                $"Ajuste solicitado: {cantidad} unidades de lote {lote.CodigoLote}", 
+                $"Lote cambiado a Cuarentena. Requiere aprobación de Control de Calidad y Administrador");
+            
             return movimiento;
         }
 
         public async Task<bool> AprobarAjusteAsync(Guid movimientoId, string aprobadoPor)
         {
-            var movimiento = await _context.Movimientos.FindAsync(movimientoId);
+            var movimiento = await _context.Movimientos
+                .Include(m => m.Lote)
+                .FirstOrDefaultAsync(m => m.Id == movimientoId);
+                
             if (movimiento == null || movimiento.Tipo != "Ajuste" || movimiento.Estado != "Pendiente")
                 return false;
+
+            // VALIDACIÓN CRÍTICA: El lote debe estar LIBERADO antes de aprobar el ajuste
+            // Esto asegura que Control de Calidad ya lo revisó
+            if (movimiento.Lote!.Estado != EstadoLote.Liberado)
+            {
+                throw new InvalidOperationException(
+                    $"No se puede aprobar el ajuste. El lote {movimiento.Lote.CodigoLote} está en estado '{movimiento.Lote.Estado}'. " +
+                    $"Control de Calidad debe liberarlo primero antes de que se pueda aprobar el ajuste numérico."
+                );
+            }
 
             movimiento.Estado = "Aprobado";
             movimiento.AprobadoPor = aprobadoPor;
@@ -227,7 +251,11 @@ namespace checkpoint_web.Services
             await ActualizarStockAsync(movimiento.LoteId, ubicacionId, movimiento.Cantidad, esIncremento);
 
             await _context.SaveChangesAsync();
-            await _auditService.LogAsync(aprobadoPor, $"Aprobó ajuste de inventario ID: {movimientoId}", string.Empty);
+            
+            await _auditService.LogAsync(aprobadoPor, 
+                $"Aprobó ajuste ID: {movimientoId} de lote {movimiento.Lote.CodigoLote}", 
+                $"Stock actualizado. Lote estaba en estado Liberado.");
+            
             return true;
         }
 

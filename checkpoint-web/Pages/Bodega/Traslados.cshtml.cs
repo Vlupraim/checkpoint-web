@@ -42,6 +42,9 @@ namespace checkpoint_web.Pages.Bodega
         [BindProperty]
         public decimal Cantidad { get; set; }
 
+        [BindProperty]
+        public string? Motivo { get; set; }
+
         public async Task OnGetAsync()
         {
             await CargarDatosAsync();
@@ -95,7 +98,8 @@ namespace checkpoint_web.Pages.Bodega
                     OrigenId,
                     DestinoId,
                     Cantidad,
-                    usuarioId
+                    usuarioId,
+                    Motivo
                 );
 
                 TempData["SuccessMessage"] = "Traslado ejecutado correctamente";

@@ -5,12 +5,12 @@
     Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_BodegaLayout.cshtml";
 }
 
-<h2>Traslados entre Ubicaciones</h2>
+<h2><i class="bi bi-arrow-left-right"></i> Traslados entre Ubicaciones</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show">
-        @TempData["SuccessMessage"]
+        <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
@@ -18,55 +18,136 @@
 @if (TempData["ErrorMessage"] != null)
 {
     <div class="alert alert-danger alert-dismissible fade show">
-        @TempData["ErrorMessage"]
+        <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
-<div class="row mb-3">
+<div class="row mb-4">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Registrar Traslado</h5>
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-arrow-left-right"></i> Registrar Traslado</h5>
             </div>
             <div class="card-body">
-                @* Solo mostrar ValidationSummary si hay errores *@
-                @if (!ViewData.ModelState.IsValid)
-                {
-                    <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
-                }
-                
-                <form method="post">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label class="form-label text-white">Lote</label>
-                            <select asp-for="LoteId" asp-items="Model.LotesDisponibles" class="form-select" required>
-                                <option value="">Seleccionar Lote...</option>
+                <form method="post" id="trasladoForm">
+                    @Html.AntiForgeryToken()
+                    
+                    <!-- Paso 1: Selección de Lote -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <label asp-for="LoteId" class="form-label fw-bold">1️⃣ Seleccione el Lote a Trasladar *</label>
+                            <select asp-for="LoteId" asp-items="Model.LotesDisponibles" class="form-select form-select-lg" id="loteSelect" required>
+                                <option value="">-- Seleccione un Lote --</option>
                             </select>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i> Solo lotes liberados con stock disponible
+                            </small>
                             <span asp-validation-for="LoteId" class="text-danger"></span>
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label text-white">Ubicación Origen</label>
-                            <select asp-for="OrigenId" asp-items="Model.UbicacionesOrigen" class="form-select" required>
-                                <option value="">Seleccionar...</option>
-                            </select>
-                            <span asp-validation-for="OrigenId" class="text-danger"></span>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label text-white">Ubicación Destino</label>
-                            <select asp-for="DestinoId" asp-items="Model.UbicacionesDestino" class="form-select" required>
-                                <option value="">Seleccionar...</option>
-                            </select>
-                            <span asp-validation-for="DestinoId" class="text-danger"></span>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label text-white">Cantidad</label>
-                            <input asp-for="Cantidad" type="number" class="form-control" step="0.01" required />
-                            <span asp-validation-for="Cantidad" class="text-danger"></span>
+                    </div>
+
+                    <!-- Información de Stock Disponible -->
+                    <div id="stockInfoContainer" style="display:none;">
+                        <div class="alert alert-info border-start border-4 border-info">
+                            <h6 class="alert-heading"><i class="bi bi-box-seam"></i> Stock Disponible por Ubicación</h6>
+                            <div id="stockCards" class="row g-3 mt-2">
+                                <!-- Se llenará dinámicamente -->
+                            </div>
                         </div>
                     </div>
-                    <div class="mt-3">
-                        <button type="submit" class="btn btn-primary">Ejecutar Traslado</button>
+
+                    <hr />
+
+                    <!-- Paso 2: Origen y Destino -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="OrigenId" class="form-label fw-bold">
+                                2️⃣ Ubicación de Origen *
+                                <span class="badge bg-danger ms-2">📤 Salida</span>
+                            </label>
+                            <select asp-for="OrigenId" asp-items="Model.UbicacionesOrigen" class="form-select form-select-lg" id="origenSelect" required>
+                                <option value="">-- Seleccione Ubicación de Origen --</option>
+                            </select>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-arrow-up-circle text-danger"></i> Desde dónde se retirará el stock
+                            </small>
+                            <span asp-validation-for="OrigenId" class="text-danger"></span>
+                            
+                            <div id="stockOrigenInfo" class="mt-2" style="display:none;">
+                                <div class="alert alert-warning mb-0">
+                                    <i class="bi bi-box"></i> Stock disponible: <strong id="stockOrigenCantidad">0</strong> <span id="stockOrigenUnidad">u</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="DestinoId" class="form-label fw-bold">
+                                3️⃣ Ubicación de Destino *
+                                <span class="badge bg-success ms-2">📥 Entrada</span>
+                            </label>
+                            <select asp-for="DestinoId" asp-items="Model.UbicacionesDestino" class="form-select form-select-lg" id="destinoSelect" required>
+                                <option value="">-- Seleccione Ubicación de Destino --</option>
+                            </select>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-arrow-down-circle text-success"></i> Hacia dónde se moverá el stock
+                            </small>
+                            <span asp-validation-for="DestinoId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Paso 4: Cantidad y Motivo -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label asp-for="Cantidad" class="form-label fw-bold">4️⃣ Cantidad a Trasladar *</label>
+                            <div class="input-group input-group-lg">
+                                <input asp-for="Cantidad" type="number" class="form-control" id="cantidadInput" step="0.01" min="0.01" placeholder="0.00" required />
+                                <span class="input-group-text" id="unidadText">u</span>
+                            </div>
+                            <span asp-validation-for="Cantidad" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-8">
+                            <label asp-for="Motivo" class="form-label">Motivo del Traslado (Opcional)</label>
+                            <input asp-for="Motivo" type="text" class="form-control form-control-lg" placeholder="Ej: Reorganización de bodega, reubicación..." />
+                        </div>
+                    </div>
+
+                    <!-- Visualización del Traslado -->
+                    <div id="trasladoVisualizacion" class="alert alert-light border" style="display:none;">
+                        <div class="row align-items-center">
+                            <div class="col-md-5 text-center">
+                                <div class="card bg-danger bg-opacity-10 border-danger">
+                                    <div class="card-body">
+                                        <h6 class="text-danger"><i class="bi bi-geo-alt-fill"></i> Origen</h6>
+                                        <p class="mb-0 fw-bold" id="origenNombre">-</p>
+                                        <small id="origenStock" class="text-muted">Stock: -</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <i class="bi bi-arrow-right" style="font-size: 3rem; color: #0d6efd;"></i>
+                                <p class="fw-bold text-primary" id="cantidadTraslado">0 u</p>
+                            </div>
+                            <div class="col-md-5 text-center">
+                                <div class="card bg-success bg-opacity-10 border-success">
+                                    <div class="card-body">
+                                        <h6 class="text-success"><i class="bi bi-geo-alt-fill"></i> Destino</h6>
+                                        <p class="mb-0 fw-bold" id="destinoNombre">-</p>
+                                        <small class="text-muted">Nueva ubicación</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-info btn-lg text-white">
+                            <i class="bi bi-arrow-left-right"></i> Ejecutar Traslado
+                        </button>
+                        <button type="reset" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-x-circle"></i> Limpiar
+                        </button>
                     </div>
                 </form>
             </div>
@@ -76,46 +157,171 @@
 
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">Traslados Recientes</h5>
+        <h5 class="mb-0"><i class="bi bi-clock-history"></i> Traslados Recientes</h5>
     </div>
     <div class="card-body">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Lote</th>
-                    <th>Origen</th>
-                    <th>Destino</th>
-                    <th>Cantidad</th>
-                    <th>Usuario</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.TrasladosRecientes.Any())
-                {
-                    @foreach (var tras in Model.TrasladosRecientes)
-                    {
+        @if (Model.TrasladosRecientes.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
                         <tr>
-                            <td>@tras.Fecha.ToString("dd/MM HH:mm")</td>
-                            <td><small>@tras.Lote?.CodigoLote</small></td>
-                            <td>@tras.OrigenUbicacion?.Codigo</td>
-                            <td>@tras.DestinoUbicacion?.Codigo</td>
-                            <td><strong>@tras.Cantidad.ToString("N2")</strong></td>
-                            <td>@(tras.UsuarioId ?? "-")</td>
+                            <th><i class="bi bi-clock"></i> Fecha</th>
+                            <th><i class="bi bi-box-seam"></i> Lote</th>
+                            <th><i class="bi bi-geo-alt text-danger"></i> Origen</th>
+                            <th></th>
+                            <th><i class="bi bi-geo-alt text-success"></i> Destino</th>
+                            <th class="text-end"><i class="bi bi-hash"></i> Cantidad</th>
+                            <th><i class="bi bi-person"></i> Usuario</th>
+                            <th><i class="bi bi-info-circle"></i> Estado</th>
                         </tr>
-                    }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="6" class="text-center text-muted">No hay traslados registrados</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var tras in Model.TrasladosRecientes)
+                        {
+                            <tr>
+                                <td><small>@tras.Fecha.ToLocalTime().ToString("dd/MM HH:mm")</small></td>
+                                <td>
+                                    <strong>@(tras.Lote?.Producto?.Nombre ?? "-")</strong><br/>
+                                    <small class="text-muted">@(tras.Lote?.CodigoLote ?? "-")</small>
+                                </td>
+                                <td><span class="badge bg-danger">@(tras.OrigenUbicacion?.Codigo ?? "-")</span></td>
+                                <td class="text-center"><i class="bi bi-arrow-right text-primary"></i></td>
+                                <td><span class="badge bg-success">@(tras.DestinoUbicacion?.Codigo ?? "-")</span></td>
+                                <td class="text-end"><strong>@tras.Cantidad.ToString("N2")</strong> @(tras.Unidad ?? "u")</td>
+                                <td><small>@(tras.UsuarioId != null && tras.UsuarioId.Length >= 8 ? tras.UsuarioId.Substring(0, 8) + "..." : tras.UsuarioId ?? "-")</small></td>
+                                <td>
+                                    @if (tras.Estado == "Completado")
+                                    {
+                                        <span class="badge bg-success">Completado</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@tras.Estado</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info mb-0">
+                <i class="bi bi-info-circle"></i> No hay traslados registrados
+            </div>
+        }
     </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+    $(document).ready(function() {
+        const loteSelect = $('#loteSelect');
+        const origenSelect = $('#origenSelect');
+        const destinoSelect = $('#destinoSelect');
+        const cantidadInput = $('#cantidadInput');
+        const stockInfoContainer = $('#stockInfoContainer');
+        const stockCards = $('#stockCards');
+        const stockOrigenInfo = $('#stockOrigenInfo');
+        const trasladoVisualizacion = $('#trasladoVisualizacion');
+        const unidadText = $('#unidadText');
+        
+        let stocksDisponibles = {};
+        
+        // Cargar stock cuando se selecciona lote
+        loteSelect.on('change', async function() {
+            const loteId = $(this).val();
+            
+            if (!loteId) {
+                stockInfoContainer.hide();
+                stockOrigenInfo.hide();
+                trasladoVisualizacion.hide();
+                return;
+            }
+            
+            // Extraer unidad
+            const selectedText = $(this).find('option:selected').text();
+            const unidadMatch = selectedText.match(/\(([\d,.]+ (\w+))/);
+            if (unidadMatch) {
+                unidadText.text(unidadMatch[2]);
+            }
+            
+            // Cargar stock
+            try {
+                const response = await fetch(`/Bodega/Movimientos?handler=StockPorLote&loteId=${loteId}`);
+                const data = await response.json();
+                
+                if (data.success && data.stocks && data.stocks.length > 0) {
+                    stocksDisponibles = {};
+                    stockCards.empty();
+                    
+                    data.stocks.forEach(stock => {
+                        stocksDisponibles[stock.ubicacionId] = stock;
+                        
+                        const card = `
+                            <div class="col-md-3">
+                                <div class="card border-info">
+                                    <div class="card-body p-3">
+                                        <h6 class="card-title text-info mb-1">
+                                            <i class="bi bi-geo-alt-fill"></i> ${stock.ubicacionCodigo}
+                                        </h6>
+                                        <p class="card-text mb-0">
+                                            <small class="text-muted">${stock.sedeNombre}</small><br/>
+                                            <strong class="text-info">${stock.cantidad.toFixed(2)} ${stock.unidad}</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        stockCards.append(card);
+                    });
+                    
+                    stockInfoContainer.show();
+                } else {
+                    stockCards.html('<div class="col-12"><div class="alert alert-warning mb-0">No hay stock disponible</div></div>');
+                    stockInfoContainer.show();
+                }
+            } catch (error) {
+                console.error('Error al cargar stock:', error);
+            }
+        });
+        
+        // Actualizar info de origen
+        origenSelect.on('change', function() {
+            const origenId = $(this).val();
+            if (origenId && stocksDisponibles[origenId]) {
+                const stock = stocksDisponibles[origenId];
+                $('#stockOrigenCantidad').text(stock.cantidad.toFixed(2));
+                $('#stockOrigenUnidad').text(stock.unidad);
+                $('#origenNombre').text($(this).find('option:selected').text());
+                $('#origenStock').text(`Stock: ${stock.cantidad.toFixed(2)} ${stock.unidad}`);
+                stockOrigenInfo.show();
+                actualizarVisualizacion();
+            } else {
+                stockOrigenInfo.hide();
+            }
+        });
+        
+        // Actualizar visualización
+        destinoSelect.on('change', actualizarVisualizacion);
+        cantidadInput.on('input', actualizarVisualizacion);
+        
+        function actualizarVisualizacion() {
+            const origenId = origenSelect.val();
+            const destinoId = destinoSelect.val();
+            const cantidad = cantidadInput.val();
+            
+            if (origenId && destinoId && cantidad > 0) {
+                $('#destinoNombre').text(destinoSelect.find('option:selected').text());
+                $('#cantidadTraslado').text(`${parseFloat(cantidad).toFixed(2)} ${unidadText.text()}`);
+                trasladoVisualizacion.show();
+            } else {
+                trasladoVisualizacion.hide();
+            }
+        }
+    });
+    </script>
 }

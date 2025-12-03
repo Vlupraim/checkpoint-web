@@ -138,19 +138,8 @@ namespace checkpoint_web.Pages.Bodega
                         TempData["SuccessMessage"] = $"?? Salida registrada correctamente: {Cantidad:N2} unidades";
                         break;
 
-                    case "ajuste":
-                        if (string.IsNullOrWhiteSpace(Observaciones))
-                        {
-                            ModelState.AddModelError(nameof(Observaciones), "Los ajustes requieren observaciones");
-                            await CargarDatosAsync();
-                            return Page();
-                        }
-                        await _movimientoService.CrearAjusteAsync(LoteId, UbicacionId, Cantidad, usuarioId, Observaciones);
-                        TempData["SuccessMessage"] = "?? Ajuste registrado correctamente (pendiente aprobación)";
-                        break;
-
                     default:
-                        TempData["ErrorMessage"] = "Tipo de movimiento no válido";
+                        TempData["ErrorMessage"] = "Tipo de movimiento no válido. Para ajustes, use la sección de Ajustes.";
                         await CargarDatosAsync();
                         return Page();
                 }
@@ -210,7 +199,7 @@ namespace checkpoint_web.Pages.Bodega
                     ubicaciones.Select(u => new
                     {
                         u.Id,
-                        Display = $"{u.Sede?.Nombre ?? "Sin sede"} - {u.Codigo} - {u.Nombre} ({u.Tipo})"
+                        Display = $"{u.Sede?.Nombre ?? "Sin sede"} - {u.Codigo} - {u.Nombre}"
                     }),
                     "Id",
                     "Display"

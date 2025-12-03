@@ -30,59 +30,102 @@
                 <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Registrar Nuevo Movimiento</h5>
             </div>
             <div class="card-body">
-                <form method="post">
+                <form method="post" id="movimientoForm">
                     @Html.AntiForgeryToken()
                     
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <label asp-for="Tipo" class="form-label">Tipo de Movimiento *</label>
-                            <select asp-for="Tipo" class="form-select" required>
-                                <option value="">-- Seleccionar --</option>
-                                <option value="Entrada">✅ Entrada</option>
-                                <option value="Salida">📤 Salida</option>
-                                <option value="Ajuste">⚖️ Ajuste</option>
-                            </select>
-                            <span asp-validation-for="Tipo" class="text-danger"></span>
+                    <!-- Paso 1: Tipo de Movimiento -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <label class="form-label fw-bold">1️⃣ Tipo de Movimiento *</label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="Tipo" id="tipoEntrada" value="Entrada" required>
+                                    <label class="form-check-label btn btn-outline-success" for="tipoEntrada" style="cursor:pointer; padding:10px 20px;">
+                                        <i class="bi bi-box-arrow-in-down"></i> ✅ Entrada/Ingreso
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="Tipo" id="tipoSalida" value="Salida">
+                                    <label class="form-check-label btn btn-outline-danger" for="tipoSalida" style="cursor:pointer; padding:10px 20px;">
+                                        <i class="bi bi-box-arrow-up"></i> 📤 Salida
+                                    </label>
+                                </div>
+                            </div>
+                            <small class="form-text text-muted" id="tipoHelp">
+                                Seleccione el tipo de operación. Para ajustes de inventario, use la sección <a href="/Bodega/Ajustes" class="text-decoration-none">⚖️ Ajustes</a>
+                            </small>
                         </div>
+                    </div>
 
-                        <div class="col-md-4">
-                            <label asp-for="LoteId" class="form-label">Lote *</label>
-                            <select asp-for="LoteId" asp-items="Model.LotesDisponibles" class="form-select" required>
-                                <option value="">-- Seleccionar Lote --</option>
+                    <hr />
+
+                    <!-- Paso 2: Selección de Lote -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-8">
+                            <label asp-for="LoteId" class="form-label fw-bold">2️⃣ Lote *</label>
+                            <select asp-for="LoteId" asp-items="Model.LotesDisponibles" class="form-select form-select-lg" id="loteSelect" required>
+                                <option value="">-- Seleccione un Lote --</option>
                             </select>
-                            <small class="form-text text-muted">Solo lotes liberados con stock disponible</small>
-                            <span asp-validation-for="LoteId" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i> Solo lotes liberados con stock disponible
+                            </small>
                         </div>
-
                         <div class="col-md-4">
-                            <label asp-for="UbicacionId" class="form-label">Ubicación *</label>
-                            <select asp-for="UbicacionId" asp-items="Model.UbicacionesDisponibles" class="form-select" required>
-                                <option value="">-- Seleccionar Ubicación --</option>
+                            <label asp-for="Cantidad" class="form-label fw-bold">4️⃣ Cantidad *</label>
+                            <div class="input-group input-group-lg">
+                                <input asp-for="Cantidad" type="number" class="form-control" id="cantidadInput" step="0.01" min="0.01" placeholder="0.00" required />
+                                <span class="input-group-text" id="unidadText">u</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paso 3: Información de Stock (se muestra dinámicamente) -->
+                    <div id="stockInfoContainer" style="display:none;">
+                        <div class="alert alert-info border-start border-4 border-info">
+                            <h6 class="alert-heading"><i class="bi bi-box-seam"></i> Stock Disponible del Lote Seleccionado</h6>
+                            <div id="stockCards" class="row g-3 mt-2">
+                                <!-- Se llenará dinámicamente con JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paso 3: Ubicación -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-12">
+                            <label asp-for="UbicacionId" class="form-label fw-bold">3️⃣ Ubicación *</label>
+                            <select asp-for="UbicacionId" asp-items="Model.UbicacionesDisponibles" class="form-select form-select-lg" id="ubicacionSelect" required>
+                                <option value="">-- Seleccione una Ubicación --</option>
                             </select>
-                            <small class="form-text text-muted">Ubicación de origen/destino</small>
+                            <small class="form-text text-muted" id="ubicacionHelp">
+                                <span id="ubicacionHelpEntrada" style="display:none;">
+                                    <i class="bi bi-arrow-down-circle text-success"></i> Ubicación de <strong>destino</strong> donde se guardará el stock
+                                </span>
+                                <span id="ubicacionHelpSalida" style="display:none;">
+                                    <i class="bi bi-arrow-up-circle text-danger"></i> Ubicación de <strong>origen</strong> donde se retirará el stock (debe tener stock disponible)
+                                </span>
+                            </small>
                             <span asp-validation-for="UbicacionId" class="text-danger"></span>
                         </div>
-
-                        <div class="col-md-1">
-                            <label asp-for="Cantidad" class="form-label">Cantidad *</label>
-                            <input asp-for="Cantidad" type="number" class="form-control" step="0.01" min="0.01" required />
-                            <span asp-validation-for="Cantidad" class="text-danger"></span>
-                        </div>
                     </div>
 
-                    <div class="row g-3 mt-2">
+                    <!-- Observaciones -->
+                    <div class="row g-3 mb-4">
                         <div class="col-md-12">
                             <label asp-for="Observaciones" class="form-label">Observaciones</label>
-                            <input asp-for="Observaciones" type="text" class="form-control" placeholder="Opcional (requerido para ajustes)" />
-                            <small class="form-text text-muted">Los ajustes requieren observaciones obligatorias</small>
+                            <textarea asp-for="Observaciones" class="form-control" rows="2" placeholder="Opcional (requerido para ajustes)"></textarea>
+                            <small class="form-text text-muted" id="observacionesHelp">
+                                <span id="obsHelp Ajuste" style="display:none;">
+                                    <i class="bi bi-exclamation-triangle text-warning"></i> <strong>Obligatorio para ajustes:</strong> Debe explicar el motivo del ajuste
+                                </span>
+                            </small>
                         </div>
                     </div>
 
-                    <div class="mt-3">
-                        <button type="submit" class="btn btn-primary">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
                             <i class="bi bi-save"></i> Registrar Movimiento
                         </button>
-                        <button type="reset" class="btn btn-secondary">
+                        <button type="reset" class="btn btn-secondary btn-lg">
                             <i class="bi bi-x-circle"></i> Limpiar
                         </button>
                     </div>
@@ -117,7 +160,7 @@
                         @foreach (var mov in Model.MovimientosHoy)
                         {
                             <tr>
-                                <td><small>@mov.Fecha.ToString("HH:mm:ss")</small></td>
+                                <td><small>@mov.Fecha.ToLocalTime().ToString("HH:mm:ss")</small></td>
                                 <td>
                                     @{
                                         var tipoLower = (mov.Tipo ?? "").ToLower();
@@ -167,7 +210,7 @@
                                 <td class="text-end">
                                     <strong>@mov.Cantidad.ToString("N2")</strong> @(mov.Unidad ?? "u")
                                 </td>
-                                <td><small>@(mov.UsuarioId ?? "-")</small></td>
+                                <td><small>@(mov.UsuarioId != null && mov.UsuarioId.Length >= 8 ? mov.UsuarioId.Substring(0, 8) + "..." : mov.UsuarioId ?? "-")</small></td>
                                 <td>
                                     @if (mov.Estado == "Completado")
                                     {
@@ -205,4 +248,108 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+    $(document).ready(function() {
+        const tipoRadios = $('input[name="Tipo"]');
+        const loteSelect = $('#loteSelect');
+        const ubicacionSelect = $('#ubicacionSelect');
+        const cantidadInput = $('#cantidadInput');
+        const stockInfoContainer = $('#stockInfoContainer');
+        const stockCards = $('#stockCards');
+        const unidadText = $('#unidadText');
+        
+        // Manejar cambio de tipo
+        tipoRadios.on('change', function() {
+            const tipo = $(this).val().toLowerCase();
+            
+            // Ocultar todos los helpers
+            $('#ubicacionHelpEntrada, #ubicacionHelpSalida, #obsHelpAjuste').hide();
+            
+            // Mostrar helper correspondiente
+            if (tipo === 'entrada') {
+                $('#ubicacionHelpEntrada').show();
+                stockInfoContainer.hide();
+            } else if (tipo === 'salida') {
+                $('#ubicacionHelpSalida').show();
+                // Si hay lote seleccionado, cargar stock
+                if (loteSelect.val()) {
+                    cargarStockPorLote(loteSelect.val());
+                }
+            }
+            
+            // Cambiar color del label
+            $('.form-check-label').removeClass('btn-outline-success btn-outline-danger btn-outline-warning active');
+            $(this).next('label').addClass('active');
+        });
+        
+        // Manejar cambio de lote
+        loteSelect.on('change', async function() {
+            const loteId = $(this).val();
+            const tipo = $('input[name="Tipo"]:checked').val();
+            
+            if (!loteId) {
+                stockInfoContainer.hide();
+                return;
+            }
+            
+            // Extraer unidad del texto seleccionado
+            const selectedText = $(this).find('option:selected').text();
+            const unidadMatch = selectedText.match(/\([\d,.]+ (\w+) disponibles\)/);
+            if (unidadMatch) {
+                unidadText.text(unidadMatch[1]);
+            }
+            
+            // Si es salida, cargar stock disponible
+            if (tipo && tipo.toLowerCase() === 'salida') {
+                await cargarStockPorLote(loteId);
+            }
+        });
+        
+        async function cargarStockPorLote(loteId) {
+            try {
+                const response = await fetch(`?handler=StockPorLote&loteId=${loteId}`);
+                const data = await response.json();
+                
+                if (data.success && data.stocks && data.stocks.length > 0) {
+                    // Limpiar cards anteriores
+                    stockCards.empty();
+                    
+                    // Crear card por cada ubicación con stock
+                    data.stocks.forEach(stock => {
+                        const card = `
+                            <div class="col-md-4">
+                                <div class="card border-success">
+                                    <div class="card-body p-3">
+                                        <h6 class="card-title text-success mb-2">
+                                            <i class="bi bi-geo-alt-fill"></i> ${stock.ubicacionCodigo}
+                                        </h6>
+                                        <p class="card-text mb-1">
+                                            <small class="text-muted">${stock.sedeNombre}</small><br/>
+                                            <strong class="text-success">${stock.cantidad.toFixed(2)} ${stock.unidad}</strong> disponibles
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        stockCards.append(card);
+                    });
+                    
+                    stockInfoContainer.show();
+                } else {
+                    stockCards.html(`
+                        <div class="col-12">
+                            <div class="alert alert-warning mb-0">
+                                <i class="bi bi-exclamation-triangle"></i> No hay stock disponible de este lote en ninguna ubicación.
+                                Primero debe registrar una <strong>Entrada</strong>.
+                            </div>
+                        </div>
+                    `);
+                    stockInfoContainer.show();
+                }
+            } catch (error) {
+                console.error('Error al cargar stock:', error);
+            }
+        }
+    });
+    </script>
 }

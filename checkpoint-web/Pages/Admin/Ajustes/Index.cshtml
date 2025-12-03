@@ -1,0 +1,304 @@
+@page
+@using checkpoint_web.Models
+@model checkpoint_web.Pages.Admin.Ajustes.IndexModel
+@{
+    ViewData["Title"] = "Aprobación de Ajustes";
+    Layout = "/Pages/Shared/_AdminLayout.cshtml";
+}
+
+<h2><i class="bi bi-clipboard-check"></i> Aprobación de Ajustes de Inventario</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Estadísticas -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card border-warning">
+            <div class="card-body">
+                <h6 class="card-title text-warning">? Pendientes de Aprobación</h6>
+                <h2 class="mb-0">@Model.AjustesPendientes.Count</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-success">
+            <div class="card-body">
+                <h6 class="card-title text-success">? Aprobados</h6>
+                <h2 class="mb-0">@Model.AjustesAprobados.Count</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-danger">
+            <div class="card-body">
+                <h6 class="card-title text-danger">? Rechazados</h6>
+                <h2 class="mb-0">@Model.AjustesRechazados.Count</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs" id="ajustesTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="pendientes-tab" data-bs-toggle="tab" data-bs-target="#pendientes" type="button">
+            ? Pendientes (@Model.AjustesPendientes.Count)
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="aprobados-tab" data-bs-toggle="tab" data-bs-target="#aprobados" type="button">
+            ? Aprobados (@Model.AjustesAprobados.Count)
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="rechazados-tab" data-bs-toggle="tab" data-bs-target="#rechazados" type="button">
+            ? Rechazados (@Model.AjustesRechazados.Count)
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="ajustesTabContent">
+    <!-- Pendientes -->
+    <div class="tab-pane fade show active" id="pendientes">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">? Ajustes Pendientes de Aprobación</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.AjustesPendientes.Any())
+                {
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> <strong>Importante:</strong> Para aprobar un ajuste, el lote debe estar <strong>LIBERADO</strong> por Control de Calidad.
+                    </div>
+                    
+                    @foreach (var ajuste in Model.AjustesPendientes)
+                    {
+                        var esIncremento = ajuste.DestinoUbicacionId.HasValue;
+                        var ubicacion = esIncremento ? ajuste.DestinoUbicacion : ajuste.OrigenUbicacion;
+                        var estadoLote = ajuste.Lote?.Estado ?? EstadoLote.Cuarentena;
+                        var puedeAprobar = estadoLote == EstadoLote.Liberado;
+                        
+                        <div class="card mb-3 @(puedeAprobar ? "border-success" : "border-danger")">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h6 class="card-title">
+                                            @if (esIncremento)
+                                            {
+                                                <span class="badge bg-success">? Incremento</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">? Decremento</span>
+                                            }
+                                            <strong>@ajuste.Lote?.Producto?.Nombre</strong>
+                                        </h6>
+                                        <p class="card-text mb-2">
+                                            <strong>Lote:</strong> @ajuste.Lote?.CodigoLote<br/>
+                                            <strong>Estado del Lote:</strong> 
+                                            @switch (estadoLote)
+                                            {
+                                                case EstadoLote.Cuarentena:
+                                                    <span class="badge bg-warning text-dark">?? Cuarentena</span>
+                                                    <small class="text-danger">(Debe ser liberado por Calidad)</small>
+                                                    break;
+                                                case EstadoLote.Liberado:
+                                                    <span class="badge bg-success">? Liberado</span>
+                                                    break;
+                                                default:
+                                                    <span class="badge bg-secondary">@estadoLote</span>
+                                                    break;
+                                            }
+                                            <br/>
+                                            <strong>Ubicación:</strong> @(ubicacion?.Codigo ?? "-") - @(ubicacion?.Nombre ?? "-")<br/>
+                                            <strong>Cantidad:</strong> <span class="fs-5 fw-bold">@(esIncremento ? "+" : "-")@ajuste.Cantidad.ToString("N2")</span> @ajuste.Unidad<br/>
+                                            <strong>Solicitado por:</strong> @(ajuste.UsuarioId != null && ajuste.UsuarioId.Length >= 8 ? ajuste.UsuarioId.Substring(0, 8) + "..." : ajuste.UsuarioId ?? "-")<br/>
+                                            <strong>Fecha:</strong> @ajuste.Fecha.ToLocalTime().ToString("dd/MM/yyyy HH:mm")<br/>
+                                            <strong>Motivo:</strong> <em>@ajuste.Motivo</em>
+                                        </p>
+                                        <div class="alert alert-light mb-0">
+                                            <small>
+                                                <strong>Stock Anterior:</strong> @(ajuste.StockAnterior?.ToString("N2") ?? "-") ?
+                                                <strong>Stock Posterior:</strong> @(ajuste.StockPosterior?.ToString("N2") ?? "-")
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 d-flex flex-column justify-content-center gap-2">
+                                        @if (puedeAprobar)
+                                        {
+                                            <form method="post" asp-page-handler="Aprobar" asp-route-id="@ajuste.Id" 
+                                                  onsubmit="return confirm('¿Aprobar este ajuste?\n\nEl stock se actualizará inmediatamente.');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-success w-100">
+                                                    <i class="bi bi-check-circle"></i> Aprobar Ajuste
+                                                </button>
+                                            </form>
+                                            
+                                            <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#rechazarModal@(ajuste.Id)">
+                                                <i class="bi bi-x-circle"></i> Rechazar
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <div class="alert alert-warning mb-0">
+                                                <i class="bi bi-exclamation-triangle"></i> 
+                                                <strong>No se puede aprobar</strong><br/>
+                                                <small>El lote debe ser liberado por Control de Calidad primero.</small>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Modal Rechazar -->
+                        <div class="modal fade" id="rechazarModal@(ajuste.Id)" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form method="post" asp-page-handler="Rechazar" asp-route-id="@ajuste.Id">
+                                        @Html.AntiForgeryToken()
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Rechazar Ajuste</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>¿Está seguro de rechazar este ajuste?</p>
+                                            <div class="mb-3">
+                                                <label class="form-label">Motivo del Rechazo *</label>
+                                                <textarea name="motivoRechazo" class="form-control" rows="3" required></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-danger">Rechazar Ajuste</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle"></i> No hay ajustes pendientes de aprobación
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Aprobados -->
+    <div class="tab-pane fade" id="aprobados">
+        <div class="card border-success">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">? Ajustes Aprobados</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.AjustesAprobados.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Lote</th>
+                                    <th>Tipo</th>
+                                    <th>Cantidad</th>
+                                    <th>Aprobado Por</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ajuste in Model.AjustesAprobados)
+                                {
+                                    var esIncremento = ajuste.DestinoUbicacionId.HasValue;
+                                    <tr>
+                                        <td><small>@ajuste.Fecha.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small></td>
+                                        <td>@ajuste.Lote?.CodigoLote</td>
+                                        <td>
+                                            @if (esIncremento)
+                                            {
+                                                <span class="badge bg-success">? Incremento</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">? Decremento</span>
+                                            }
+                                        </td>
+                                        <td><strong>@ajuste.Cantidad.ToString("N2")</strong> @ajuste.Unidad</td>
+                                        <td><small>@(ajuste.AprobadoPor?.Substring(0, Math.Min(8, ajuste.AprobadoPor?.Length ?? 0)) ?? "-")</small></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle"></i> No hay ajustes aprobados
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Rechazados -->
+    <div class="tab-pane fade" id="rechazados">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">? Ajustes Rechazados</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.AjustesRechazados.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Lote</th>
+                                    <th>Cantidad</th>
+                                    <th>Motivo Rechazo</th>
+                                    <th>Rechazado Por</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ajuste in Model.AjustesRechazados)
+                                {
+                                    <tr>
+                                        <td><small>@ajuste.Fecha.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small></td>
+                                        <td>@ajuste.Lote?.CodigoLote</td>
+                                        <td><strong>@ajuste.Cantidad.ToString("N2")</strong> @ajuste.Unidad</td>
+                                        <td><small>@ajuste.Motivo</small></td>
+                                        <td><small>@(ajuste.AprobadoPor?.Substring(0, Math.Min(8, ajuste.AprobadoPor?.Length ?? 0)) ?? "-")</small></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle"></i> No hay ajustes rechazados
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
