@@ -176,31 +176,29 @@
     </div>
 </div>
 
-@section Scripts {
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Manejar confirmación de eliminación
-        const deleteForms = document.querySelectorAll('.delete-form');
-        
-        deleteForms.forEach(form => {
-            form.addEventListener('submit', function(e) {
-                const proveedorNombre = this.dataset.proveedorNombre;
-                const lotesCount = parseInt(this.dataset.lotesCount) || 0;
-                
-                let mensaje = `¿Está seguro de eliminar el proveedor "${proveedorNombre}"?\n\n`;
-                mensaje += '⚠️ Esta acción no se puede deshacer.\n\n';
-                
-                if (lotesCount > 0) {
-                    mensaje += `ℹ️ Este proveedor tiene ${lotesCount} lote(s) asociado(s).\n`;
-                    mensaje += 'Los lotes serán desvinculados (el proveedor quedará sin asignar).';
-                }
-                
-                if (!confirm(mensaje)) {
-                    e.preventDefault();
-                    return false;
-                }
-            });
+(function() {
+    // Manejar confirmación de eliminación
+    const deleteForms = document.querySelectorAll('.delete-form');
+    
+    deleteForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const proveedorNombre = this.dataset.proveedorNombre;
+            const lotesCount = parseInt(this.dataset.lotesCount) || 0;
+            
+            let mensaje = `¿Está seguro de eliminar el proveedor "${proveedorNombre}"?\n\n`;
+            mensaje += '⚠️ Esta acción no se puede deshacer.\n\n';
+            
+            if (lotesCount > 0) {
+                mensaje += `ℹ️ Este proveedor tiene ${lotesCount} lote(s) asociado(s).\n`;
+                mensaje += 'Los lotes serán desvinculados (el proveedor quedará sin asignar).';
+            }
+            
+            if (!confirm(mensaje)) {
+                e.preventDefault();
+                return false;
+            }
         });
     });
+})();
 </script>
-}
