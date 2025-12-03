@@ -80,29 +80,38 @@ namespace checkpoint_web.Pages.Bodega
 
         public async Task<IActionResult> OnPostAsync()
         {
+            _logger.LogInformation("[TRASLADOS] POST recibido - LoteId: {LoteId}, OrigenId: {OrigenId}, DestinoId: {DestinoId}", 
+                LoteId, OrigenId, DestinoId);
+
             // Validaciones manuales
             if (LoteId == Guid.Empty)
             {
+                _logger.LogWarning("[TRASLADOS] Validación fallida: LoteId vacío");
                 ModelState.AddModelError(nameof(LoteId), "Debe seleccionar un lote");
             }
 
             if (OrigenId == Guid.Empty)
             {
+                _logger.LogWarning("[TRASLADOS] Validación fallida: OrigenId vacío");
                 ModelState.AddModelError(nameof(OrigenId), "Debe seleccionar una ubicación de origen");
             }
 
             if (DestinoId == Guid.Empty)
             {
+                _logger.LogWarning("[TRASLADOS] Validación fallida: DestinoId vacío");
                 ModelState.AddModelError(nameof(DestinoId), "Debe seleccionar una ubicación de destino");
             }
 
             if (OrigenId != Guid.Empty && DestinoId != Guid.Empty && OrigenId == DestinoId)
             {
+                _logger.LogWarning("[TRASLADOS] Validación fallida: Origen y destino son iguales");
                 ModelState.AddModelError(string.Empty, "La ubicación de origen y destino no pueden ser la misma");
             }
 
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning("[TRASLADOS] ModelState inválido. Errores: {Errors}", 
+                    string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)));
                 TempData["ErrorMessage"] = "Por favor complete todos los campos requeridos";
                 await CargarDatosAsync();
                 return Page();
