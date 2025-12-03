@@ -23,8 +23,8 @@
         <dd class="col-sm-9">@(Model.Sede.Activa ? "Sí" : "No")</dd>
     </dl>
     
-    <form method="post">
-        <input type="hidden" asp-for="Sede.Id" />
+    <form method="post" asp-route-id="@Model.Sede.Id">
+        @Html.AntiForgeryToken()
         <button type="submit" class="btn btn-danger">Eliminar</button>
         <a class="btn btn-secondary" asp-page="Index">Cancelar</a>
     </form>

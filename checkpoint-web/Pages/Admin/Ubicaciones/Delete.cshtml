@@ -23,8 +23,8 @@
         <dd class="col-sm-9">@Model.Ubicacion.Capacidad</dd>
     </dl>
     
-    <form method="post">
-        <input type="hidden" asp-for="Ubicacion.Id" />
+    <form method="post" asp-route-id="@Model.Ubicacion.Id">
+        @Html.AntiForgeryToken()
         <button type="submit" class="btn btn-danger">Eliminar</button>
         <a class="btn btn-secondary" asp-page="Index">Cancelar</a>
     </form>
