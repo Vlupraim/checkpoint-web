@@ -119,17 +119,21 @@ namespace checkpoint_web.Pages.Bodega
 
             try
             {
+                _logger.LogInformation("[TRASLADOS] Iniciando proceso de traslado");
+                
                 // VALIDACIÓN: Asegurar que usuarioId es un GUID válido
                 var usuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 
+                _logger.LogInformation("[TRASLADOS] Usuario identificado: {UserId}", usuarioId);
+                
                 if (string.IsNullOrEmpty(usuarioId))
                 {
+                    _logger.LogError("[TRASLADOS] UsuarioId es null o vacío");
                     TempData["ErrorMessage"] = "? Error: No se pudo identificar al usuario. Por favor, inicie sesión nuevamente.";
                     await CargarDatosAsync();
                     return Page();
                 }
 
-                // Validar que es un GUID y no un email
                 if (!Guid.TryParse(usuarioId, out _))
                 {
                     _logger.LogError("[TRASLADOS] UsuarioId no es un GUID válido: {UserId}", usuarioId);
@@ -138,11 +142,16 @@ namespace checkpoint_web.Pages.Bodega
                     return Page();
                 }
 
+                _logger.LogInformation("[TRASLADOS] Obteniendo cantidad disponible para Lote: {LoteId}, Origen: {OrigenId}", LoteId, OrigenId);
+                
                 // OBTENER CANTIDAD AUTOMÁTICAMENTE desde el stock de origen
                 var cantidadDisponible = await _movimientoService.GetStockDisponibleEnUbicacionAsync(LoteId, OrigenId);
                 
+                _logger.LogInformation("[TRASLADOS] Cantidad disponible: {Cantidad}", cantidadDisponible);
+                
                 if (cantidadDisponible <= 0)
                 {
+                    _logger.LogWarning("[TRASLADOS] No hay stock disponible en origen");
                     var ubicacion = await _context.Ubicaciones.FindAsync(OrigenId);
                     TempData["ErrorMessage"] = $"? No hay stock disponible en {ubicacion?.Codigo ?? "la ubicación de origen"}. " +
                         $"Seleccione una ubicación que contenga stock de este lote.";
@@ -153,6 +162,8 @@ namespace checkpoint_web.Pages.Bodega
                 _logger.LogInformation("[TRASLADOS] Trasladando TODO el stock - Usuario: {UserId}, Lote: {LoteId}, Cantidad: {Cantidad}", 
                     usuarioId, LoteId, cantidadDisponible);
                 
+                _logger.LogInformation("[TRASLADOS] Llamando a CrearTrasladoAsync...");
+                
                 await _movimientoService.CrearTrasladoAsync(
                     LoteId,
                     OrigenId,
@@ -162,8 +173,15 @@ namespace checkpoint_web.Pages.Bodega
                     Motivo
                 );
 
+                _logger.LogInformation("[TRASLADOS] Traslado creado exitosamente");
+
                 var lote = await _context.Lotes.Include(l => l.Producto).FirstOrDefaultAsync(l => l.Id == LoteId);
-                TempData["SuccessMessage"] = $"? Traslado ejecutado correctamente: {cantidadDisponible:N2} {lote?.Producto?.Unidad ?? "u"}";
+                var mensajeExito = $"? Traslado ejecutado correctamente: {cantidadDisponible:N2} {lote?.Producto?.Unidad ?? "u"}";
+                
+                _logger.LogInformation("[TRASLADOS] Mensaje de éxito: {Mensaje}", mensajeExito);
+                TempData["SuccessMessage"] = mensajeExito;
+                
+                _logger.LogInformation("[TRASLADOS] Redirigiendo a página");
                 return RedirectToPage();
             }
             catch (InvalidOperationException ex)
