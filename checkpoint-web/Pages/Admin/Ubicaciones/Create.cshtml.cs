@@ -31,7 +31,7 @@ namespace checkpoint_web.Pages.Admin.Ubicaciones
  // Validate that a sede was selected (prevent Guid.Empty being saved)
  if (Ubicacion.SedeId == Guid.Empty)
  {
- ModelState.AddModelError("Ubicacion.SedeId", "Seleccione una sede.");
+ ModelState.AddModelError("Ubicacion.SedeId", "Debe seleccionar una sede.");
  }
 
  if (!ModelState.IsValid)
@@ -41,11 +41,22 @@ namespace checkpoint_web.Pages.Admin.Ubicaciones
  return Page();
  }
 
+ try
+ {
  await _ubicacionService.CreateAsync(Ubicacion);
  // CORREGIDO: Usar UserId (ClaimTypes.NameIdentifier) en lugar de User.Identity?.Name (email)
  var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous";
  await _auditService.LogAsync(userId, $"CreateUbicacion:{Ubicacion.Codigo}", System.Text.Json.JsonSerializer.Serialize(Ubicacion));
+ TempData["SuccessMessage"] = "Ubicación creada correctamente";
  return RedirectToPage("Index");
+ }
+ catch (Exception ex)
+ {
+ TempData["ErrorMessage"] = "Error al crear la ubicación: " + ex.Message;
+ var sedes = await _sedeService.GetAllAsync();
+ Sedes = new SelectList(sedes, "Id", "Nombre");
+ return Page();
+ }
  }
  }
 }

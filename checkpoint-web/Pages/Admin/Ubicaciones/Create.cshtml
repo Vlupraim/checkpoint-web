@@ -10,11 +10,21 @@
         <div class="col-md-8">
             <h1 class="mb-4"><i class="bi bi-geo-alt"></i> Crear Ubicación</h1>
 
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
             <div class="card">
                 <div class="card-body">
                     <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
                         <div class="mb-3">
-                            <label asp-for="Ubicacion.SedeId" class="form-label">Sede</label>
+                            <label asp-for="Ubicacion.SedeId" class="form-label">Sede *</label>
                             <select asp-for="Ubicacion.SedeId" asp-items="Model.Sedes" class="form-select">
                                 <option value="">-- Seleccione Sede --</option>
                             </select>
@@ -22,7 +32,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Ubicacion.Codigo" class="form-label">Código</label>
+                            <label asp-for="Ubicacion.Codigo" class="form-label">Código *</label>
                             <input asp-for="Ubicacion.Codigo" class="form-control" />
                             <span asp-validation-for="Ubicacion.Codigo" class="text-danger"></span>
                         </div>
