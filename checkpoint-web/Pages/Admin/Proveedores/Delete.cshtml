@@ -1,0 +1,88 @@
+@page "{id?}"
+@model checkpoint_web.Pages.Admin.Proveedores.DeleteModel
+@{
+    ViewData["Title"] = "Eliminar Proveedor";
+    Layout = "/Pages/Shared/_AdminLayout.cshtml";
+}
+
+<h2><i class="bi bi-trash"></i> Eliminar Proveedor</h2>
+
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle"></i>
+    <strong>¿Está seguro de que desea eliminar este proveedor?</strong>
+    <p class="mb-0">Esta acción no se puede deshacer.</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5>Detalles del Proveedor</h5>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Nombre:</dt>
+            <dd class="col-sm-9">@Model.Proveedor.Nombre</dd>
+            
+            @if (!string.IsNullOrEmpty(Model.Proveedor.NombreComercial))
+            {
+                <dt class="col-sm-3">Nombre Comercial:</dt>
+                <dd class="col-sm-9">@Model.Proveedor.NombreComercial</dd>
+            }
+            
+            @if (!string.IsNullOrEmpty(Model.Proveedor.Categoria))
+            {
+                <dt class="col-sm-3">Categoría:</dt>
+                <dd class="col-sm-9">@Model.Proveedor.Categoria</dd>
+            }
+            
+            @if (!string.IsNullOrEmpty(Model.Proveedor.IdentificadorFiscal))
+            {
+                <dt class="col-sm-3">RUT/NIT:</dt>
+                <dd class="col-sm-9">@Model.Proveedor.IdentificadorFiscal</dd>
+            }
+            
+            @if (!string.IsNullOrEmpty(Model.Proveedor.Email))
+            {
+                <dt class="col-sm-3">Email:</dt>
+                <dd class="col-sm-9">@Model.Proveedor.Email</dd>
+            }
+            
+            @if (!string.IsNullOrEmpty(Model.Proveedor.Telefono))
+            {
+                <dt class="col-sm-3">Teléfono:</dt>
+                <dd class="col-sm-9">@Model.Proveedor.Telefono</dd>
+            }
+            
+            @if (Model.Proveedor.Calificacion.HasValue)
+            {
+                <dt class="col-sm-3">Calificación:</dt>
+                <dd class="col-sm-9">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <i class="bi bi-star@(i <= Model.Proveedor.Calificacion.Value ? "-fill text-warning" : "")"></i>
+                    }
+                </dd>
+            }
+            
+            <dt class="col-sm-3">Estado:</dt>
+            <dd class="col-sm-9">
+                <span class="badge @(Model.Proveedor.Estado == "Activo" ? "bg-success" : "bg-secondary")">
+                    @Model.Proveedor.Estado
+                </span>
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<form method="post" class="mt-3">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Proveedor.Id" />
+    
+    <div class="d-flex justify-content-between">
+        <a asp-page="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Cancelar
+        </a>
+        <button type="submit" class="btn btn-danger">
+            <i class="bi bi-trash"></i> Confirmar Eliminación
+        </button>
+    </div>
+</form>

@@ -39,12 +39,27 @@ namespace checkpoint_web.Pages.Admin.Ubicaciones
  Sedes = new SelectList(sedes, "Id", "Nombre", Ubicacion.SedeId);
  return Page();
  }
+ 
+ try
+ {
  var before = await _ubicacionService.GetByIdAsync(Ubicacion.Id);
  await _ubicacionService.UpdateAsync(Ubicacion);
  // CORREGIDO: Usar UserId (ClaimTypes.NameIdentifier) en lugar de User.Identity?.Name (email)
  var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous";
  await _auditService.LogAsync(userId, $"UpdateUbicacion:{Ubicacion.Id}", System.Text.Json.JsonSerializer.Serialize(new { Before = before, After = Ubicacion }));
+ TempData["SuccessMessage"] = "Ubicación actualizada correctamente";
  return RedirectToPage("Index");
+ }
+ catch (InvalidOperationException ex)
+ {
+ TempData["ErrorMessage"] = ex.Message;
+ return RedirectToPage("Index");
+ }
+ catch (Exception ex)
+ {
+ TempData["ErrorMessage"] = "Error al actualizar la ubicación: " + ex.Message;
+ return RedirectToPage("Index");
+ }
  }
  }
 }

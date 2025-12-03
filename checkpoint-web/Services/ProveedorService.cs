@@ -47,11 +47,30 @@ namespace checkpoint_web.Services
 
         public async Task<Proveedor> UpdateAsync(Proveedor proveedor)
         {
-            proveedor.UltimaActualizacion = DateTime.UtcNow;
-            _context.Entry(proveedor).State = EntityState.Modified;
+            var existing = await _context.Proveedores.FindAsync(proveedor.Id);
+            if (existing == null)
+                throw new InvalidOperationException("Proveedor no encontrado");
+
+            // Actualizar propiedades manualmente
+            existing.Nombre = proveedor.Nombre;
+            existing.NombreComercial = proveedor.NombreComercial;
+            existing.IdentificadorFiscal = proveedor.IdentificadorFiscal;
+            existing.Direccion = proveedor.Direccion;
+            existing.Ciudad = proveedor.Ciudad;
+            existing.Pais = proveedor.Pais;
+            existing.Telefono = proveedor.Telefono;
+            existing.Email = proveedor.Email;
+            existing.PersonaContacto = proveedor.PersonaContacto;
+            existing.Categoria = proveedor.Categoria;
+            existing.Calificacion = proveedor.Calificacion;
+            existing.Estado = proveedor.Estado;
+            existing.Observaciones = proveedor.Observaciones;
+            existing.Activo = proveedor.Activo;
+            existing.UltimaActualizacion = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
             await _auditService.LogAsync("system", $"Actualizó proveedor: {proveedor.Nombre} (ID: {proveedor.Id})", string.Empty);
-            return proveedor;
+            return existing;
         }
 
         public async Task<bool> DeleteAsync(int id)
