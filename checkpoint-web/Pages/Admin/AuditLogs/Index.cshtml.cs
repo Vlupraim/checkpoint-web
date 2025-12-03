@@ -66,7 +66,7 @@ namespace checkpoint_web.Pages.Admin.AuditLogs
  Logs = await q.OrderByDescending(a => a.Timestamp).Take(500).ToListAsync();
     
       // Resolver nombres de usuario
-        var userIds = Logs.Select(l => l.UserId).Distinct().ToList();
+        var userIds = Logs.Select(l => l.UserId).Where(id => !string.IsNullOrEmpty(id)).Distinct().ToList();
  foreach (var userId in userIds)
 {
         if (userId == "system" || userId == "anonymous")
@@ -82,8 +82,9 @@ if (user != null)
             }
           else
        {
-        // Si el usuario fue eliminado
-        UserNames[userId] = $"Usuario eliminado ({userId.Substring(0, 8)}...)";
+        // Si el usuario fue eliminado - prevenir error de Substring
+        var shortId = userId.Length >= 8 ? userId.Substring(0, 8) : userId;
+        UserNames[userId] = $"Usuario eliminado ({shortId}...)";
         }
       }
         }

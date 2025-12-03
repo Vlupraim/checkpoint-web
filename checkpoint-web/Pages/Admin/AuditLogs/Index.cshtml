@@ -68,7 +68,9 @@
                     <tbody>
                         @foreach (var log in Model.Logs)
                         {
-                            var userName = Model.UserNames.ContainsKey(log.UserId) ? Model.UserNames[log.UserId] : log.UserId;
+                            var userName = !string.IsNullOrEmpty(log.UserId) && Model.UserNames.ContainsKey(log.UserId) 
+                                ? Model.UserNames[log.UserId] 
+                                : "Sistema";
                             var actionType = log.Action.Split(':')[0];
                             var badgeClass = actionType.Contains("Create") ? "bg-success" :
                                              actionType.Contains("Delete") ? "bg-danger" :
@@ -86,7 +88,7 @@
                                         <i class="bi bi-person-circle me-2"></i>
                                         <div>
                                             <strong>@userName</strong>
-                                            @if (userName != log.UserId)
+                                            @if (!string.IsNullOrEmpty(log.UserId) && userName != log.UserId && log.UserId.Length >= 8)
                                             {
                                                 <br /><small class="text-muted">@log.UserId.Substring(0, 8)...</small>
                                             }
