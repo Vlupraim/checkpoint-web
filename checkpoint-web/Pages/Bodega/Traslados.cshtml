@@ -230,6 +230,7 @@
         const unidadText = $('#unidadText');
         
         let stocksDisponibles = {};
+        let unidadProducto = 'u';
         
         // Cargar stock cuando se selecciona lote
         loteSelect.on('change', async function() {
@@ -246,10 +247,11 @@
             const selectedText = $(this).find('option:selected').text();
             const unidadMatch = selectedText.match(/\(([\d,.]+ (\w+))/);
             if (unidadMatch) {
-                unidadText.text(unidadMatch[2]);
+                unidadProducto = unidadMatch[2];
+                unidadText.text(unidadProducto);
             }
             
-            // Cargar stock
+            // Cargar stock disponible por ubicación
             try {
                 const response = await fetch(`/Bodega/Movimientos?handler=StockPorLote&loteId=${loteId}`);
                 const data = await response.json();
@@ -289,25 +291,67 @@
             }
         });
         
-        // Actualizar info de origen
-        origenSelect.on('change', function() {
+        // Actualizar info de origen cuando se selecciona
+        origenSelect.on('change', async function() {
             const origenId = $(this).val();
-            if (origenId && stocksDisponibles[origenId]) {
-                const stock = stocksDisponibles[origenId];
-                $('#stockOrigenCantidad').text(stock.cantidad.toFixed(2));
-                $('#stockOrigenUnidad').text(stock.unidad);
-                $('#origenNombre').text($(this).find('option:selected').text());
-                $('#origenStock').text(`Stock: ${stock.cantidad.toFixed(2)} ${stock.unidad}`);
-                stockOrigenInfo.show();
-                actualizarVisualizacion();
-            } else {
+            const loteId = loteSelect.val();
+            
+            if (!origenId || !loteId) {
                 stockOrigenInfo.hide();
+                return;
             }
+            
+            // Obtener stock específico de esta ubicación
+            try {
+                const response = await fetch(`?handler=StockPorLoteYUbicacion&loteId=${loteId}&ubicacionId=${origenId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    $('#stockOrigenCantidad').text(data.cantidad.toFixed(2));
+                    $('#stockOrigenUnidad').text(data.unidad);
+                    $('#origenNombre').text($(this).find('option:selected').text());
+                    $('#origenStock').text(`Stock: ${data.cantidad.toFixed(2)} ${data.unidad}`);
+                    stockOrigenInfo.removeClass('alert-danger').addClass('alert-warning').show();
+                    
+                    // Validar si la cantidad solicitada es mayor al stock
+                    const cantidadSolicitada = parseFloat(cantidadInput.val() || 0);
+                    if (cantidadSolicitada > data.cantidad) {
+                        stockOrigenInfo.removeClass('alert-warning').addClass('alert-danger');
+                        $('#stockOrigenCantidad').html(`<span class="text-danger">${data.cantidad.toFixed(2)} (Insuficiente)</span>`);
+                    }
+                } else {
+                    stockOrigenInfo.removeClass('alert-warning').addClass('alert-danger').show();
+                    $('#stockOrigenCantidad').html('<span class="text-danger">0 (Sin stock)</span>');
+                    $('#stockOrigenUnidad').text(unidadProducto);
+                }
+                
+                actualizarVisualizacion();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+        
+        // Validar cantidad en tiempo real
+        cantidadInput.on('input', function() {
+            const cantidadSolicitada = parseFloat($(this).val() || 0);
+            const origenId = origenSelect.val();
+            
+            if (origenId && stocksDisponibles[origenId]) {
+                const stockDisp = stocksDisponibles[origenId].cantidad;
+                if (cantidadSolicitada > stockDisp) {
+                    $(this).addClass('is-invalid');
+                    stockOrigenInfo.removeClass('alert-warning').addClass('alert-danger');
+                } else {
+                    $(this).removeClass('is-invalid');
+                    stockOrigenInfo.removeClass('alert-danger').addClass('alert-warning');
+                }
+            }
+            
+            actualizarVisualizacion();
         });
         
         // Actualizar visualización
         destinoSelect.on('change', actualizarVisualizacion);
-        cantidadInput.on('input', actualizarVisualizacion);
         
         function actualizarVisualizacion() {
             const origenId = origenSelect.val();

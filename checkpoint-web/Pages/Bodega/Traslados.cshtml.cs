@@ -50,6 +50,37 @@ namespace checkpoint_web.Pages.Bodega
             await CargarDatosAsync();
         }
 
+        // API endpoint para obtener stock por lote y ubicación
+        public async Task<IActionResult> OnGetStockPorLoteYUbicacionAsync(Guid loteId, Guid ubicacionId)
+        {
+            try
+            {
+                var stock = await _context.Stocks
+                    .Include(s => s.Ubicacion).ThenInclude(u => u!.Sede)
+                    .Include(s => s.Lote).ThenInclude(l => l!.Producto)
+                    .FirstOrDefaultAsync(s => s.LoteId == loteId && s.UbicacionId == ubicacionId);
+
+                if (stock != null && stock.Cantidad > 0)
+                {
+                    return new JsonResult(new
+                    {
+                        success = true,
+                        cantidad = stock.Cantidad,
+                        unidad = stock.Unidad,
+                        ubicacionCodigo = stock.Ubicacion?.Codigo,
+                        productoNombre = stock.Lote?.Producto?.Nombre
+                    });
+                }
+
+                return new JsonResult(new { success = false, message = "No hay stock en esta ubicación" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[TRASLADOS] Error al obtener stock");
+                return new JsonResult(new { success = false, error = ex.Message });
+            }
+        }
+
         public async Task<IActionResult> OnPostAsync()
         {
             // Validaciones manuales
@@ -87,8 +118,24 @@ namespace checkpoint_web.Pages.Bodega
 
             try
             {
-                // CORREGIDO: Usar UserId (GUID) en lugar de Name (email)
-                var usuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";
+                // VALIDACIÓN: Asegurar que usuarioId es un GUID válido
+                var usuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                
+                if (string.IsNullOrEmpty(usuarioId))
+                {
+                    TempData["ErrorMessage"] = "? Error: No se pudo identificar al usuario. Por favor, inicie sesión nuevamente.";
+                    await CargarDatosAsync();
+                    return Page();
+                }
+
+                // Validar que es un GUID y no un email
+                if (!Guid.TryParse(usuarioId, out _))
+                {
+                    _logger.LogError("[TRASLADOS] UsuarioId no es un GUID válido: {UserId}", usuarioId);
+                    TempData["ErrorMessage"] = "? Error de autenticación. El identificador de usuario no es válido.";
+                    await CargarDatosAsync();
+                    return Page();
+                }
                 
                 _logger.LogInformation("[TRASLADOS] Creando traslado - Usuario: {UserId}, Lote: {LoteId}, Cantidad: {Cantidad}", 
                     usuarioId, LoteId, Cantidad);
@@ -102,13 +149,38 @@ namespace checkpoint_web.Pages.Bodega
                     Motivo
                 );
 
-                TempData["SuccessMessage"] = "Traslado ejecutado correctamente";
+                TempData["SuccessMessage"] = $"? Traslado ejecutado correctamente: {Cantidad:N2} unidades";
                 return RedirectToPage();
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "[TRASLADOS] Operación inválida");
+                
+                // Mejorar mensaje si es error de stock
+                if (ex.Message.Contains("Stock insuficiente"))
+                {
+                    // Obtener stock actual para mostrar
+                    var stockActual = await _movimientoService.GetStockDisponibleEnUbicacionAsync(LoteId, OrigenId);
+                    var ubicacion = await _context.Ubicaciones.FindAsync(OrigenId);
+                    var lote = await _context.Lotes.Include(l => l.Producto).FirstOrDefaultAsync(l => l.Id == LoteId);
+                    
+                    TempData["ErrorMessage"] = $"? Stock insuficiente en {ubicacion?.Codigo ?? "ubicación de origen"}. " +
+                        $"Disponible: {stockActual:N2} {lote?.Producto?.Unidad ?? "u"}, " +
+                        $"Solicitado: {Cantidad:N2} {lote?.Producto?.Unidad ?? "u"}. " +
+                        $"?? Verifique el stock disponible antes de realizar el traslado.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = $"? {ex.Message}";
+                }
+                
+                await CargarDatosAsync();
+                return Page();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "[TRASLADOS] Error al crear traslado");
-                TempData["ErrorMessage"] = $"Error: {ex.Message}";
+                TempData["ErrorMessage"] = $"? Error al registrar el traslado: {ex.Message}";
                 await CargarDatosAsync();
                 return Page();
             }
