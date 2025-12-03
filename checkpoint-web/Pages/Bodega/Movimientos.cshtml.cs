@@ -26,6 +26,7 @@ namespace checkpoint_web.Pages.Bodega
         }
 
         public SelectList LotesDisponibles { get; set; } = new SelectList(new List<Lote>(), "Id", "CodigoLote");
+        public SelectList UbicacionesDisponibles { get; set; } = new SelectList(new List<Ubicacion>(), "Id", "Codigo");
         public IList<Movimiento> MovimientosHoy { get; set; } = new List<Movimiento>();
 
         [BindProperty]
@@ -33,6 +34,9 @@ namespace checkpoint_web.Pages.Bodega
 
         [BindProperty]
         public Guid LoteId { get; set; }
+
+        [BindProperty]
+        public Guid UbicacionId { get; set; }
 
         [BindProperty]
         public decimal Cantidad { get; set; }
@@ -47,6 +51,7 @@ namespace checkpoint_web.Pages.Bodega
 
         public async Task<IActionResult> OnPostAsync()
         {
+            // Validaciones
             if (string.IsNullOrWhiteSpace(Tipo))
             {
                 ModelState.AddModelError(nameof(Tipo), "Debe seleccionar un tipo de movimiento");
@@ -55,6 +60,11 @@ namespace checkpoint_web.Pages.Bodega
             if (LoteId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(LoteId), "Debe seleccionar un lote");
+            }
+
+            if (UbicacionId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(UbicacionId), "Debe seleccionar una ubicación");
             }
 
             if (Cantidad <= 0)
@@ -70,13 +80,55 @@ namespace checkpoint_web.Pages.Bodega
 
             try
             {
-                TempData["SuccessMessage"] = "Movimiento registrado correctamente";
+                var usuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "anonymous";
+
+                // Crear movimiento según el tipo
+                switch (Tipo.ToLower())
+                {
+                    case "entrada":
+                    case "ingreso":
+                        await _movimientoService.CrearIngresoAsync(LoteId, UbicacionId, Cantidad, usuarioId);
+                        TempData["SuccessMessage"] = $"Entrada registrada correctamente: {Cantidad} unidades";
+                        break;
+
+                    case "salida":
+                        await _movimientoService.CrearSalidaAsync(LoteId, UbicacionId, Cantidad, null, usuarioId, Observaciones);
+                        TempData["SuccessMessage"] = $"Salida registrada correctamente: {Cantidad} unidades";
+                        break;
+
+                    case "ajuste":
+                        if (string.IsNullOrWhiteSpace(Observaciones))
+                        {
+                            ModelState.AddModelError(nameof(Observaciones), "Los ajustes requieren observaciones");
+                            await CargarDatosAsync();
+                            return Page();
+                        }
+                        await _movimientoService.CrearAjusteAsync(LoteId, UbicacionId, Cantidad, usuarioId, Observaciones);
+                        TempData["SuccessMessage"] = "Ajuste registrado correctamente (pendiente aprobación)";
+                        break;
+
+                    default:
+                        TempData["ErrorMessage"] = "Tipo de movimiento no válido";
+                        await CargarDatosAsync();
+                        return Page();
+                }
+
+                _logger.LogInformation("[MOVIMIENTOS] Movimiento {Tipo} creado - Lote: {LoteId}, Cantidad: {Cantidad}, Usuario: {UsuarioId}", 
+                    Tipo, LoteId, Cantidad, usuarioId);
+
                 return RedirectToPage();
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "[MOVIMIENTOS] Operación inválida al crear movimiento {Tipo}", Tipo);
+                TempData["ErrorMessage"] = ex.Message;
+                await CargarDatosAsync();
+                return Page();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[MOVIMIENTOS] Error al crear movimiento");
-                TempData["ErrorMessage"] = $"Error: {ex.Message}";
+                _logger.LogError(ex, "[MOVIMIENTOS] Error al crear movimiento {Tipo}", Tipo);
+                TempData["ErrorMessage"] = $"Error al registrar el movimiento: {ex.Message}";
                 await CargarDatosAsync();
                 return Page();
             }
@@ -86,6 +138,7 @@ namespace checkpoint_web.Pages.Bodega
         {
             try
             {
+                // Cargar lotes liberados con stock disponible
                 var lotesDisponibles = await _context.Lotes
                     .Include(l => l.Producto)
                     .Where(l => l.Estado == EstadoLote.Liberado && l.CantidadDisponible > 0)
@@ -104,14 +157,37 @@ namespace checkpoint_web.Pages.Bodega
                     "Display"
                 );
 
+                // Cargar ubicaciones activas
+                var ubicaciones = await _context.Ubicaciones
+                    .Include(u => u.Sede)
+                    .OrderBy(u => u.Sede!.Nombre).ThenBy(u => u.Codigo)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                UbicacionesDisponibles = new SelectList(
+                    ubicaciones.Select(u => new
+                    {
+                        u.Id,
+                        Display = $"{u.Sede?.Nombre ?? "Sin sede"} - {u.Codigo} ({u.Tipo})"
+                    }),
+                    "Id",
+                    "Display"
+                );
+
+                // Cargar movimientos de hoy
                 var hoy = DateTime.UtcNow.Date;
                 MovimientosHoy = await _context.Movimientos
                     .Include(m => m.Lote).ThenInclude(l => l!.Producto)
+                    .Include(m => m.OrigenUbicacion)
+                    .Include(m => m.DestinoUbicacion)
                     .Where(m => m.Fecha >= hoy && m.Fecha < hoy.AddDays(1))
                     .OrderByDescending(m => m.Fecha)
-                    .Take(20)
+                    .Take(50)
                     .AsNoTracking()
                     .ToListAsync();
+
+                _logger.LogInformation("[MOVIMIENTOS] Datos cargados - {LotesCount} lotes, {UbicacionesCount} ubicaciones, {MovimientosCount} movimientos hoy", 
+                    lotesDisponibles.Count, ubicaciones.Count, MovimientosHoy.Count);
             }
             catch (Exception ex)
             {

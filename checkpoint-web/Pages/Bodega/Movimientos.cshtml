@@ -5,12 +5,12 @@
     Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_BodegaLayout.cshtml";
 }
 
-<h2>Movimientos de Inventario</h2>
+<h2><i class="bi bi-arrow-left-right"></i> Movimientos de Inventario</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show">
-        @TempData["SuccessMessage"]
+        <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
@@ -18,52 +18,73 @@
 @if (TempData["ErrorMessage"] != null)
 {
     <div class="alert alert-danger alert-dismissible fade show">
-        @TempData["ErrorMessage"]
+        <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
-<div class="row mb-3">
+<div class="row mb-4">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Registrar Nuevo Movimiento</h5>
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Registrar Nuevo Movimiento</h5>
             </div>
             <div class="card-body">
-                <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
-                
                 <form method="post">
-                    <div class="row">
+                    @Html.AntiForgeryToken()
+                    
+                    <div class="row g-3">
                         <div class="col-md-3">
-                            <label class="form-label text-white">Tipo de Movimiento</label>
+                            <label asp-for="Tipo" class="form-label">Tipo de Movimiento *</label>
                             <select asp-for="Tipo" class="form-select" required>
-                                <option value="">Seleccionar...</option>
-                                <option value="Entrada">Entrada</option>
-                                <option value="Salida">Salida</option>
-                                <option value="Ajuste">Ajuste</option>
+                                <option value="">-- Seleccionar --</option>
+                                <option value="Entrada">✅ Entrada</option>
+                                <option value="Salida">📤 Salida</option>
+                                <option value="Ajuste">⚖️ Ajuste</option>
                             </select>
                             <span asp-validation-for="Tipo" class="text-danger"></span>
                         </div>
+
                         <div class="col-md-4">
-                            <label class="form-label text-white">Lote</label>
+                            <label asp-for="LoteId" class="form-label">Lote *</label>
                             <select asp-for="LoteId" asp-items="Model.LotesDisponibles" class="form-select" required>
-                                <option value="">Seleccionar Lote...</option>
+                                <option value="">-- Seleccionar Lote --</option>
                             </select>
-                            <small class="text-muted">Solo lotes liberados con stock disponible</small>
+                            <small class="form-text text-muted">Solo lotes liberados con stock disponible</small>
                             <span asp-validation-for="LoteId" class="text-danger"></span>
                         </div>
-                        <div class="col-md-2">
-                            <label class="form-label text-white">Cantidad</label>
-                            <input asp-for="Cantidad" type="number" class="form-control" step="0.01" required />
+
+                        <div class="col-md-4">
+                            <label asp-for="UbicacionId" class="form-label">Ubicación *</label>
+                            <select asp-for="UbicacionId" asp-items="Model.UbicacionesDisponibles" class="form-select" required>
+                                <option value="">-- Seleccionar Ubicación --</option>
+                            </select>
+                            <small class="form-text text-muted">Ubicación de origen/destino</small>
+                            <span asp-validation-for="UbicacionId" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-1">
+                            <label asp-for="Cantidad" class="form-label">Cantidad *</label>
+                            <input asp-for="Cantidad" type="number" class="form-control" step="0.01" min="0.01" required />
                             <span asp-validation-for="Cantidad" class="text-danger"></span>
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label text-white">Observaciones</label>
-                            <input asp-for="Observaciones" type="text" class="form-control" placeholder="Opcional" />
+                    </div>
+
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-12">
+                            <label asp-for="Observaciones" class="form-label">Observaciones</label>
+                            <input asp-for="Observaciones" type="text" class="form-control" placeholder="Opcional (requerido para ajustes)" />
+                            <small class="form-text text-muted">Los ajustes requieren observaciones obligatorias</small>
                         </div>
                     </div>
+
                     <div class="mt-3">
-                        <button type="submit" class="btn btn-primary">Registrar Movimiento</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Registrar Movimiento
+                        </button>
+                        <button type="reset" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Limpiar
+                        </button>
                     </div>
                 </form>
             </div>
@@ -73,44 +94,106 @@
 
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">Historial de Movimientos Hoy</h5>
+        <h5 class="mb-0"><i class="bi bi-clock-history"></i> Historial de Movimientos Hoy</h5>
     </div>
     <div class="card-body">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Hora</th>
-                    <th>Tipo</th>
-                    <th>Producto</th>
-                    <th>Lote</th>
-                    <th>Cantidad</th>
-                    <th>Usuario</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.MovimientosHoy.Any())
-                {
-                    @foreach (var mov in Model.MovimientosHoy)
-                    {
+        @if (Model.MovimientosHoy.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover table-sm">
+                    <thead class="table-dark">
                         <tr>
-                            <td>@mov.Fecha.ToString("HH:mm")</td>
-                            <td><span class="badge bg-primary">@mov.Tipo</span></td>
-                            <td>@mov.Lote?.Producto?.Nombre</td>
-                            <td><small>@mov.Lote?.CodigoLote</small></td>
-                            <td><strong>@mov.Cantidad.ToString("N2")</strong></td>
-                            <td>@(mov.UsuarioId ?? "-")</td>
+                            <th><i class="bi bi-clock"></i> Hora</th>
+                            <th><i class="bi bi-tag"></i> Tipo</th>
+                            <th><i class="bi bi-box-seam"></i> Producto</th>
+                            <th><i class="bi bi-upc"></i> Lote</th>
+                            <th><i class="bi bi-geo-alt"></i> Ubicación</th>
+                            <th class="text-end"><i class="bi bi-hash"></i> Cantidad</th>
+                            <th><i class="bi bi-person"></i> Usuario</th>
+                            <th><i class="bi bi-info-circle"></i> Estado</th>
                         </tr>
-                    }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="6" class="text-center text-muted">No hay movimientos registrados hoy</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var mov in Model.MovimientosHoy)
+                        {
+                            <tr>
+                                <td><small>@mov.Fecha.ToString("HH:mm:ss")</small></td>
+                                <td>
+                                    @switch (mov.Tipo.ToLower())
+                                    {
+                                        case "ingreso":
+                                        case "entrada":
+                                            <span class="badge bg-success">✅ @mov.Tipo</span>
+                                            break;
+                                        case "salida":
+                                            <span class="badge bg-danger">📤 @mov.Tipo</span>
+                                            break;
+                                        case "traslado":
+                                            <span class="badge bg-info">🔄 @mov.Tipo</span>
+                                            break;
+                                        case "ajuste":
+                                            <span class="badge bg-warning text-dark">⚖️ @mov.Tipo</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-secondary">@mov.Tipo</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    <strong>@(mov.Lote?.Producto?.Nombre ?? "-")</strong>
+                                </td>
+                                <td>
+                                    <small class="text-muted">@(mov.Lote?.CodigoLote ?? "-")</small>
+                                </td>
+                                <td>
+                                    <small>
+                                        @if (mov.DestinoUbicacionId != null)
+                                        {
+                                            <span class="text-success">→ @(mov.DestinoUbicacion?.Codigo ?? "N/A")</span>
+                                        }
+                                        @if (mov.OrigenUbicacionId != null)
+                                        {
+                                            <span class="text-danger">← @(mov.OrigenUbicacion?.Codigo ?? "N/A")</span>
+                                        }
+                                    </small>
+                                </td>
+                                <td class="text-end">
+                                    <strong>@mov.Cantidad.ToString("N2")</strong> @(mov.Unidad ?? "u")
+                                </td>
+                                <td><small>@(mov.UsuarioId ?? "-")</small></td>
+                                <td>
+                                    @if (mov.Estado == "Completado")
+                                    {
+                                        <span class="badge bg-success">Completado</span>
+                                    }
+                                    else if (mov.Estado == "Pendiente")
+                                    {
+                                        <span class="badge bg-warning text-dark">Pendiente</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@mov.Estado</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info mb-0">
+                <i class="bi bi-info-circle"></i> No hay movimientos registrados hoy
+            </div>
+        }
     </div>
+    @if (Model.MovimientosHoy.Any())
+    {
+        <div class="card-footer text-muted">
+            <small><i class="bi bi-calculator"></i> Total de movimientos hoy: <strong>@Model.MovimientosHoy.Count</strong></small>
+        </div>
+    }
 </div>
 
 @section Scripts {

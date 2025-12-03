@@ -1,54 +1,53 @@
 ﻿@page
 @model checkpoint_web.Pages.Admin.Ubicaciones.CreateModel
 @{
- ViewData["Title"] = "Crear UbicaciÃ³n";
- Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Crear Ubicación";
+    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_AdminLayout.cshtml";
 }
 
 <div class="container">
- <div class="row">
- <div class="col-md-8">
- <h1 class="mb-4"><i class="bi bi-geo-alt"></i> Crear UbicaciÃ³n</h1>
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="mb-4"><i class="bi bi-geo-alt"></i> Crear Ubicación</h1>
 
- <div class="card">
- <div class="card-body">
- <form method="post">
- <div class="mb-3">
- <label asp-for="Ubicacion.SedeId" class="form-label">Sede</label>
- <select asp-for="Ubicacion.SedeId" asp-items="Model.Sedes" class="form-select">
- <option value="">-- Seleccione Sede --</option>
- </select>
- <span asp-validation-for="Ubicacion.SedeId" class="text-danger"></span>
- </div>
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label asp-for="Ubicacion.SedeId" class="form-label">Sede</label>
+                            <select asp-for="Ubicacion.SedeId" asp-items="Model.Sedes" class="form-select">
+                                <option value="">-- Seleccione Sede --</option>
+                            </select>
+                            <span asp-validation-for="Ubicacion.SedeId" class="text-danger"></span>
+                        </div>
 
- <div class="mb-3">
- <label asp-for="Ubicacion.Codigo" class="form-label">CÃ³digo</label>
- <input asp-for="Ubicacion.Codigo" class="form-control" />
- <span asp-validation-for="Ubicacion.Codigo" class="text-danger"></span>
- </div>
+                        <div class="mb-3">
+                            <label asp-for="Ubicacion.Codigo" class="form-label">Código</label>
+                            <input asp-for="Ubicacion.Codigo" class="form-control" />
+                            <span asp-validation-for="Ubicacion.Codigo" class="text-danger"></span>
+                        </div>
 
- <div class="mb-3">
- <label asp-for="Ubicacion.Tipo" class="form-label">Tipo</label>
- <input asp-for="Ubicacion.Tipo" class="form-control" placeholder="Ej: Refrigerado, Seco, Cuarentena" />
- </div>
+                        <div class="mb-3">
+                            <label asp-for="Ubicacion.Tipo" class="form-label">Tipo</label>
+                            <input asp-for="Ubicacion.Tipo" class="form-control" placeholder="Ej: Refrigerado, Seco, Cuarentena" />
+                        </div>
 
- <div class="mb-3">
- <label asp-for="Ubicacion.Capacidad" class="form-label">Capacidad</label>
- <input asp-for="Ubicacion.Capacidad" class="form-control" type="number" step="0.01" />
- </div>
+                        <div class="mb-3">
+                            <label asp-for="Ubicacion.Capacidad" class="form-label">Capacidad</label>
+                            <input asp-for="Ubicacion.Capacidad" class="form-control" type="number" step="0.01" />
+                        </div>
 
- <div class="d-flex gap-2">
- <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Crear</button>
- <a asp-page="Index" class="btn btn-secondary"><i class="bi bi-x-circle"></i> Cancelar</a>
- </div>
- </form>
- </div>
- </div>
-
- </div>
- </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Crear</button>
+                            <a asp-page="Index" class="btn btn-secondary"><i class="bi bi-x-circle"></i> Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
- @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

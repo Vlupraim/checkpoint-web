@@ -9,26 +9,52 @@ namespace checkpoint_web.Pages.Admin.Proveedores
     [Authorize(Roles = "Administrador")]
     public class EditModel : PageModel
     {
-    private readonly IProveedorService _proveedorService;
-     public EditModel(IProveedorService proveedorService) => _proveedorService = proveedorService;
+        private readonly IProveedorService _proveedorService;
+        
+        public EditModel(IProveedorService proveedorService) => _proveedorService = proveedorService;
 
-    [BindProperty]
- public Proveedor Proveedor { get; set; } = new();
+        [BindProperty]
+        public Proveedor Proveedor { get; set; } = new();
 
-  public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int? id)
         {
-       var proveedor = await _proveedorService.GetByIdAsync(id);
-  if (proveedor == null) return NotFound();
-     Proveedor = proveedor;
-     return Page();
-  }
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "ID de proveedor no válido";
+                return RedirectToPage("./Index");
+            }
 
-   public async Task<IActionResult> OnPostAsync()
+            var proveedor = await _proveedorService.GetByIdAsync(id.Value);
+            
+            if (proveedor == null)
+            {
+                TempData["ErrorMessage"] = "Proveedor no encontrado";
+                return RedirectToPage("./Index");
+            }
+            
+            Proveedor = proveedor;
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync()
         {
-  if (!ModelState.IsValid) return Page();
-  await _proveedorService.UpdateAsync(Proveedor);
-TempData["SuccessMessage"] = "Proveedor actualizado";
- return RedirectToPage("./Index");
-}
+            if (!ModelState.IsValid)
+            {
+                TempData["ErrorMessage"] = "Por favor corrija los errores en el formulario";
+                return Page();
+            }
+
+            try
+            {
+                await _proveedorService.UpdateAsync(Proveedor);
+                TempData["SuccessMessage"] = "Proveedor actualizado exitosamente";
+                return RedirectToPage("./Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error al actualizar el proveedor: " + ex.Message;
+                return Page();
+            }
+        }
     }
 }
