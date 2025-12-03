@@ -106,8 +106,8 @@
  <a asp-page="Edit" asp-route-id="@cliente.Id" class="btn btn-outline-primary" title="Editar">
 <i class="bi bi-pencil"></i> Editar
  </a>
- <form method="post" asp-page-handler="Delete" asp-route-id="@cliente.Id" class="d-inline" 
- onsubmit="return confirm('¿Eliminar cliente @cliente.Nombre?');">
+ <form method="post" asp-page-handler="Delete" asp-route-id="@cliente.Id" class="d-inline delete-form"
+       data-cliente-nombre="@cliente.Nombre">
  @Html.AntiForgeryToken()
  <button type="submit" class="btn btn-outline-danger btn-sm" title="Eliminar">
  <i class="bi bi-trash"></i> Eliminar
@@ -190,3 +190,24 @@ else
  </div>
  </div>
 </div>
+
+<script>
+(function() {
+    const deleteForms = document.querySelectorAll('.delete-form');
+    
+    deleteForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const clienteNombre = this.dataset.clienteNombre;
+            
+            let mensaje = `¿Está seguro de eliminar el cliente "${clienteNombre}"?\n\n`;
+            mensaje += '⚠️ Esta acción no se puede deshacer.\n\n';
+            mensaje += 'Nota: Si el cliente tiene movimientos asociados, no podrá ser eliminado por razones de trazabilidad.';
+            
+            if (!confirm(mensaje)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    });
+})();
+</script>

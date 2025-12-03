@@ -47,11 +47,28 @@ namespace checkpoint_web.Services
 
         public async Task<Cliente> UpdateAsync(Cliente cliente)
         {
-            cliente.UltimaActualizacion = DateTime.UtcNow;
-            _context.Entry(cliente).State = EntityState.Modified;
+            var existing = await _context.Clientes.FindAsync(cliente.Id);
+            if (existing == null)
+                throw new InvalidOperationException("Cliente no encontrado");
+
+            // Actualizar propiedades manualmente
+            existing.Nombre = cliente.Nombre;
+            existing.NombreComercial = cliente.NombreComercial;
+            existing.IdentificadorFiscal = cliente.IdentificadorFiscal;
+            existing.Direccion = cliente.Direccion;
+            existing.Ciudad = cliente.Ciudad;
+            existing.Pais = cliente.Pais;
+            existing.Telefono = cliente.Telefono;
+            existing.Email = cliente.Email;
+            existing.PersonaContacto = cliente.PersonaContacto;
+            existing.Estado = cliente.Estado;
+            existing.Observaciones = cliente.Observaciones;
+            existing.Activo = cliente.Activo;
+            existing.UltimaActualizacion = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
             await _auditService.LogAsync("system", $"Actualizó cliente: {cliente.Nombre} (ID: {cliente.Id})", string.Empty);
-            return cliente;
+            return existing;
         }
 
         public async Task<bool> DeleteAsync(int id)
