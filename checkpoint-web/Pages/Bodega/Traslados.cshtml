@@ -300,6 +300,12 @@
                 return;
             }
             
+            // Si el destino es igual al origen, resetear destino
+            if (destinoSelect.val() === origenId) {
+                destinoSelect.val('');
+                trasladoVisualizacion.hide();
+            }
+            
             // Obtener stock específico de esta ubicación
             try {
                 const response = await fetch(`?handler=StockPorLoteYUbicacion&loteId=${loteId}&ubicacionId=${origenId}`);
@@ -320,6 +326,21 @@
             } catch (error) {
                 console.error('Error:', error);
             }
+        });
+        
+        // Validar que destino no sea igual a origen
+        destinoSelect.on('change', function() {
+            const destinoId = $(this).val();
+            const origenId = origenSelect.val();
+            
+            if (destinoId && origenId && destinoId === origenId) {
+                alert('❌ La ubicación de destino no puede ser la misma que la de origen.\n\nPor favor seleccione una ubicación diferente.');
+                $(this).val('');
+                trasladoVisualizacion.hide();
+                return;
+            }
+            
+            actualizarVisualizacion();
         });
         
         // Actualizar visualización
