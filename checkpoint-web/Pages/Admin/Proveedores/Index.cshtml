@@ -66,6 +66,7 @@
                     <tbody>
                         @foreach (var proveedor in Model.Proveedores)
                         {
+                            var lotesCount = proveedor.Lotes?.Count ?? 0;
                             <tr>
                                 <td>
                                     <strong>@proveedor.Nombre</strong>
@@ -99,8 +100,8 @@
                                 <td>
                                     <div class="btn-group btn-group-sm">
                                         <a asp-page="Edit" asp-route-id="@proveedor.Id" class="btn btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
-                                        <form method="post" asp-page-handler="Delete" asp-route-id="@proveedor.Id" class="d-inline"
-                                              onsubmit="return confirm('¿Está seguro de eliminar este proveedor?\n\nEsta acción no se puede deshacer.');">
+                                        <form method="post" asp-page-handler="Delete" asp-route-id="@proveedor.Id" class="d-inline delete-form"
+                                              data-proveedor-nombre="@proveedor.Nombre" data-lotes-count="@lotesCount">
                                             @Html.AntiForgeryToken()
                                             <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> Eliminar</button>
                                         </form>
@@ -174,3 +175,33 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Manejar confirmación de eliminación
+        const deleteForms = document.querySelectorAll('.delete-form');
+        
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const proveedorNombre = this.dataset.proveedorNombre;
+                const lotesCount = parseInt(this.dataset.lotesCount) || 0;
+                
+                let mensaje = `¿Está seguro de eliminar el proveedor "${proveedorNombre}"?\n\n`;
+                mensaje += '⚠️ Esta acción no se puede deshacer.\n\n';
+                
+                if (lotesCount > 0) {
+                    mensaje += `ℹ️ Este proveedor tiene ${lotesCount} lote(s) asociado(s).\n`;
+                    mensaje += 'Los lotes serán desvinculados (el proveedor quedará sin asignar).';
+                }
+                
+                if (confirm(mensaje)) {
+                    this.submit();
+                }
+            });
+        });
+    });
+</script>
+}

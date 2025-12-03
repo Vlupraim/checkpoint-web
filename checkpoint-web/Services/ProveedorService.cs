@@ -27,7 +27,10 @@ namespace checkpoint_web.Services
         }
 
         public async Task<IEnumerable<Proveedor>> GetAllAsync() =>
-            await _context.Proveedores.OrderBy(p => p.Nombre).ToListAsync();
+            await _context.Proveedores
+                .Include(p => p.Lotes)
+                .OrderBy(p => p.Nombre)
+                .ToListAsync();
 
         public async Task<IEnumerable<Proveedor>> GetActivosAsync() =>
             await _context.Proveedores.Where(p => p.Activo && p.Estado == "Activo").OrderBy(p => p.Nombre).ToListAsync();
@@ -78,16 +81,20 @@ namespace checkpoint_web.Services
             var proveedor = await _context.Proveedores.FindAsync(id);
             if (proveedor == null) return false;
 
-            // CORREGIDO: Verificar si hay lotes asociados
-            var lotesAsociados = await _context.Lotes.CountAsync(l => l.ProveedorId == id);
-            if (lotesAsociados > 0)
+            // Desvincular lotes asociados (SetNull behavior)
+            var lotesAsociados = await _context.Lotes.Where(l => l.ProveedorId == id).ToListAsync();
+            if (lotesAsociados.Any())
             {
-                throw new InvalidOperationException(
-                    $"No se puede eliminar el proveedor '{proveedor.Nombre}' porque tiene {lotesAsociados} lote(s) asociado(s). " +
-                    $"Primero debe desvincular o eliminar los lotes relacionados.");
+                foreach (var lote in lotesAsociados)
+                {
+                    lote.ProveedorId = null;
+                }
+                await _auditService.LogAsync("system",
+                    $"Se desvincularon {lotesAsociados.Count} lote(s) del proveedor '{proveedor.Nombre}' antes de eliminarlo",
+                    string.Empty);
             }
 
-            // Si no hay lotes, se puede eliminar
+            // Eliminar el proveedor
             _context.Proveedores.Remove(proveedor);
             await _context.SaveChangesAsync();
             await _auditService.LogAsync("system", $"Eliminó proveedor: {proveedor.Nombre} (ID: {id})", string.Empty);

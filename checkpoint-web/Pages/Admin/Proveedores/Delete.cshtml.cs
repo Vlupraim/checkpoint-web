@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Authorization;
 using checkpoint_web.Models;
 using checkpoint_web.Services;
+using checkpoint_web.Data;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace checkpoint_web.Pages.Admin.Proveedores
@@ -12,15 +14,19 @@ namespace checkpoint_web.Pages.Admin.Proveedores
     {
         private readonly IProveedorService _proveedorService;
         private readonly IAuditService _auditService;
+        private readonly CheckpointDbContext _context;
 
-        public DeleteModel(IProveedorService proveedorService, IAuditService auditService)
+        public DeleteModel(IProveedorService proveedorService, IAuditService auditService, CheckpointDbContext context)
         {
             _proveedorService = proveedorService;
             _auditService = auditService;
+            _context = context;
         }
 
         [BindProperty]
         public Proveedor Proveedor { get; set; } = new();
+        
+        public int LotesAsociados { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -39,6 +45,7 @@ namespace checkpoint_web.Pages.Admin.Proveedores
             }
             
             Proveedor = proveedor;
+            LotesAsociados = await _context.Lotes.CountAsync(l => l.ProveedorId == id.Value);
             return Page();
         }
 
