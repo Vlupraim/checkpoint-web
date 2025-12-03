@@ -82,7 +82,8 @@
                     <a class="nav-link active" href="#" data-url="/Admin/Dashboard" data-path="/Admin/Dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
 
                     <div class="sidebar-section-header">GESTIÓN DE ACCESOS</div>
-                    <a class="nav-link" href="#" data-url="/Fragments/Usuarios" data-path="/Admin/Users"><i class="bi bi-people"></i> Usuarios y Roles</a>
+                    <!-- CAMBIADO: Link directo a /Admin/Users en lugar de AJAX -->
+                    <a class="nav-link" href="/Admin/Users"><i class="bi bi-people"></i> Usuarios y Roles</a>
 
                     <div class="sidebar-section-header">INFRAESTRUCTURA</div>
                     <a class="nav-link" href="#" data-url="/Admin/Sedes/Index" data-path="/Admin/Sedes"><i class="bi bi-building"></i> Sedes</a>
@@ -119,7 +120,7 @@
         (function() {
             const mapping = {
                 '/Productos': '/Fragments/Productos',
-                '/Admin/Users': '/Fragments/Usuarios',
+                '/Admin/Users': '/Admin/Users/Index',  // Ya no necesita AJAX, link directo
                 '/Admin/Dashboard': '/Admin/Dashboard',
                 '/Admin/Sedes': '/Admin/Sedes/Index',
                 '/Admin/Ubicaciones': '/Admin/Ubicaciones/Index',
