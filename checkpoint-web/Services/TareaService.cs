@@ -103,7 +103,7 @@ namespace checkpoint_web.Services
      await _notificacionService.CrearNotificacionAsync(
     tarea.ResponsableId,
       "TareaNueva",
-   $"?? Nueva tarea asignada: {tarea.Titulo}",
+   $"📋 Nueva tarea asignada: {tarea.Titulo}",
        tarea.Descripcion ?? "Sin descripción",
   $"/Admin/Tareas"
    );
@@ -122,7 +122,7 @@ namespace checkpoint_web.Services
   var cambios = new List<string>();
  
           if (existing.Estado != tarea.Estado)
-  cambios.Add($"Estado: {existing.Estado} ? {tarea.Estado}");
+  cambios.Add($"Estado: {existing.Estado} → {tarea.Estado}");
  
          if (existing.ResponsableId != tarea.ResponsableId)
     {
@@ -134,7 +134,7 @@ namespace checkpoint_web.Services
          await _notificacionService.CrearNotificacionAsync(
  tarea.ResponsableId,
      "TareaReasignada",
-     $"?? Tarea reasignada: {tarea.Titulo}",
+     $"🔄 Tarea reasignada: {tarea.Titulo}",
      $"Se te ha asignado esta tarea. Estado: {tarea.Estado}",
          $"/Admin/Tareas"
       );
@@ -142,7 +142,7 @@ namespace checkpoint_web.Services
         }
 
         if (existing.Progreso != tarea.Progreso)
-   cambios.Add($"Progreso: {existing.Progreso}% ? {tarea.Progreso}%");
+   cambios.Add($"Progreso: {existing.Progreso}% → {tarea.Progreso}%");
 
        if (cambios.Any())
     {
@@ -229,7 +229,7 @@ $"Actualizó tarea: {tarea.Titulo} (ID: {tarea.Id})"
 
         await _auditService.LogAsync(
        usuarioId ?? "system",
-           $"Cambió estado de tarea {id}: {estadoAnterior} ? {nuevoEstado}"
+           $"Cambió estado de tarea {id}: {estadoAnterior} → {nuevoEstado}"
   );
 
       return true;

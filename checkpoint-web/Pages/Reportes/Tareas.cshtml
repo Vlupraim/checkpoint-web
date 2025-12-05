@@ -21,20 +21,20 @@
  <form method="get" class="row g-3">
  <div class="col-md-3">
  <label class="form-label">Desde</label>
- <input asp-for="FechaDesde" type="date" class="form-control" />
+ <input type="date" name="desde" class="form-control" value="@Model.FechaDesde?.ToString("yyyy-MM-dd")" />
  </div>
  <div class="col-md-3">
  <label class="form-label">Hasta</label>
- <input asp-for="FechaHasta" type="date" class="form-control" />
+ <input type="date" name="hasta" class="form-control" value="@Model.FechaHasta?.ToString("yyyy-MM-dd")" />
  </div>
  <div class="col-md-3">
  <label class="form-label">Estado</label>
- <select asp-for="EstadoFiltro" class="form-select">
+ <select name="estado" class="form-select">
  <option value="">Todos</option>
- <option value="Pendiente">Pendiente</option>
- <option value="EnProgreso">En Progreso</option>
- <option value="Finalizada">Finalizada</option>
- <option value="Cancelada">Cancelada</option>
+ <option value="Pendiente" selected="@(Model.EstadoFiltro == "Pendiente")">Pendiente</option>
+ <option value="EnProgreso" selected="@(Model.EstadoFiltro == "EnProgreso")">En Progreso</option>
+ <option value="Finalizada" selected="@(Model.EstadoFiltro == "Finalizada")">Finalizada</option>
+ <option value="Cancelada" selected="@(Model.EstadoFiltro == "Cancelada")">Cancelada</option>
  </select>
  </div>
  <div class="col-md-3 d-flex align-items-end">
@@ -54,7 +54,7 @@
  </div>
 </div>
 
-<!-- EstadÃ­sticas RÃ¡pidas -->
+<!-- Estadísticas Rápidas -->
 @if (Model.Tareas.Any())
 {
  var pendientes = Model.Tareas.Count(t => t.Estado == "Pendiente");
@@ -107,13 +107,13 @@
  <table class="table table-hover table-sm">
  <thead class="table-light">
  <tr>
- <th>TÃ­tulo</th>
+ <th>Título</th>
  <th>Producto</th>
  <th>Prioridad</th>
  <th>Estado</th>
  <th>Progreso</th>
  <th>Responsable</th>
- <th>Fecha LÃ­mite</th>
+ <th>Fecha Límite</th>
  <th>Creada</th>
  </tr>
  </thead>

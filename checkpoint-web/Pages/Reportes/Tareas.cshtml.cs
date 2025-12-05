@@ -13,7 +13,7 @@ namespace checkpoint_web.Pages.Reportes
 
         public TareasModel(IReporteService reporteService)
         {
-    _reporteService = reporteService;
+            _reporteService = reporteService;
         }
 
         public IEnumerable<Tarea> Tareas { get; set; } = new List<Tarea>();
@@ -21,15 +21,26 @@ namespace checkpoint_web.Pages.Reportes
         public DateTime? FechaHasta { get; set; }
         public string? EstadoFiltro { get; set; }
 
-    public async Task<IActionResult> OnGetAsync(DateTime? desde = null, DateTime? hasta = null, string? estado = null)
+        public async Task<IActionResult> OnGetAsync(DateTime? desde = null, DateTime? hasta = null, string? estado = null)
         {
             try
             {
-                FechaDesde = desde ?? DateTime.UtcNow.AddDays(-30);
-                FechaHasta = hasta ?? DateTime.UtcNow;
+                // Guardar los filtros para mostrarlos en la vista
+                FechaDesde = desde;
+                FechaHasta = hasta;
                 EstadoFiltro = estado;
 
-                Tareas = await _reporteService.GetTareasAsync(EstadoFiltro, FechaDesde, FechaHasta);
+                // Si no se especifican fechas, NO aplicar filtro de fecha (mostrar TODAS las tareas)
+                DateTime? filtroDesde = desde;
+                DateTime? filtroHasta = hasta;
+
+                // Solo si el usuario especificó fechas, ajustar el hasta para incluir el día completo
+                if (hasta.HasValue)
+                {
+                    filtroHasta = hasta.Value.Date.AddDays(1).AddSeconds(-1);
+                }
+
+                Tareas = await _reporteService.GetTareasAsync(EstadoFiltro, filtroDesde, filtroHasta);
                 return Page();
             }
             catch (Exception ex)

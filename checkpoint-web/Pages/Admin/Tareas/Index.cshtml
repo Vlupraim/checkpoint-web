@@ -9,41 +9,57 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Gestión de Tareas y Procesos</h2>
     <a asp-page="Create" class="btn btn-primary">
-  <i class="bi bi-plus-circle"></i> Nueva Tarea
+        <i class="bi bi-plus-circle"></i> Nueva Tarea
     </a>
 </div>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <!-- Estadísticas -->
 <div class="row g-3 mb-4">
-  <div class="col-md-3">
+    <div class="col-md-3">
         <div class="card bg-primary text-white">
-      <div class="card-body">
-       <h6>Total Tareas</h6>
-            <h3>@Model.Estadisticas.GetValueOrDefault("Total", 0)</h3>
+            <div class="card-body">
+                <h6>Total Tareas</h6>
+                <h3>@Model.Estadisticas.GetValueOrDefault("Total", 0)</h3>
             </div>
- </div>
- </div>
+        </div>
+    </div>
     <div class="col-md-3">
         <div class="card bg-warning text-dark">
-         <div class="card-body">
-    <h6>Pendientes</h6>
-      <h3>@Model.Estadisticas.GetValueOrDefault("Pendientes", 0)</h3>
-      </div>
+            <div class="card-body">
+                <h6>Pendientes</h6>
+                <h3>@Model.Estadisticas.GetValueOrDefault("Pendientes", 0)</h3>
+            </div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="card bg-info text-white">
             <div class="card-body">
-     <h6>En Progreso</h6>
+                <h6>En Progreso</h6>
                 <h3>@Model.Estadisticas.GetValueOrDefault("EnProgreso", 0)</h3>
-  </div>
-    </div>
+            </div>
+        </div>
     </div>
     <div class="col-md-3">
         <div class="card bg-success text-white">
-     <div class="card-body">
-           <h6>Finalizadas</h6>
-             <h3>@Model.Estadisticas.GetValueOrDefault("Finalizadas", 0)</h3>
+            <div class="card-body">
+                <h6>Finalizadas</h6>
+                <h3>@Model.Estadisticas.GetValueOrDefault("Finalizadas", 0)</h3>
             </div>
         </div>
     </div>
@@ -52,145 +68,147 @@
 <!-- Filtros -->
 <div class="card mb-3">
     <div class="card-body">
-  <form method="get" class="row g-3">
-      <div class="col-md-6">
-   <label class="form-label">Filtrar por Estado</label>
-    <div class="btn-group w-100" role="group">
-      <button type="submit" name="estado" value="" class="btn @(string.IsNullOrEmpty(Model.FiltroEstado) ? "btn-primary" : "btn-outline-primary")">Todas</button>
-      <button type="submit" name="estado" value="Pendiente" class="btn @(Model.FiltroEstado == "Pendiente" ? "btn-warning" : "btn-outline-warning")">Pendientes</button>
-      <button type="submit" name="estado" value="EnProgreso" class="btn @(Model.FiltroEstado == "EnProgreso" ? "btn-info" : "btn-outline-info")">En Progreso</button>
-      <button type="submit" name="estado" value="Finalizada" class="btn @(Model.FiltroEstado == "Finalizada" ? "btn-success" : "btn-outline-success")">Finalizadas</button>
-   </div>
- </div>
-      <div class="col-md-4">
-    <label class="form-label">Filtrar por Responsable</label>
-     <select name="responsable" class="form-select" onchange="this.form.submit()">
-    <option value="">Todos los usuarios</option>
-     @if (Model.UsuariosSelectList != null)
-      {
-        @foreach (var item in Model.UsuariosSelectList)
-      {
-      <option value="@item.Value" selected="@(Model.FiltroResponsable == item.Value)">@item.Text</option>
-    }
-   }
-          </select>
-   <input type="hidden" name="estado" id="estadoHidden" value="@Model.FiltroEstado" />
- </div>
-  <div class="col-md-2 d-flex align-items-end">
-            @if (!string.IsNullOrEmpty(Model.FiltroEstado) || !string.IsNullOrEmpty(Model.FiltroResponsable))
-   {
-     <a asp-page="Index" class="btn btn-secondary w-100">
-    <i class="bi bi-x-circle"></i> Limpiar
-         </a>
-   }
-  </div>
- </form>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Filtrar por Estado</label>
+                <div class="btn-group w-100" role="group">
+                    <a asp-page="Index" asp-route-responsable="@Model.FiltroResponsable" class="btn @(string.IsNullOrEmpty(Model.FiltroEstado) ? "btn-primary" : "btn-outline-primary")">Todas</a>
+                    <a asp-page="Index" asp-route-estado="Pendiente" asp-route-responsable="@Model.FiltroResponsable" class="btn @(Model.FiltroEstado == "Pendiente" ? "btn-warning" : "btn-outline-warning")">Pendientes</a>
+                    <a asp-page="Index" asp-route-estado="EnProgreso" asp-route-responsable="@Model.FiltroResponsable" class="btn @(Model.FiltroEstado == "EnProgreso" ? "btn-info" : "btn-outline-info")">En Progreso</a>
+                    <a asp-page="Index" asp-route-estado="Finalizada" asp-route-responsable="@Model.FiltroResponsable" class="btn @(Model.FiltroEstado == "Finalizada" ? "btn-success" : "btn-outline-success")">Finalizadas</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <form method="get" id="formResponsable">
+                    <input type="hidden" name="estado" value="@Model.FiltroEstado" />
+                    <label class="form-label">Filtrar por Responsable</label>
+                    <select name="responsable" class="form-select" onchange="this.form.submit()">
+                        <option value="">Todos los usuarios</option>
+                        @if (Model.UsuariosSelectList != null)
+                        {
+                            @foreach (var item in Model.UsuariosSelectList)
+                            {
+                                <option value="@item.Value" selected="@(Model.FiltroResponsable == item.Value)">@item.Text</option>
+                            }
+                        }
+                    </select>
+                </form>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                @if (!string.IsNullOrEmpty(Model.FiltroEstado) || !string.IsNullOrEmpty(Model.FiltroResponsable))
+                {
+                    <a asp-page="Index" class="btn btn-secondary w-100">
+                        <i class="bi bi-x-circle"></i> Limpiar
+                    </a>
+                }
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Tabla de Tareas -->
 <div class="card">
     <div class="card-body">
-     @if (Model.Tareas.Any())
+        @if (Model.Tareas.Any())
         {
-    <div class="table-responsive">
-        <table class="table table-hover">
-   <thead>
-   <tr>
-           <th>Título</th>
-  <th>Estado</th>
-        <th>Prioridad</th>
-   <th>Responsable</th>
-           <th>Progreso</th>
-<th>Fecha Límite</th>
-      <th>Acciones</th>
-            </tr>
-  </thead>
-            <tbody>
-        @foreach (var tarea in Model.Tareas)
-  {
-         var estadoClass = tarea.Estado switch
-          {
-          "Pendiente" => "badge bg-warning",
-          "EnProgreso" => "badge bg-info",
- "Finalizada" => "badge bg-success",
-          "Cancelada" => "badge bg-secondary",
-   _ => "badge bg-secondary"
-        };
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Estado</th>
+                            <th>Prioridad</th>
+                            <th>Responsable</th>
+                            <th>Progreso</th>
+                            <th>Fecha Límite</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var tarea in Model.Tareas)
+                        {
+                            var estadoClass = tarea.Estado switch
+                            {
+                                "Pendiente" => "badge bg-warning",
+                                "EnProgreso" => "badge bg-info",
+                                "Finalizada" => "badge bg-success",
+                                "Cancelada" => "badge bg-secondary",
+                                _ => "badge bg-secondary"
+                            };
 
-    var prioridadClass = tarea.Prioridad switch
-         {
-   "Baja" => "badge bg-secondary",
-  "Media" => "badge bg-primary",
-       "Alta" => "badge bg-warning text-dark",
-           "Urgente" => "badge bg-danger",
-     _ => "badge bg-secondary"
-         };
+                            var prioridadClass = tarea.Prioridad switch
+                            {
+                                "Baja" => "badge bg-secondary",
+                                "Media" => "badge bg-primary",
+                                "Alta" => "badge bg-warning text-dark",
+                                "Urgente" => "badge bg-danger",
+                                _ => "badge bg-secondary"
+                            };
 
-   var vencida = tarea.FechaLimite.HasValue && tarea.FechaLimite.Value < DateTime.UtcNow && tarea.Estado != "Finalizada";
+                            var vencida = tarea.FechaLimite.HasValue && tarea.FechaLimite.Value < DateTime.UtcNow && tarea.Estado != "Finalizada";
 
-  <tr class="@(vencida ? "table-danger" : "")">
-      <td>
-        <strong>@tarea.Titulo</strong>
-           @if (tarea.Producto != null)
-      {
-  <br /><small class="text-muted">Producto: @tarea.Producto.Nombre</small>
-      }
-       </td>
-       <td><span class="@estadoClass">@tarea.Estado</span></td>
-         <td><span class="@prioridadClass">@tarea.Prioridad</span></td>
-                 <td>
-                 @{ 
-                   var respId = tarea.ResponsableId;
-                   if (string.IsNullOrEmpty(respId)) {
-                      @:<span class="text-muted">-</span>
-                   } else if (Model.UserNames != null && Model.UserNames.ContainsKey(respId)) {
-                      @:<small>@Model.UserNames[respId]</small>
-                   } else {
-                      @:<small class="text-muted">@respId.Substring(0, Math.Min(8, respId.Length))...</small>
-                   }
-                 }
-                 </td>
-      <td>
-     <div class="progress" style="height: 20px;">
-             <div class="progress-bar" role="progressbar" style="width: @tarea.Progreso%" aria-valuenow="@tarea.Progreso" aria-valuemin="0" aria-valuemax="100">
-        @tarea.Progreso%
-           </div>
+                            <tr class="@(vencida ? "table-danger" : "")">
+                                <td>
+                                    <strong>@tarea.Titulo</strong>
+                                    @if (tarea.Producto != null)
+                                    {
+                                        <br /><small class="text-muted">Producto: @tarea.Producto.Nombre</small>
+                                    }
+                                </td>
+                                <td><span class="@estadoClass">@tarea.Estado</span></td>
+                                <td><span class="@prioridadClass">@tarea.Prioridad</span></td>
+                                <td>
+                                    @{ 
+                                        var respId = tarea.ResponsableId;
+                                        if (string.IsNullOrEmpty(respId)) {
+                                            @:<span class="text-muted">-</span>
+                                        } else if (Model.UserNames != null && Model.UserNames.ContainsKey(respId)) {
+                                            @:<small>@Model.UserNames[respId]</small>
+                                        } else {
+                                            @:<small class="text-muted">@respId.Substring(0, Math.Min(8, respId.Length))...</small>
+                                        }
+                                    }
+                                </td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar" role="progressbar" style="width: @tarea.Progreso%" aria-valuenow="@tarea.Progreso" aria-valuemin="0" aria-valuemax="100">
+                                            @tarea.Progreso%
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (tarea.FechaLimite.HasValue)
+                                    {
+                                        <span class="@(vencida ? "text-danger fw-bold" : "")">
+                                            @tarea.FechaLimite.Value.ToString("dd/MM/yyyy")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-page="Edit" asp-route-id="@tarea.Id" class="btn btn-outline-primary" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a asp-page="Delete" asp-route-id="@tarea.Id" class="btn btn-outline-danger" title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-        </td>
-        <td>
-  @if (tarea.FechaLimite.HasValue)
- {
-          <span class="@(vencida ? "text-danger fw-bold" : "")">
-           @tarea.FechaLimite.Value.ToString("dd/MM/yyyy")
-           </span>
-          }
-        else
-          {
-              <span class="text-muted">-</span>
-          }
-       </td>
-      <td>
-          <div class="btn-group btn-group-sm">
-                   <a asp-page="Edit" asp-route-id="@tarea.Id" class="btn btn-outline-primary" title="Editar">
-                   <i class="bi bi-pencil"></i>
-    </a>
-  <a asp-page="Delete" asp-route-id="@tarea.Id" class="btn btn-outline-danger" title="Eliminar">
-   <i class="bi bi-trash"></i>
-          </a>
-    </div>
- </td>
-           </tr>
-  }
-           </tbody>
-     </table>
-         </div>
         }
         else
         {
-        <div class="alert alert-info">
-  No hay tareas registradas.
+            <div class="alert alert-info">
+                No hay tareas registradas con los filtros aplicados.
             </div>
-   }
+        }
     </div>
 </div>

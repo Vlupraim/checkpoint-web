@@ -8,16 +8,25 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="bi bi-journal-text"></i> Registro de Auditoría</h2>
     <div>
-        <span class="badge bg-primary">Total: @Model.Logs.Count registros</span>
+        <span class="badge bg-primary">Total: @Model.TotalRecords registros</span>
     </div>
 </div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
 
 <div class="card mb-4">
     <div class="card-header">
         <h5 class="mb-0"><i class="bi bi-funnel"></i> Filtros</h5>
     </div>
     <div class="card-body">
-        <form method="get" class="row g-3">
+        <form method="get" class="row g-3" id="filterForm">
+            <input type="hidden" name="PageNumber" value="1" />
             <div class="col-md-3">
                 <label class="form-label">Usuario (ID o Email)</label>
                 <input asp-for="UserFilter" class="form-control" placeholder="Buscar por usuario..." />
@@ -55,6 +64,56 @@
     <div class="card-body">
         @if (Model.Logs.Any())
         {
+            <!-- Paginación Superior (estilo Gmail) -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="text-muted">
+                    Mostrando @((Model.PageNumber - 1) * Model.PageSize + 1) - @(Math.Min(Model.PageNumber * Model.PageSize, Model.TotalRecords)) de @Model.TotalRecords registros
+                </div>
+                <div class="btn-group" role="group">
+                    @if (Model.HasPreviousPage)
+                    {
+                        <a asp-page="/Admin/AuditLogs/Index" 
+                           asp-route-PageNumber="@(Model.PageNumber - 1)"
+                           asp-route-UserFilter="@Model.UserFilter"
+                           asp-route-ActionFilter="@Model.ActionFilter"
+                           asp-route-From="@Model.From?.ToString("yyyy-MM-dd")"
+                           asp-route-To="@Model.To?.ToString("yyyy-MM-dd")"
+                           class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-chevron-left"></i> Anterior
+                        </a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-outline-secondary btn-sm" disabled>
+                            <i class="bi bi-chevron-left"></i> Anterior
+                        </button>
+                    }
+                    
+                    <button class="btn btn-outline-secondary btn-sm" disabled>
+                        Página @Model.PageNumber de @Model.TotalPages
+                    </button>
+                    
+                    @if (Model.HasNextPage)
+                    {
+                        <a asp-page="/Admin/AuditLogs/Index" 
+                           asp-route-PageNumber="@(Model.PageNumber + 1)"
+                           asp-route-UserFilter="@Model.UserFilter"
+                           asp-route-ActionFilter="@Model.ActionFilter"
+                           asp-route-From="@Model.From?.ToString("yyyy-MM-dd")"
+                           asp-route-To="@Model.To?.ToString("yyyy-MM-dd")"
+                           class="btn btn-outline-secondary btn-sm">
+                            Siguiente <i class="bi bi-chevron-right"></i>
+                        </a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-outline-secondary btn-sm" disabled>
+                            Siguiente <i class="bi bi-chevron-right"></i>
+                        </button>
+                    }
+                </div>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-hover table-sm">
                     <thead class="table-light">
@@ -128,12 +187,55 @@
                 </table>
             </div>
 
-            @if (Model.Logs.Count >= 500)
-            {
-                <div class="alert alert-info mt-3">
-                    <i class="bi bi-info-circle"></i> Mostrando los últimos 500 registros. Usa los filtros para refinar la búsqueda.
+            <!-- Paginación Inferior (estilo Gmail) -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="text-muted">
+                    Mostrando @((Model.PageNumber - 1) * Model.PageSize + 1) - @(Math.Min(Model.PageNumber * Model.PageSize, Model.TotalRecords)) de @Model.TotalRecords registros
                 </div>
-            }
+                <div class="btn-group" role="group">
+                    @if (Model.HasPreviousPage)
+                    {
+                        <a asp-page="/Admin/AuditLogs/Index" 
+                           asp-route-PageNumber="@(Model.PageNumber - 1)"
+                           asp-route-UserFilter="@Model.UserFilter"
+                           asp-route-ActionFilter="@Model.ActionFilter"
+                           asp-route-From="@Model.From?.ToString("yyyy-MM-dd")"
+                           asp-route-To="@Model.To?.ToString("yyyy-MM-dd")"
+                           class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-chevron-left"></i> Anterior
+                        </a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-outline-secondary btn-sm" disabled>
+                            <i class="bi bi-chevron-left"></i> Anterior
+                        </button>
+                    }
+                    
+                    <button class="btn btn-outline-secondary btn-sm" disabled>
+                        Página @Model.PageNumber de @Model.TotalPages
+                    </button>
+                    
+                    @if (Model.HasNextPage)
+                    {
+                        <a asp-page="/Admin/AuditLogs/Index" 
+                           asp-route-PageNumber="@(Model.PageNumber + 1)"
+                           asp-route-UserFilter="@Model.UserFilter"
+                           asp-route-ActionFilter="@Model.ActionFilter"
+                           asp-route-From="@Model.From?.ToString("yyyy-MM-dd")"
+                           asp-route-To="@Model.To?.ToString("yyyy-MM-dd")"
+                           class="btn btn-outline-secondary btn-sm">
+                            Siguiente <i class="bi bi-chevron-right"></i>
+                        </a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-outline-secondary btn-sm" disabled>
+                            Siguiente <i class="bi bi-chevron-right"></i>
+                        </button>
+                    }
+                </div>
+            </div>
         }
         else
         {
