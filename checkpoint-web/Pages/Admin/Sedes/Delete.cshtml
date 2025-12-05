@@ -2,30 +2,42 @@
 @model checkpoint_web.Pages.Admin.Sedes.DeleteModel
 @{
     ViewData["Title"] = "Eliminar Sede";
-    Layout = "/Pages/Shared/_DashboardLayout.cshtml";
+    Layout = "/Pages/Shared/_AdminLayout.cshtml";
 }
 
 <h1>Eliminar Sede</h1>
-<h3>¿Está seguro de que desea eliminar esta sede?</h3>
 
-<div>
-    <dl class="row">
-        <dt class="col-sm-3">Código</dt>
-        <dd class="col-sm-9">@Model.Sede.Codigo</dd>
+<div class="alert alert-warning">
+    <h4 class="alert-heading"><i class="bi bi-exclamation-triangle"></i> ¿Está seguro?</h4>
+    <p>Esta acción eliminará permanentemente la sede. Esta operación no se puede deshacer.</p>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Código</dt>
+            <dd class="col-sm-9">@Model.Sede.Codigo</dd>
+            
+            <dt class="col-sm-3">Nombre</dt>
+            <dd class="col-sm-9">@Model.Sede.Nombre</dd>
+            
+            <dt class="col-sm-3">Dirección</dt>
+            <dd class="col-sm-9">@Model.Sede.Direccion</dd>
+            
+            <dt class="col-sm-3">Activa</dt>
+            <dd class="col-sm-9">@(Model.Sede.Activa ? "Sí" : "No")</dd>
+        </dl>
         
-        <dt class="col-sm-3">Nombre</dt>
-        <dd class="col-sm-9">@Model.Sede.Nombre</dd>
-        
-        <dt class="col-sm-3">Dirección</dt>
-        <dd class="col-sm-9">@Model.Sede.Direccion</dd>
-        
-        <dt class="col-sm-3">Activa</dt>
-        <dd class="col-sm-9">@(Model.Sede.Activa ? "Sí" : "No")</dd>
-    </dl>
-    
-    <form method="post" asp-route-id="@Model.Sede.Id">
-        @Html.AntiForgeryToken()
-        <button type="submit" class="btn btn-danger">Eliminar</button>
-        <a class="btn btn-secondary" asp-page="Index">Cancelar</a>
-    </form>
+        <form method="post" asp-route-id="@Model.Sede.Id">
+            @Html.AntiForgeryToken()
+            <div class="d-flex justify-content-between mt-4">
+                <a class="btn btn-secondary" asp-page="Index">
+                    <i class="bi bi-arrow-left"></i> Cancelar
+                </a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Confirmar Eliminación
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
