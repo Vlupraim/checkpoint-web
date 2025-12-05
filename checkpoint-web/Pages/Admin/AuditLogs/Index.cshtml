@@ -2,7 +2,13 @@
 @model checkpoint_web.Pages.Admin.AuditLogs.IndexModel
 @{
     ViewData["Title"] = "Registro de Auditoría";
-    Layout = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ? null : "/Pages/Shared/_AdminLayout.cshtml";
+    
+    // Determinar layout según contexto de navegación
+    var isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+    var referer = Request.Headers["Referer"].ToString();
+    var isFromCalidad = referer.Contains("/Calidad/") || Request.Query.ContainsKey("fromCalidad");
+    
+    Layout = isAjax ? null : (isFromCalidad ? "/Pages/Shared/_CalidadLayout.cshtml" : "/Pages/Shared/_AdminLayout.cshtml");
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -25,8 +31,12 @@
         <h5 class="mb-0"><i class="bi bi-funnel"></i> Filtros</h5>
     </div>
     <div class="card-body">
-        <form method="get" class="row g-3" id="filterForm">
+        <form method="get" class="row g-3" id="filterForm" onsubmit="return true;">
             <input type="hidden" name="PageNumber" value="1" />
+            @if (isFromCalidad)
+            {
+                <input type="hidden" name="fromCalidad" value="true" />
+            }
             <div class="col-md-3">
                 <label class="form-label">Usuario (ID o Email)</label>
                 <input asp-for="UserFilter" class="form-control" placeholder="Buscar por usuario..." />
@@ -52,7 +62,7 @@
         @if (!string.IsNullOrEmpty(Model.UserFilter) || !string.IsNullOrEmpty(Model.ActionFilter) || Model.From.HasValue || Model.To.HasValue)
         {
             <div class="mt-3">
-                <a href="@Url.Page("/Admin/AuditLogs/Index")" class="btn btn-sm btn-outline-secondary">
+                <a href="@Url.Page("/Admin/AuditLogs/Index", new { fromCalidad = isFromCalidad ? "true" : null })" class="btn btn-sm btn-outline-secondary">
                     <i class="bi bi-x-circle"></i> Limpiar filtros
                 </a>
             </div>
@@ -78,6 +88,7 @@
                            asp-route-ActionFilter="@Model.ActionFilter"
                            asp-route-From="@Model.From?.ToString("yyyy-MM-dd")"
                            asp-route-To="@Model.To?.ToString("yyyy-MM-dd")"
+                           asp-route-fromCalidad="@(isFromCalidad ? "true" : null)"
                            class="btn btn-outline-secondary btn-sm">
                             <i class="bi bi-chevron-left"></i> Anterior
                         </a>
@@ -101,6 +112,7 @@
                            asp-route-ActionFilter="@Model.ActionFilter"
                            asp-route-From="@Model.From?.ToString("yyyy-MM-dd")"
                            asp-route-To="@Model.To?.ToString("yyyy-MM-dd")"
+                           asp-route-fromCalidad="@(isFromCalidad ? "true" : null)"
                            class="btn btn-outline-secondary btn-sm">
                             Siguiente <i class="bi bi-chevron-right"></i>
                         </a>
@@ -201,6 +213,7 @@
                            asp-route-ActionFilter="@Model.ActionFilter"
                            asp-route-From="@Model.From?.ToString("yyyy-MM-dd")"
                            asp-route-To="@Model.To?.ToString("yyyy-MM-dd")"
+                           asp-route-fromCalidad="@(isFromCalidad ? "true" : null)"
                            class="btn btn-outline-secondary btn-sm">
                             <i class="bi bi-chevron-left"></i> Anterior
                         </a>
@@ -224,6 +237,7 @@
                            asp-route-ActionFilter="@Model.ActionFilter"
                            asp-route-From="@Model.From?.ToString("yyyy-MM-dd")"
                            asp-route-To="@Model.To?.ToString("yyyy-MM-dd")"
+                           asp-route-fromCalidad="@(isFromCalidad ? "true" : null)"
                            class="btn btn-outline-secondary btn-sm">
                             Siguiente <i class="bi bi-chevron-right"></i>
                         </a>

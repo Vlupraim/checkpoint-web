@@ -172,7 +172,12 @@
                 '/Reportes/Tareas': '/Reportes/Tareas'
             };
 
+            let spaNavigating = false;
+
             function loadUrl(url, replaceState) {
+                if (spaNavigating) return;
+                spaNavigating = true;
+
                 fetch(url, {
                     credentials: 'same-origin',
                     headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -184,10 +189,12 @@
                     .then(function (html) {
                         document.getElementById('bodegaContent').innerHTML = html;
                         if (replaceState) history.replaceState({ url: url }, '', location.pathname);
+                        spaNavigating = false;
                     })
                     .catch(function (err) {
                         console.error('Load error:', err);
                         document.getElementById('bodegaContent').innerHTML = '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>';
+                        spaNavigating = false;
                     });
             }
 
@@ -195,27 +202,46 @@
                 document.querySelectorAll('.sidebar a[data-url]').forEach(function (a) {
                     a.addEventListener('click', function (e) {
                         e.preventDefault();
+                        e.stopPropagation();
+
                         document.querySelectorAll('.sidebar a').forEach(function (link) { link.classList.remove('active'); });
                         a.classList.add('active');
                         var url = a.getAttribute('data-url');
                         var path = a.getAttribute('data-path') || url;
-                        loadUrl(url, false);
-                        history.pushState({ url: url }, '', path);
+
+                        if (spaNavigating) return;
+                        spaNavigating = true;
+
+                        fetch(url, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                            .then(function (resp) { if (!resp.ok) throw new Error('HTTP ' + resp.status); return resp.text(); })
+                            .then(function (html) {
+                                document.getElementById('bodegaContent').innerHTML = html;
+                                history.pushState({ url: url }, '', path);
+                                spaNavigating = false;
+                            })
+                            .catch(function (err) {
+                                console.error('Navigation error:', err);
+                                document.getElementById('bodegaContent').innerHTML = '<div class="alert alert-danger">Error al cargar el contenido: ' + err.message + '</div>';
+                                spaNavigating = false;
+                            });
                     });
                 });
 
+                // Browser back/forward - SOLO si es navegación del sidebar
                 window.addEventListener('popstate', function (event) {
                     var state = event.state;
-                    if (state && state.url) loadUrl(state.url, false);
-                    else {
-                        var frag = mapping[location.pathname];
-                        if (frag) loadUrl(frag, true);
-                        else window.location = location.pathname;
+                    if (state && state.url) {
+                        loadUrl(state.url, false);
                     }
                 });
 
+                // Initial load: SOLO si es una ruta del sidebar
                 var initial = location.pathname;
-                if (initial && initial !== '/Bodega/Dashboard' && mapping[initial]) loadUrl(mapping[initial], true);
+                var basePath = initial.split('?')[0];
+
+                if (basePath && basePath !== '/Bodega/Dashboard' && mapping[basePath]) {
+                    loadUrl(mapping[basePath], true);
+                }
             });
         })();
     </script>

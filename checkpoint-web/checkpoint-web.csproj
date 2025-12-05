@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <!-- Solo PostgreSQL - Removido SQL Server que causaba conflictos -->
+    <PackageReference Include="EPPlus" Version="7.5.2" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>

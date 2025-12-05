@@ -15,7 +15,7 @@
                 <h5 class="mb-0">Filtros de Búsqueda</h5>
             </div>
             <div class="card-body">
-                <form method="get">
+                <form method="get" onsubmit="return true;">
                     <div class="row">
                         <div class="col-md-4">
                             <label class="form-label text-white">Producto</label>
@@ -56,9 +56,13 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Stock por Producto y Ubicación (@Model.Stocks.Count resultados)</h5>
-        <button class="btn btn-sm btn-success" onclick="exportToExcel()">
+        <a asp-page-handler="ExportExcel" 
+           asp-route-Producto="@Model.Producto"
+           asp-route-SedeId="@Model.SedeId"
+           asp-route-UbicacionId="@Model.UbicacionId"
+           class="btn btn-sm btn-success">
             <i class="bi bi-file-excel"></i> Exportar Excel
-        </button>
+        </a>
     </div>
     <div class="card-body">
         @if (Model.Stocks.Any())
@@ -115,11 +119,3 @@
         }
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        function exportToExcel() {
-            alert('Funcionalidad de exportación en desarrollo');
-        }
-    </script>
-}

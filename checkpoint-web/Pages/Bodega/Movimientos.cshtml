@@ -71,11 +71,14 @@
                             </small>
                         </div>
                         <div class="col-md-4">
-                            <label asp-for="Cantidad" class="form-label fw-bold">4️⃣ Cantidad *</label>
+                            <label class="form-label fw-bold">4️⃣ Cantidad y Unidad *</label>
                             <div class="input-group input-group-lg">
                                 <input asp-for="Cantidad" type="number" class="form-control" id="cantidadInput" step="0.01" min="0.01" placeholder="0.00" required />
-                                <span class="input-group-text" id="unidadText">u</span>
+                                <input type="text" class="form-control" id="unidadInput" name="Unidad" value="u" placeholder="Unidad" style="max-width: 100px;" required />
                             </div>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i> Valor: cantidad numérica | Unidad: kg, L, caja, etc.
+                            </small>
                         </div>
                     </div>
 
@@ -114,7 +117,7 @@
                             <label asp-for="Observaciones" class="form-label">Observaciones</label>
                             <textarea asp-for="Observaciones" class="form-control" rows="2" placeholder="Opcional (requerido para ajustes)"></textarea>
                             <small class="form-text text-muted" id="observacionesHelp">
-                                <span id="obsHelp Ajuste" style="display:none;">
+                                <span id="obsHelpAjuste" style="display:none;">
                                     <i class="bi bi-exclamation-triangle text-warning"></i> <strong>Obligatorio para ajustes:</strong> Debe explicar el motivo del ajuste
                                 </span>
                             </small>
@@ -254,9 +257,36 @@
         const loteSelect = $('#loteSelect');
         const ubicacionSelect = $('#ubicacionSelect');
         const cantidadInput = $('#cantidadInput');
+        const unidadInput = $('#unidadInput');
         const stockInfoContainer = $('#stockInfoContainer');
         const stockCards = $('#stockCards');
-        const unidadText = $('#unidadText');
+        const movimientoForm = $('#movimientoForm');
+        
+        let stockDisponiblePorUbicacion = {};
+        
+        // Validar antes de enviar formulario
+        movimientoForm.on('submit', function(e) {
+            const tipo = $('input[name="Tipo"]:checked').val();
+            const ubicacionId = ubicacionSelect.val();
+            const cantidad = parseFloat(cantidadInput.val());
+            
+            // Validar solo en salidas
+            if (tipo && tipo.toLowerCase() === 'salida') {
+                const stockDisponible = stockDisponiblePorUbicacion[ubicacionId] || 0;
+                
+                if (cantidad > stockDisponible) {
+                    e.preventDefault();
+                    alert(`❌ Stock Insuficiente\n\n` +
+                          `Cantidad solicitada: ${cantidad.toFixed(2)}\n` +
+                          `Stock disponible en ubicación: ${stockDisponible.toFixed(2)}\n\n` +
+                          `Por favor, ajuste la cantidad o seleccione otra ubicación con stock suficiente.`);
+                    cantidadInput.focus();
+                    cantidadInput.addClass('is-invalid');
+                    setTimeout(() => cantidadInput.removeClass('is-invalid'), 3000);
+                    return false;
+                }
+            }
+        });
         
         // Manejar cambio de tipo
         tipoRadios.on('change', function() {
@@ -289,11 +319,12 @@
             
             if (!loteId) {
                 stockInfoContainer.hide();
-                unidadText.text('u');
+                unidadInput.val('u');
+                stockDisponiblePorUbicacion = {};
                 return;
             }
             
-            // Extraer unidad del texto seleccionado - MEJORADO
+            // Extraer unidad del texto seleccionado
             const selectedText = $(this).find('option:selected').text();
             
             // Buscar patrones como: (100,00 kg disponibles) o (100,00 unidad disponibles)
@@ -322,15 +353,15 @@
                 };
                 
                 unidad = unidadMap[unidad] || unidad;
-                unidadText.text(unidad);
+                unidadInput.val(unidad);
             } else {
                 // Fallback: buscar la unidad en el texto sin patrón específico
-                if (selectedText.includes(' kg ')) unidadText.text('kg');
-                else if (selectedText.includes(' caja ')) unidadText.text('caja');
-                else if (selectedText.includes(' 500 ')) unidadText.text('500');
-                else if (selectedText.includes(' L ')) unidadText.text('L');
-                else if (selectedText.includes(' g ')) unidadText.text('g');
-                else unidadText.text('u');
+                if (selectedText.includes(' kg ')) unidadInput.val('kg');
+                else if (selectedText.includes(' caja ')) unidadInput.val('caja');
+                else if (selectedText.includes(' 500 ')) unidadInput.val('500');
+                else if (selectedText.includes(' L ')) unidadInput.val('L');
+                else if (selectedText.includes(' g ')) unidadInput.val('g');
+                else unidadInput.val('u');
             }
             
             // Si es salida, cargar stock disponible
@@ -346,8 +377,12 @@
                 
                 if (data.success && data.stocks && data.stocks.length > 0) {
                     stockCards.empty();
+                    stockDisponiblePorUbicacion = {};
                     
                     data.stocks.forEach(stock => {
+                        // Guardar stock disponible por ubicación
+                        stockDisponiblePorUbicacion[stock.ubicacionId] = stock.cantidad;
+                        
                         const card = `
                             <div class="col-md-3">
                                 <div class="card border-info">
@@ -368,13 +403,45 @@
                     
                     stockInfoContainer.show();
                 } else {
-                    stockCards.html('<div class="col-12"><div class="alert alert-warning mb-0">No hay stock disponible</div></div>');
+                    stockCards.html('<div class="col-12"><div class="alert alert-warning mb-0">No hay stock disponible para este lote</div></div>');
                     stockInfoContainer.show();
+                    stockDisponiblePorUbicacion = {};
                 }
             } catch (error) {
                 console.error('Error al cargar stock:', error);
             }
         }
+        
+        // Validar cantidad en tiempo real cuando cambia ubicación (solo en salida)
+        ubicacionSelect.on('change', function() {
+            const tipo = $('input[name="Tipo"]:checked').val();
+            if (tipo && tipo.toLowerCase() === 'salida') {
+                const ubicacionId = $(this).val();
+                const cantidad = parseFloat(cantidadInput.val()) || 0;
+                const stockDisponible = stockDisponiblePorUbicacion[ubicacionId] || 0;
+                
+                if (cantidad > stockDisponible && stockDisponible > 0) {
+                    cantidadInput.addClass('is-invalid');
+                    setTimeout(() => cantidadInput.removeClass('is-invalid'), 2000);
+                }
+            }
+        });
+        
+        // Validar cantidad en tiempo real
+        cantidadInput.on('input', function() {
+            const tipo = $('input[name="Tipo"]:checked').val();
+            if (tipo && tipo.toLowerCase() === 'salida') {
+                const ubicacionId = ubicacionSelect.val();
+                const cantidad = parseFloat($(this).val()) || 0;
+                const stockDisponible = stockDisponiblePorUbicacion[ubicacionId] || 0;
+                
+                if (cantidad > stockDisponible && stockDisponible > 0) {
+                    $(this).addClass('is-invalid');
+                } else {
+                    $(this).removeClass('is-invalid');
+                }
+            }
+        });
     });
     </script>
 }

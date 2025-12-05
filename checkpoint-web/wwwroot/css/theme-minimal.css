@@ -235,12 +235,12 @@ background: var(--accent-blue);
 .table thead th {
     background: var(--bg-tertiary);
     border-bottom: 2px solid var(--border-color);
-  color: var(--text-secondary);
-font-weight: 600;
+    color: var(--text-primary);  /* Cambiado de text-secondary a text-primary para mejor visibilidad */
+    font-weight: 600;
     text-transform: uppercase;
-    font-size: 0.8rem;
+    font-size: 0.85rem;  /* Aumentado de 0.8rem a 0.85rem */
     letter-spacing: 0.5px;
-    padding: 0.75rem;
+    padding: 0.85rem 0.75rem;  /* Aumentado padding vertical */
 }
 
 .table tbody td {
@@ -249,7 +249,18 @@ font-weight: 600;
 }
 
 .table-hover tbody tr:hover {
-  background: var(--bg-tertiary);
+    background: var(--bg-tertiary);
+}
+
+/* Encabezados de tabla con fondo oscuro (para mejor contraste) */
+.table-dark thead th {
+    background: var(--bg-primary);
+    border-bottom: 2px solid var(--accent-blue);
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 0.9rem;  /* Más grande para tabla oscura */
+    letter-spacing: 0.8px;
+    padding: 1rem 0.75rem;
 }
 
 /* Alerts Minimalistas */
